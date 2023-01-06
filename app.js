@@ -22,12 +22,12 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 //session setup
-const min = 1000*60;
+const tenmin = 1000*60*10;
 app.use(session({
     secret: 'secretKey',
     resave: true,
     saveUninitialized: true,
-    cookie: {maxAge: min}
+    cookie: {maxAge: tenmin}
 }))
 
 //Cache Control

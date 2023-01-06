@@ -3,40 +3,38 @@ const bcrypt = require('bcrypt');
 const db = require('../config/connection');
 const session = require('express-session');
 
-const isLogin = require("../middleware/isLogin");
 const UserModel = require("../models/userModel");
+let userErr = false;
+let passErr = false;
 
 module.exports = {
 
     signupPage: async(req,res,next)=>{
         try{
-            console.log("<<signup page rendering>>");
-            res.render('user/signup')
+            res.render('user/signup',{title:"SignUp",login:req.session})
         }catch(error){
             next(error)
         }
     },
 
     loginPage: async(req,res,next)=>{
-        console.log("<<login page rendering>>");
-        console.log(req.session);
         try{
-
             if(!req.session.userLogin){
-                res.render('user/login');
+                res.render('user/login',{title:"Login",login:req.session,userErr,passErr});
+                userErr=false
+                passErr=false
             }else{
                 res.redirect('/');
             }
-
         }catch(error){
             next(error)
         }
     },
 
     homePage: async(req,res,next)=>{
-        console.log("<<rendering home page>>");
         try{
-            res.render('user/index');
+            console.log(req.session);
+            res.render('user/index',{title:"Home",login:req.session});
         }catch(error){
             next(error)
         }
@@ -44,7 +42,9 @@ module.exports = {
 
     shopPage: async(req,res,next)=>{
         try{
-            res.render('user/shop')
+            console.log("<<shop page rendering>>");
+            console.log(req.session);
+            res.render('user/shop',{title:"Shop",login:req.session})
         }catch(error){
             next(error)
         }
@@ -52,7 +52,7 @@ module.exports = {
 
     productPage: async(req,res,next)=>{
         try{
-            res.render('user/product')
+            res.render('user/product',{title:"Product",login:req.session})
         }catch(error){
             next(error)
         }
@@ -60,7 +60,7 @@ module.exports = {
 
     ordersPage: async(req,res,next)=>{
         try{
-            res.render('user/orders')
+            res.render('user/orders',{title:"Orders",login:req.session})
         }catch(error){
             next(error)
         }
@@ -68,7 +68,7 @@ module.exports = {
 
     wishlistPage: async(req,res,next)=>{
         try{
-            res.render('user/wishlist')
+            res.render('user/wishlist',{title:"Wishlist",login:req.session})
         }catch(error){
             next(error)
         }
@@ -76,7 +76,7 @@ module.exports = {
 
     contactPage: async(req,res,next)=>{
         try{
-            res.render('user/contact')
+            res.render('user/contact',{title:"Contact",login:req.session})
         }catch(error){
             next(error)
         }
@@ -84,7 +84,7 @@ module.exports = {
 
     profilePage: async(req,res,next)=>{
         try{
-            res.render('user/profile')
+            res.render('user/profile',{title:"Profile",login:req.session})
         }catch(error){
             next(error)
         }
@@ -92,7 +92,7 @@ module.exports = {
 
     cartPage: async(req,res,next)=>{
         try{
-            res.render('user/cart')
+            res.render('user/cart',{title:"Cart",login:req.session})
         }catch(error){
             next(error)
         }
@@ -100,7 +100,7 @@ module.exports = {
 
     checkoutPage: async(req,res,next)=>{
         try{
-            res.render('user/checkout')
+            res.render('user/checkout',{title:"Checkout",login:req.session})
         }catch(error){
             next(error)
         }
@@ -137,16 +137,16 @@ module.exports = {
         const user = await UserModel.findOne({$and: [{email: email},{blocked:false}]});
         if(!user){
             userErr = true;
-            res.redirect('/login');
-            return 
+            req.session.userLogin = true;
+            return res.redirect('/login');
         }
         const isPass = await bcrypt.compare(password, user.password);
         if(!isPass){
             passErr = true;
-            res.redirect('/login');
-            return
+            req.session.userLogin = false;
+            return res.redirect('/login');
         }
-        req.session.user = user.fullname
+        req.session.username = user.fullname
         req.session.userId = user._id
         req.session.userLogin = true
         res.redirect('/')

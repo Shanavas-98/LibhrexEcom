@@ -6,7 +6,16 @@ const AdminModel = require("../models/adminModel");
 
 module.exports = {
 
-    Home: async(req,res,next)=>{
+    loginPage: async(req,res,next)=>{
+        console.log("homepage");
+        try{
+            res.render('admin/login')
+        }catch(error){
+            next(error)
+        }
+    },
+
+    homePage: async(req,res,next)=>{
         console.log("homepage");
         try{
             res.render('admin/dashboard')
@@ -15,5 +24,12 @@ module.exports = {
         }
     },
 
-
+    homePage: async(req,res,next)=>{
+        console.log("homepage");
+        try{
+            res.render('admin/dashboard')
+        }catch(error){
+            next(error)
+        }
+    }
 }

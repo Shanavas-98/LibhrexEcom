@@ -16,30 +16,40 @@
                             <form action="/signin" class="user" method="POST" id="">
                                 <div class="form-group row justify-content-center">
                                     <div class="col-sm-6 input-control">
-                                    <input type="email" class="form-control form-control-user" id="emailAddress"
-                                        name="email" placeholder="Email Address" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" required />
-                    
+                                        <input type="email" class="form-control form-control-user" id="emailAddress"
+                                            name="email" placeholder="Email Address"
+                                            pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" required />
+                                            <p style="color: red;">
+                                                <% if (userErr) { %>
+                                                    user doesn't exist
+                                                    <% } %>
+                                                        
+                                            </p>
                                     </div>
                                 </div>
                                 <div class="form-group row justify-content-center">
                                     <div class="col-sm-6 mb-3 mb-sm-0 input-control text-center">
-                                        <input type="password" class="form-control form-control-user"
-                                            id="pswd" name="password" placeholder="Password" required />
-                                       
+                                        <input type="password" class="form-control form-control-user" id="pswd"
+                                            name="password" placeholder="Password" required />
+                                        <p style="color: red;">
+                                            <% if(passErr) { %>
+                                            incorrect password
+                                            <% } %></p>
                                     </div>
                                 </div>
                                 <div class="form-group row justify-content-center">
 
-                                <button type="submit" class="btn btn-primary btn-user px-5">
-                                    Login
-                                </button>
+                                    <button type="submit" class="btn btn-primary btn-user px-5">
+                                        Login
+                                    </button>
                                 </div>
                             </form>
                             <div class="text-center mt-3 mb-2">
                                 <a class="small" href="forgot-password.html">Forgot Password?</a>
                             </div>
                             <div class="text-center">
-                                <p class="small">Don't have an account? <a href="/signup">Signup here</a></p>
+                                <p class="small">Don't have an account? <a href="/signup">Signup
+                                        here</a></p>
                             </div>
                         </div>
                     </div>
@@ -47,6 +57,6 @@
             </div>
         </div>
     </div>
-    
-    
-<%-include('../user/layouts/user-script.ejs') %>
+
+
+    <%-include('../user/layouts/user-script.ejs') %>
