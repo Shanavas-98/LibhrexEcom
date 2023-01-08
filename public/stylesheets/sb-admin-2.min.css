@@ -204,6 +204,7 @@ pre {
     margin-top: 0;
     margin-bottom: 1rem;
     overflow: auto;
+    -ms-overflow-style: scrollbar
 }
 
 figure {
@@ -3969,6 +3970,8 @@ input[type=submit].btn-block {
     display: block;
     min-height: 1.5rem;
     padding-left: 1.5rem;
+    -webkit-print-color-adjust: exact;
+    color-adjust: exact
 }
 
 .custom-control-inline {

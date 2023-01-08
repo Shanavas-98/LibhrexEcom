@@ -120,7 +120,7 @@ module.exports = {
             newUser.save()
                 .then(()=>{
                 res.redirect("/login");
-            })
+                })
                 .catch((error)=>{
                     console.log(error);
                     res.redirect("/register");
@@ -137,7 +137,7 @@ module.exports = {
         const user = await UserModel.findOne({$and: [{email: email},{blocked:false}]});
         if(!user){
             userErr = true;
-            req.session.userLogin = true;
+            req.session.userLogin = false;
             return res.redirect('/login');
         }
         const isPass = await bcrypt.compare(password, user.password);

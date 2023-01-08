@@ -1,0 +1,99 @@
+<%- include('../admin/layouts/admin-sidebar.ejs') %>
+<%- include('../admin/layouts/admin-navbar.ejs') %>
+        <section class="content-main">
+            <div class="content-header">
+                <div>
+                    <h2 class="content-title card-title">Categories </h2>
+                    <p>Add, edit or delete a category</p>
+                </div>
+                <div>
+                    <input type="text" placeholder="Search Categories" class="form-control bg-white">
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <form action="/admin/addcategory" method="POST">
+                                <div class="mb-4">
+                                    <label for="product_name" class="form-label">Category</label>
+                                    <input type="text" placeholder="Type here" class="form-control" id="" name="category" required/>
+                                </div>
+                                <div class="mb-4">
+                                    <label for="product_slug" class="form-label">Sub-Category</label>
+                                    <input type="text" placeholder="Type here" class="form-control" id="" name="subcategory" required/>
+                                </div>
+                                <!-- <div class="mb-4">
+                                    <label for="product_slug" class="form-label">Brand</label>
+                                    <input type="text" placeholder="Type here" class="form-control" id="" name="brand" required/>
+                                </div> -->
+                                <div class="d-grid">
+                                    <button type="submit" class="btn btn-primary">Create category</button>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="col-md-9">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>S.No</th>
+                                            <th>Category</th>
+                                            <th>Subcategory</th>
+                                            <th>Edit</th>
+                                            <th>Flag</th>
+                                            <th>Delete</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% Categories.forEach(function(categ){ %>
+                                            <% Subcategories.forEach(function(subcateg){ %>
+                                        <tr>
+
+
+                                            <td><%= index++ %></td>
+                                            <td><b><%= categ.category  %></b></td>
+                                            
+                                            <td>
+                                                <%= subcateg.subcategory  %>
+                                            </td>
+                                            <td>
+                                                <form action="/admin/editcategory/<%= subcateg._id %>" method="post">
+                                                    <button type="submit" class="btn  btn-secondary" style="width: 50px;" ><i class="bi bi-pen-fill"></i></button>
+                                                  </form>
+                                            </td>
+                                            <td>
+                                                <form action="/admin/flagcategory/<%= subcateg._id %>" method="post">
+                                                    <button type="submit" class="btn  btn-warning" style="width: 50px;" ><i class="bi bi-flag-fill"></i></button>
+                                                  </form>
+                                            </td>
+                                            <td>
+                                                <form action="/admin/deletesubcategory/<%= subcateg._id %>" method="post">
+                                                    <button type="submit" class="btn  btn-danger" style="width: 50px;" ><i class="bi bi-trash-fill"></i></button>
+                                                  </form>
+                                            </td>
+
+                                            <!-- <td class="text-end">
+                                                <div class="dropdown">
+                                                    <a href="#" data-bs-toggle="dropdown" class="btn btn-light rounded btn-sm font-sm"> <i class="material-icons md-more_horiz"></i> </a>
+                                                    <div class="dropdown-menu">
+                                                        <a class="dropdown-item" href="#">View detail</a>
+                                                        <a class="dropdown-item" href="#">Edit info</a>
+                                                        <a class="dropdown-item text-danger" href="#">Delete</a>
+                                                    </div>
+                                                </div>
+                                            </td> -->
+                                            
+                                        </tr>
+                                        <% }) %> 
+                                    <% }) %> 
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div> <!-- .col// -->
+                    </div> <!-- .row // -->
+                </div> <!-- card body .// -->
+            </div> <!-- card .// -->
+        </section> <!-- content-main end// -->
+        <%- include('../admin/layouts/admin-footer.ejs') %>
+        
