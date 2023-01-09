@@ -4,31 +4,48 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const session = require('express-session');
+const multer = require('multer')
+const file = require('./utils/multer')
 
+
+
+//routes setup
 let adminRoute = require('./routes/adminRoute');
 let userRoute = require('./routes/userRoute');
 
 const app = express();
 
+
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
+
+
+//middlewares
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+
 //public folder setup
 app.use(express.static(path.join(__dirname, 'public')));
+//multer file upload
+app.use(multer({ storage: file.storage }).array("image", 10));
+
+
 
 //session setup
-const tenmin = 1000*60*10;
+const oneHour = 1000*60*60;
 app.use(session({
     secret: 'secretKey',
     resave: true,
     saveUninitialized: true,
-    cookie: {maxAge: tenmin}
+    cookie: {maxAge: oneHour}
 }))
+
+
 
 //Cache Control
 app.use((req,res,next)=>{
@@ -36,9 +53,13 @@ app.use((req,res,next)=>{
     next();
 })
 
+
+
 //Routes setup
 app.use('/', userRoute);
 app.use('/admin', adminRoute);
+
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -56,4 +77,5 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
-module.exports = app;
+// module.exports = app;
+app.listen(3000)

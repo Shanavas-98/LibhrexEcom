@@ -1,12 +1,18 @@
 const mongoose = require('mongoose');
-const Objectid = mongoose.Types.ObjectId
+const ObjectId = mongoose.Types.ObjectId
 const productSchema = new mongoose.Schema({
-    brand: {
-        type: Objectid,
+
+    category:{
+        type: ObjectId,
         required: true,
-        ref: "BrandData"
+        ref:"Categories"
     },
-    productName: {
+    subcategory:{
+        type: ObjectId,
+        required: true,
+        ref:"Subcategories"
+    },
+    product: {
         type: String,
         required: true,
     },
@@ -14,7 +20,11 @@ const productSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    price: {
+    mrp: {
+        type: Number,
+        required: true
+    },
+    srp: {
         type: Number,
         required: true
     },
@@ -33,7 +43,7 @@ const productSchema = new mongoose.Schema({
     blockedDate: {
         type: Date,
         default: Date.now
-    },
+    }
 
 })
 

@@ -19,43 +19,16 @@
     <link href="/admin/css/main.css" rel="stylesheet" type="text/css" />
 </head>
 
-<body>
+<body style="background-color: aquamarine;">
     <main>
-        <header class="main-header style-2 navbar">
-            <div class="col-brand">
-                <a href="/admin" class="brand-wrap">
-                    <img src="/images/logo.png" class="logo" alt="Libhrex Dashboard">
-                </a>
-            </div>
-            <div class="col-nav">
-                <ul class="nav">
-                    <li class="nav-item">
-                        <a class="nav-link btn-icon" href="#">
-                            <i class="material-icons md-notifications animation-shake"></i>
-                            <span class="badge rounded-pill">3</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link btn-icon darkmode" href="#"> <i class="material-icons md-nights_stay"></i> </a>
-                    </li>
-                    <li class="dropdown nav-item">
-                        <a class="dropdown-toggle" data-bs-toggle="dropdown" href="#" id="dropdownAccount" aria-expanded="false"> <img class="img-xs rounded-circle" src="/admin/imgs/people/avatar2.jpg" alt="User"></a>
-                        <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownAccount">
-                            <a class="dropdown-item" href="#"><i class="material-icons md-perm_identity"></i>Edit Profile</a>
-                            <a class="dropdown-item" href="#"><i class="material-icons md-settings"></i>Account Settings</a>
-                            <a class="dropdown-item" href="#"><i class="material-icons md-account_balance_wallet"></i>Wallet</a>
-                            <a class="dropdown-item" href="#"><i class="material-icons md-receipt"></i>Billing</a>
-                            <a class="dropdown-item" href="#"><i class="material-icons md-help_outline"></i>Help center</a>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item text-danger" href="#"><i class="material-icons md-exit_to_app"></i>Logout</a>
-                        </div>
-                    </li>
-                </ul>
-            </div>
-        </header>
-        <section class="content-main mt-80 mb-80">
+        <section class="content-main mt-80 mb-80" style="background-color: aquamarine;">
             <div class="card mx-auto card-login">
-                <div class="card-body">
+                <div class="col-brand p-3">
+                    <a href="/admin" class="brand-wrap">
+                        <img src="/images/logo.png" class="logo" alt="Libhrex Dashboard" style="height: 50px;">
+                    </a>
+                </div>
+                <div class="card-body pt-3">
                     <h4 class="card-title mb-4">Admin Login</h4>
                     <form action="/admin/signin" class="user" method="POST">
                         <div class="mb-3">
@@ -94,6 +67,4 @@
     <script src="/admin/js/main.js" type="text/javascript"></script>
 </body>
 
-
-<!-- Mirrored from wp.alithemes.com/html/evara/evara-backend/page-account-login.html by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 01 Aug 2021 15:33:33 GMT -->
 </html>

@@ -1,95 +1,101 @@
 <%- include('../admin/layouts/admin-sidebar.ejs') %>
-<%- include('../admin/layouts/admin-navbar.ejs') %>
+    <%- include('../admin/layouts/admin-navbar.ejs') %>
         <section class="content-main">
             <div class="row">
                 <div class="col-9">
                     <div class="content-header">
                         <h2 class="content-title">Add New Product</h2>
-                        <div>
-                            <button class="btn btn-md rounded font-sm hover-up">List Product</button>
-                        </div>
                     </div>
                 </div>
-                <div class="d-flex">
-                    <div class="card mb-4">
+                <form class="row" action="/admin/add-product" method="POST" enctype="multipart/form-data">
+                    <div class="card mb-4 col-md-6">
                         <div class="card-header">
                             <h4>Basic</h4>
                         </div>
                         <div class="card-body">
-                            <form>
-                                <div class="mb-4">
-                                    <label for="product_name" class="form-label">Product title</label>
-                                    <input type="text" placeholder="Type here" class="form-control" id="" name="product" required/>
-                                </div>
-                                <div class="mb-4">
-                                    <label class="form-label">Full description</label>
-                                    <textarea placeholder="Type here" class="form-control" rows="4" id="" name="description" required></textarea>
-                                </div>
-                                <div class="row">
-                                    <div class="col-lg-4">
-                                        <div class="mb-4">
-                                            <label class="form-label">Regular price</label>
-                                            <div class="row gx-2">
-                                                <input placeholder="$" type="text" class="form-control" name="mrp" required/>
-                                            </div>
+                            <div class="mb-4">
+                                <label for="product_name" class="form-label">Product title</label>
+                                <input type="text" placeholder="Type here" class="form-control" id="" name="product"
+                                    required />
+                            </div>
+                            <div class="mb-4">
+                                <label class="form-label">Full description</label>
+                                <textarea placeholder="Type here" class="form-control" rows="4" id="" name="description"
+                                    required></textarea>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-4">
+                                    <div class="mb-4">
+                                        <label class="form-label">Regular price</label>
+                                        <div class="row gx-2">
+                                            <input placeholder="$" type="text" class="form-control" name="mrp"
+                                                required />
                                         </div>
                                     </div>
-                                    <div class="col-lg-4">
-                                        <div class="mb-4">
-                                            <label class="form-label">Selling price</label>
-                                            <input placeholder="$" type="text" class="form-control" name="srp" required/>
-                                        </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="mb-4">
+                                        <label class="form-label">Selling price</label>
+                                        <input placeholder="$" type="text" class="form-control" name="srp" required />
                                     </div>
-                                    <div class="col-lg-4">
+                                </div>
+                                <!-- <div class="col-lg-4">
                                         <label class="form-label">Currency</label>
                                         <select class="form-select">
                                             <option> USD </option>
                                             <option> INR </option>
                                             <option> SAR </option>
                                         </select>
-                                    </div>
-                                </div>
-                            </form>
+                                    </div> -->
+                            </div>
+
                         </div>
                     </div> <!-- card end// -->
-                    
-                        <div class="card mb-4">
-                            <div class="card-header">
-                                <h4>Organisation</h4>
+
+                    <div class="card mb-4 col-md-6">
+                        <div class="card-header">
+                            <h4>Organisation</h4>
+                        </div>
+
+                        <div class=" mb-3">
+                            <label class="form-label">Category</label>
+                            <select class="form-select" name="category">
+                                <option value="" selected>Choose Category</option>
+                                <% Categories.forEach(function(categ){ %>
+                                    <option value="<%= categ._id %> ">
+                                        <%= categ.category %>
+                                    </option>
+                                    <% }) %>
+                            </select>
+                        </div>
+                        <div class=" mb-3">
+                            <label class="form-label">Sub-category</label>
+                            <select class="form-select" name="subcategory">
+                                <option value="" selected>Choose Subcategory</option>
+                                <% Subcategories.forEach(function(subcateg){ %>
+                                    <option value="<%= subcateg._id %> ">
+                                        <%= subcateg.subcategory %>
+                                    </option>
+                                    <% }) %>
+                            </select>
+                        </div>
+                        <div class="card-header">
+                            <h4>Media</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="input-upload">
+                                <img src="/admin/imgs/theme/upload.svg" alt="upload image">
+                                <input type="file" multiple class="form-control" id="input-5" name="image" required
+                                    placeholder="Choose an image" />
                             </div>
-                            <div class=" mb-3">
-                                <label class="form-label">Category</label>
-                                <select class="form-select">
-                                    <option> Automobiles </option>
-                                    <option> Home items </option>
-                                    <option> Electronics </option>
-                                    <option> Smartphones </option>
-                                    <option> Sport items </option>
-                                    <option> Baby and Tous </option>
-                                </select>
-                            </div>
-                            <div class=" mb-3">
-                                <label class="form-label">Sub-category</label>
-                                <select class="form-select">
-                                    <option> Nissan </option>
-                                    <option> Honda </option>
-                                    <option> Mercedes </option>
-                                    <option> Chevrolet </option>
-                                </select>
-                            </div>
-                            <div class="card-header">
-                                <h4>Media</h4>
-                            </div>
-                            <div class="card-body">
-                                <div class="input-upload">
-                                    <img src="assets/imgs/theme/upload.svg" alt="">
-                                    <input class="form-control" type="file">
-                                </div>
-                            </div>
-                        </div> <!-- card end// -->
-                </div>
-                
+                        </div>
+                    </div> <!-- card end// -->
+                    <div>
+                        <button class="btn btn-md rounded font-sm hover-up" type="submit">Add Product</button>
+                    </div>
+                </form>
+
             </div>
         </section> <!-- content-main end// -->
-        
+
         <%- include('../admin/layouts/admin-footer.ejs') %>
