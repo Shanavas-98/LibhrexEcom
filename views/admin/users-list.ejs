@@ -1,5 +1,5 @@
 <%- include('../admin/layouts/admin-sidebar.ejs') %>
-<%- include('../admin/layouts/admin-navbar.ejs') %>
+    <%- include('../admin/layouts/admin-navbar.ejs') %>
         <section class="content-main">
             <div class="content-header">
                 <h2 class="content-title">Users list</h2>
@@ -44,36 +44,45 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <% users.forEach(function(user){ %> 
-                                <tr>
-                                    <td><%= index++ %> </td>
-                                    <td><%= user.fullname %> </td>
-                                    <td><%= user.email %> </td>
-                                    <td><%= user.mobile %> </td>
-                                    <td>
-                                        <% if(user.blocked){ %> 
-                                        <span class="badge rounded-pill alert-danger">Blocked</span>
-                                        <% } else { %> 
-                                        <span class="badge rounded-pill alert-success">Active</span>
-                                        <% } %> 
-                                    </td>
-                                    <td>
-                                        <% if(user.blocked){ %> 
-                                            <a href="/admin/users/unblock/<%= user._id %> ">
-                                                <button class="btn btn-sm btn-info rounded font-sm mt-15">Unblock</button>
-                                                    <!-- <span><i class="bi bi-person-fill-slash"></i></span> -->
-                                                    </a>
-                                            <% } else { %> 
+                                <% Users.forEach(function(user){ %>
+                                    <tr>
+                                        <td>
+                                            <%= index++ %>
+                                        </td>
+                                        <td>
+                                            <%= user.fullname %>
+                                        </td>
+                                        <td>
+                                            <%= user.email %>
+                                        </td>
+                                        <td>
+                                            <%= user.mobile %>
+                                        </td>
+                                        <td>
+                                            <% if(user.blocked){ %>
+                                                <span class="badge rounded-pill alert-danger">Blocked</span>
+                                                <% } else { %>
+                                                    <span class="badge rounded-pill alert-success">Active</span>
+                                                    <% } %>
+                                        </td>
+                                        <td>
                                             <a href="/admin/users/block/<%= user._id %>">
-                                                <button class="btn btn-sm btn-danger rounded font-sm mt-15">Block</button>
-                                                <!-- <span><i class="bi bi-person-fill-check"></i></span> -->
-                                                </a>
-                                            <% } %>
-                                    
-                                        <a href="/admin/users/details/<%= user._id %>" class="btn btn-sm btn-brand rounded font-sm mt-15">View details</a>
-                                    </td>
-                                </tr>
-                                <% }) %>
+                                                <% if(user.blocked){ %>
+                                                    <button
+                                                        class="btn btn-sm btn-info rounded font-sm">Unblock</button>
+                                                    <!-- <span><i class="bi bi-person-fill-slash"></i></span> -->
+                                                    <% } else { %>
+                                                        <button
+                                                            class="btn btn-sm btn-danger rounded font-sm">Block</button>
+                                                        <!-- <span><i class="bi bi-person-fill-check"></i></span> -->
+                                                        <% } %>
+                                            </a>
+
+                                            <a href="/admin/users/details/<%= user._id %>"
+                                                class="btn btn-sm btn-brand rounded font-sm">View details</a>
+                                        </td>
+                                    </tr>
+                                    <% }) %>
                             </tbody>
                         </table> <!-- table-responsive.// -->
                     </div>
@@ -87,7 +96,8 @@
                         <li class="page-item"><a class="page-link" href="#">03</a></li>
                         <li class="page-item"><a class="page-link dot" href="#">...</a></li>
                         <li class="page-item"><a class="page-link" href="#">16</a></li>
-                        <li class="page-item"><a class="page-link" href="#"><i class="material-icons md-chevron_right"></i></a></li>
+                        <li class="page-item"><a class="page-link" href="#"><i
+                                    class="material-icons md-chevron_right"></i></a></li>
                     </ul>
                 </nav>
             </div>

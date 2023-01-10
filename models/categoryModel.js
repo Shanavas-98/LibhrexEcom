@@ -17,6 +17,10 @@ const subcategorySchema = new mongoose.Schema({
     subcategory: {
         type: String,
         required: true
+    },
+    flag:{
+        type: Boolean,
+        default: false
     }
 })
 

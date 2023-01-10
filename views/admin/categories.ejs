@@ -14,7 +14,7 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-3">
-                            <form action="/admin/add-category" method="POST">
+                            <form action="/admin/categories/add" method="POST">
                                 <div class="mb-4">
                                     <label for="product_name" class="form-label">Category</label>
                                     <input type="text" placeholder="Type here" class="form-control" id=""
@@ -63,40 +63,36 @@
                                                             <%= subcateg.subcategory %>
                                                         </td>
                                                         <td>
-                                                            <form action="/admin/editcategory/<%= subcateg._id %>"
+                                                            <form action="/admin/categories/edit/<%= subcateg._id %>"
                                                                 method="post">
-                                                                <button type="submit" class="btn  btn-secondary"
-                                                                    style="width: 50px;"><i
-                                                                        class="bi bi-pen-fill"></i></button>
+                                                                <button type="submit" class="btn  btn-secondary" title="edit"
+                                                                    style="width: 50px;">
+                                                                    <i class="bi bi-pencil-square"></i>
+                                                                </button>
                                                             </form>
                                                         </td>
                                                         <td>
-                                                            <form action="/admin/flagcategory/<%= subcateg._id %>"
+                                                            <form action="/admin/categories/flag/<%= subcateg._id %>"
                                                                 method="post">
-                                                                <button type="submit" class="btn  btn-warning"
-                                                                    style="width: 50px;"><i
-                                                                        class="bi bi-flag-fill"></i></button>
+                                                                <% if(subcateg.flag){ %> 
+                                                                <button type="submit" class="btn  btn-warning" title="unflag"
+                                                                    style="width: 50px;">
+                                                                    <i class="bi bi-flag-fill"></i></button>
+                                                                    <% } else { %>
+                                                                        <button type="submit" class="btn  btn-info" title="flag"
+                                                                    style="width: 50px;">
+                                                                    <i class="bi bi-flag-fill"></i></button> 
+                                                                    <% } %> 
                                                             </form>
                                                         </td>
                                                         <td>
-                                                            <form action="/admin/deletesubcategory/<%= subcateg._id %>"
+                                                            <form action="/admin/categories/delete/<%= subcateg._id %>"
                                                                 method="post">
-                                                                <button type="submit" class="btn  btn-danger"
+                                                                <button type="submit" class="btn  btn-danger" title="delete"
                                                                     style="width: 50px;"><i
                                                                         class="bi bi-trash-fill"></i></button>
                                                             </form>
                                                         </td>
-
-                                                        <!-- <td class="text-end">
-                                                <div class="dropdown">
-                                                    <a href="#" data-bs-toggle="dropdown" class="btn btn-light rounded btn-sm font-sm"> <i class="material-icons md-more_horiz"></i> </a>
-                                                    <div class="dropdown-menu">
-                                                        <a class="dropdown-item" href="#">View detail</a>
-                                                        <a class="dropdown-item" href="#">Edit info</a>
-                                                        <a class="dropdown-item text-danger" href="#">Delete</a>
-                                                    </div>
-                                                </div>
-                                            </td> -->
 
                                                     </tr>
                                                     <% } %>

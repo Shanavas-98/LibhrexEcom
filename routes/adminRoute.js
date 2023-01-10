@@ -10,21 +10,26 @@ router.get('/login',controller.loginPage);
 router.get('/profile',controller.profilePage);
 router.get('/products',controller.productsPage);
 router.get('/products/add',controller.addProductPage);
-router.get('/products/edit',controller.editProductPage);
+router.get('/products/edit/:id',controller.editProductPage);
+
+router.get('/products/flag/:id',controller.flagProduct);
+router.get('/products/details/:id',controller.editProductPage);
 router.get('/categories',controller.categoriesPage);
+
 router.get('/users',controller.usersPage);
 router.get('/users/block/:id',controller.blockUser);
-router.get('/users/unblock/:id',controller.unblockUser);
 router.get('/users/details/:id',controller.viewUser);
 
 
 
 // POST Methods
 router.post('/signin',controller.doLogin)
-router.post('/add-category',controller.addCategory)
-router.post('/add-product',controller.addProduct)
-
-
+router.post('/categories/add',controller.addCategory)
+router.post('/categories/edit/:id',controller.editCategory);
+router.post('/categories/flag/:id',controller.flagCategory);
+router.post('/categories/delete/:id',controller.deleteCategory);
+router.post('/products/add-product',controller.addProduct);
+router.post('/products/edit-product/:id',controller.editProduct);
 
 
 module.exports = router;
