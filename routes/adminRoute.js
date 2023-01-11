@@ -19,15 +19,15 @@ router.get('/categories',controller.categoriesPage);
 router.get('/users',controller.usersPage);
 router.get('/users/block/:id',controller.blockUser);
 router.get('/users/details/:id',controller.viewUser);
+router.get('/categories/edit/:id',controller.editCategory);
+router.get('/categories/flag/:id',controller.flagCategory);
+router.get('/categories/delete/:id',controller.deleteCategory);
 
 
 
 // POST Methods
 router.post('/signin',controller.doLogin)
 router.post('/categories/add',controller.addCategory)
-router.post('/categories/edit/:id',controller.editCategory);
-router.post('/categories/flag/:id',controller.flagCategory);
-router.post('/categories/delete/:id',controller.deleteCategory);
 router.post('/products/add-product',controller.addProduct);
 router.post('/products/edit-product/:id',controller.editProduct);
 

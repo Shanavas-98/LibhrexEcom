@@ -4,78 +4,90 @@ const db = require('../config/connection');
 const session = require('express-session');
 
 const UserModel = require("../models/userModel");
-let userErr = '';
-let passErr = '';
+const ProductModel = require("../models/productModel");
+const sendOtp = require("../utils/nodemailer");
 
-const signupPage = async(req,res,next)=>{
-    try{
-        res.render('user/signup',{title:"SignUp",login:req.session})
-    }catch(error){
+let userErr = "";
+let passErr = "";
+let otp = "";
+
+const signupPage = async (req, res, next) => {
+    try {
+        res.render('user/signup', { title: "SignUp", login: req.session })
+    } catch (error) {
         next(error)
     }
 }
 
-const loginPage = async(req,res,next)=>{
-    try{
-        if(!req.session.userLogin){
-            res.render('user/login',{title:"Login",login:req.session,userErr,passErr});
-            userErr=''
-            passErr=''
-        }else{
+const verifyPage = async (req, res, next) => {
+    try {
+        res.render('user/verifyotp', { title: "Verification", login: req.session })
+    } catch (error) {
+        next(error)
+    }
+}
+
+const loginPage = async (req, res, next) => {
+    try {
+        if (!req.session.userLogin) {
+            res.render('user/login', { title: "Login", login: req.session, userErr, passErr });
+            userErr = ''
+            passErr = ''
+        } else {
             res.redirect('/');
         }
-    }catch(error){
+    } catch (error) {
         next(error)
     }
 }
 
-const homePage = async(req,res,next)=>{
-    try{
-        console.log(req.session);
-        res.render('user/index',{title:"Home",login:req.session});
-    }catch(error){
+const homePage = async (req, res, next) => {
+    try {
+        const products = await ProductModel.find().limit(8)
+        return res.render('user/index', { title: "Home", login: req.session, products });
+    } catch (error) {
         next(error)
     }
 }
 
-const shopPage = async(req,res,next)=>{
-    try{
+const shopPage = async (req, res, next) => {
+    try {
         console.log("<<shop page rendering>>");
         console.log(req.session);
-        res.render('user/shop',{title:"Shop",login:req.session})
-    }catch(error){
+        res.render('user/shop', { title: "Shop", login: req.session })
+    } catch (error) {
         next(error)
     }
 }
 
-const productPage = async(req,res,next)=>{
-    try{
-        res.render('user/product',{title:"Product",login:req.session})
-    }catch(error){
+const productPage = async (req, res, next) => {
+    try {
+        res.render('user/product', { title: "Product", login: req.session })
+    } catch (error) {
         next(error)
     }
 }
 
-const ordersPage = async(req,res,next)=>{
-    try{
-        res.render('user/orders',{title:"Orders",login:req.session})
-    }catch(error){
+const ordersPage = async (req, res, next) => {
+    try {
+        res.render('user/orders', { title: "Orders", login: req.session })
+    } catch (error) {
         next(error)
     }
 }
 
-const wishlistPage = async(req,res,next)=>{
-    try{
-        res.render('user/wishlist',{title:"Wishlist",login:req.session})
-    }catch(error){
+const wishlistPage = async (req, res, next) => {
+    try {
+        res.render('user/wishlist', { title: "Wishlist", login: req.session })
+    } catch (error) {
         next(error)
     }
 }
 
-const contactPage = async(req,res,next)=>{
-    try{
-        res.render('user/contact',{title:"Contact",login:req.session})
-    }catch(error){
+const contactPage = async (req, res, next) => {
+    try {
+        res.render('user/contact', { title: "Contact", login: req.session })
+    } catch (error) {
         next(error)
     }
 }
@@ -84,89 +96,113 @@ const profilePage = async (req, res, next) => {
     console.log("<<profile page rendering>>");
     try {
         console.log(req.session.userId);
-        const user = await UserModel.findOne({ _id: req.session.userId});
-        res.render('user/user-profile',{title:"Profile",login:req.session,user})
+        const user = await UserModel.findOne({ _id: req.session.userId });
+        res.render('user/user-profile', { title: "Profile", login: req.session, user })
     } catch (error) {
         next(error)
     }
 }
 
-const cartPage = async(req,res,next)=>{
+const cartPage = async (req, res, next) => {
+    try {
+        res.render('user/cart', { title: "Cart", login: req.session })
+    } catch (error) {
+        next(error)
+    }
+}
+
+const checkoutPage = async (req, res, next) => {
+    try {
+        res.render('user/checkout', { title: "Checkout", login: req.session })
+    } catch (error) {
+        next(error)
+    }
+}
+
+async function getOtp(email){
+    otp = Math.floor(Math.random() * (1000000-99999)+999999);
+    console.log(otp);
+    await sendOtp.sendVerifyEmail(email, otp);
+}
+
+const verifyUser = async (req,res,next)=>{
     try{
-        res.render('user/cart',{title:"Cart",login:req.session})
+        let userEmail = req.session.email;
+        if(req.body.otp == otp){
+            console.log("both otp equal");
+            await UserModel.findOneAndUpdate({email: userEmail},{$set:{verified: true}});
+            return res.redirect('/');
+        }else{
+            console.log("otp doesnt match");
+            return res.redirect('/verify')
+        }
     }catch(error){
         next(error)
     }
 }
 
-const checkoutPage = async(req,res,next)=>{
-    try{
-        res.render('user/checkout',{title:"Checkout",login:req.session})
-    }catch(error){
-        next(error)
-    }
-}
-
-const doSignup = async(req,res,next)=>{
-    try{
+const doSignup = async (req, res, next) => {
+    try {
+        getOtp(req.body.email);
+        req.session.email = req.body.email;
         const newUser = UserModel({
-            fullname:req.body.fullname,
-            email:req.body.email,
-            mobile:req.body.mobile,
-            password:await bcrypt.hash(req.body.password,10),
-            password2:req.body.password2
+            fullname: req.body.fullname,
+            email: req.body.email,
+            mobile: req.body.mobile,
+            password: await bcrypt.hash(req.body.password, 10),
+            password2: req.body.password2
         })
 
-        newUser.save()
-            .then(()=>{
-            res.redirect("/login");
+        await newUser.save()
+            .then(() => {
+                res.redirect("/verify");
             })
-            .catch((error)=>{
+            .catch((error) => {
                 console.log(error);
                 res.redirect("/register");
             })
-    }catch(error){
+    } catch (error) {
         next(error);
     }
 }
 
-const doLogin = async(req,res,next)=>{
-    console.log("<<<do login work>>>",req.body);
-try{
-    const {email, password} = req.body;
-    const user = await UserModel.findOne({email: email});
-    if(!user){
-        userErr = 'user doesnot exist';
-        req.session.userLogin = false;
-        return res.redirect('/login');
-    }
-    if(user.blocked){
-        userErr = 'sorry user blocked';
-        req.session.userLogin = false;
-        return res.redirect('/login');
-    }
-    const isPass = await bcrypt.compare(password, user.password);
-    if(!isPass){
-        passErr = 'incorrect password';
-        req.session.userLogin = false;
-        return res.redirect('/login');
-    }
-    req.session.username = user.fullname
-    req.session.userId = user._id
-    req.session.userLogin = true
-    res.redirect('/');
+const doLogin = async (req, res, next) => {
+    console.log("<<<do login work>>>", req.body);
+    try {
+        const { email, password } = req.body;
+        const user = await UserModel.findOne({ email: email });
+        if (!user) {
+            userErr = 'user doesnot exist';
+            req.session.userLogin = false;
+            return res.redirect('/login');
+        }
+        if (user.blocked) {
+            userErr = 'sorry user blocked';
+            req.session.userLogin = false;
+            return res.redirect('/login');
+        }
+        const isPass = await bcrypt.compare(password, user.password);
+        if (!isPass) {
+            passErr = 'incorrect password';
+            req.session.userLogin = false;
+            return res.redirect('/login');
+        }
+        req.session.username = user.fullname
+        req.session.userId = user._id
+        req.session.userLogin = true
+        res.redirect('/');
 
-}catch(error){
-    next(error)
-}
+    } catch (error) {
+        next(error)
+    }
 }
 
-const doLogout = async(req,res,next)=>{
-    try{
+const doLogout = async (req, res, next) => {
+    try {
         req.session.logOut = true
         req.session.destroy()
         res.redirect('/')
-    }catch(error){
+    } catch (error) {
         next(error)
     }
 }
@@ -174,6 +210,7 @@ const doLogout = async(req,res,next)=>{
 module.exports = {
 
     signupPage,
+    verifyPage,
     loginPage,
     homePage,
     shopPage,
@@ -184,6 +221,8 @@ module.exports = {
     profilePage,
     cartPage,
     checkoutPage,
+    getOtp,
+    verifyUser,
     doSignup,
     doLogin,
     doLogout

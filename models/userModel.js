@@ -22,6 +22,10 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    verified: {
+        type: Boolean,
+        default: false
+    },
     blocked : {
         type: Boolean,
         default: false
@@ -29,7 +33,7 @@ const userSchema = new mongoose.Schema({
     date: {
         type: Date,
         default: Date("<YYYY-mm-dd>")
-    },
+    }
 })
 
 module.exports = mongoose.model('User',userSchema);
