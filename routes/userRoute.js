@@ -25,7 +25,7 @@ router.get('/resendotp',controller.getOtp);
 
 
 //POST Methods
-router.post('/register',controller.doSignup)
+router.post('/register',controller.doSignup,controller.getOtp)
 router.post('/signin',controller.doLogin)
 router.post('/verify-user',controller.verifyUser)
 

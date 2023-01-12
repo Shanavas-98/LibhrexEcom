@@ -119,31 +119,27 @@ const checkoutPage = async (req, res, next) => {
     }
 }
 
-async function getOtp(email){
-    otp = Math.floor(Math.random() * (1000000-99999)+999999);
-    console.log(otp);
-    await sendOtp.sendVerifyEmail(email, otp);
-}
+// async function getOtp(){
+//     otp = Math.floor(100000 + Math.random() * 900000);
+//     console.log(otp);
+//     await sendOtp.sendVerifyEmail(userEmail, otp);
+//     return
+// }
 
-const verifyUser = async (req,res,next)=>{
-    try{
-        let userEmail = req.session.email;
-        if(req.body.otp == otp){
-            console.log("both otp equal");
-            await UserModel.findOneAndUpdate({email: userEmail},{$set:{verified: true}});
-            return res.redirect('/');
-        }else{
-            console.log("otp doesnt match");
-            return res.redirect('/verify')
-        }
-    }catch(error){
-        next(error)
-    }
+const getOtp = async (req, res, next) => {
+    let email = req.session.email;
+    otp = Math.floor(100000 + Math.random() * 900000);
+    await sendOtp.sendVerifyEmail(email, otp)
+        .then(() => {
+            res.redirect('/verify');
+        }).catch((error) => {
+            next(error)
+        })
+
 }
 
 const doSignup = async (req, res, next) => {
     try {
-        getOtp(req.body.email);
         req.session.email = req.body.email;
         const newUser = UserModel({
             fullname: req.body.fullname,
@@ -155,7 +151,7 @@ const doSignup = async (req, res, next) => {
 
         await newUser.save()
             .then(() => {
-                res.redirect("/verify");
+                next();
             })
             .catch((error) => {
                 console.log(error);
@@ -163,6 +159,27 @@ const doSignup = async (req, res, next) => {
             })
     } catch (error) {
         next(error);
+    }
+}
+
+const verifyUser = async (req, res, next) => {
+    try {
+        if (req.body.otp == otp) {
+            await UserModel.findOneAndUpdate({ email: req.session.email }, { $set: { verified: true } })
+                .then(() => {
+                    otp = "";
+                    res.redirect('/')
+                })
+                .catch((error)=>{
+                    next(error)
+                })
+
+        } else {
+            console.log("otp doesnt match");
+            return res.redirect('/verify')
+        }
+    } catch (error) {
+        next(error)
     }
 }
 
