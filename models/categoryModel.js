@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const Objectid = mongoose.Types.ObjectId
+const ObjectId = mongoose.Types.ObjectId
 
 
 const categorySchema = new mongoose.Schema({
@@ -11,7 +11,7 @@ const categorySchema = new mongoose.Schema({
 
 const subcategorySchema = new mongoose.Schema({
     cat_id:{
-        type: Objectid,
+        type: ObjectId,
         required: true
     },
     subcategory: {
@@ -26,7 +26,7 @@ const subcategorySchema = new mongoose.Schema({
 
 const brandSchema = new mongoose.Schema({
     subcat_id:{
-        type: Objectid,
+        type: ObjectId,
         required: true
     },
     brand: {

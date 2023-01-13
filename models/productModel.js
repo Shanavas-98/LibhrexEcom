@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const ObjectId = mongoose.Types.ObjectId
+const ObjectId = mongoose.Types.ObjectId;
 const productSchema = new mongoose.Schema({
 
     cat_id:{
@@ -26,6 +26,10 @@ const productSchema = new mongoose.Schema({
     },
     srp: {
         type: Number,
+        required: true
+    },
+    discount:{
+        type:Number,
         required: true
     },
     qty: {

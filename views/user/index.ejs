@@ -4,30 +4,30 @@
 
 	<section id="home-section" class="hero">
 		<div class="home-slider owl-carousel">
-			<div class="slider-item" style="background-image: url(/userside/images/bg_1.jpg);">
+			<div class="slider-item" style="background-image: url(/userside/images/banner_1.jpg);">
 				<div class="overlay"></div>
 				<div class="container">
 					<div class="row slider-text justify-content-center align-items-center" data-scrollax-parent="true">
 
 						<div class="col-md-12 ftco-animate text-center">
-							<h1 class="mb-2">We serve Fresh Vegetables &amp; Fruits</h1>
-							<h2 class="subheading mb-4">We deliver organic vegetables &amp; fruits</h2>
-							<p><a href="#" class="btn btn-primary">View Details</a></p>
+							<h1 class="mb-2">You are at the right place.</h1>
+							<h2 class="subheading mb-4">We provide the best quality spare parts</h2>
+							<p><a href="/shop" class="btn btn-primary">Shop Now</a></p>
 						</div>
 
 					</div>
 				</div>
 			</div>
 
-			<div class="slider-item" style="background-image: url(/userside/images/bg_2.jpg);">
+			<div class="slider-item" style="background-image: url(/userside/images/banner_2.jpg);">
 				<div class="overlay"></div>
 				<div class="container">
 					<div class="row slider-text justify-content-center align-items-center" data-scrollax-parent="true">
 
 						<div class="col-sm-12 ftco-animate text-center">
-							<h1 class="mb-2">100% Fresh &amp; Organic Foods</h1>
-							<h2 class="subheading mb-4">We deliver organic vegetables &amp; fruits</h2>
-							<p><a href="#" class="btn btn-primary">View Details</a></p>
+							<h1 class="mb-2">Why wait? Order Now</h1>
+							<h2 class="subheading mb-4">We provide the best quality spare parts</h2>
+							<p><a href="/shop" class="btn btn-primary">Shop Now</a></p>
 						</div>
 
 					</div>
@@ -85,9 +85,9 @@
 							<div class="category-wrap-2 ftco-animate img align-self-stretch d-flex"
 								style="background-image: url(/userside/images/category.jpg);">
 								<div class="text text-center">
-									<h2>Vegetables</h2>
-									<p>Protect the health of every home</p>
-									<p><a href="#" class="btn btn-primary">Shop now</a></p>
+									<h2>Libhrex</h2>
+									<p>Take care of your Automobiles</p>
+									<p><a href="/shop" class="btn btn-primary">Shop now</a></p>
 								</div>
 							</div>
 						</div>
@@ -95,13 +95,13 @@
 							<div class="category-wrap ftco-animate img mb-4 d-flex align-items-end"
 								style="background-image: url(/userside/images/category-1.jpg);">
 								<div class="text px-3 py-1">
-									<h2 class="mb-0"><a href="#">Fruits</a></h2>
+									<h2 class="mb-0"><a href="#">Nuts & Bolts</a></h2>
 								</div>
 							</div>
 							<div class="category-wrap ftco-animate img d-flex align-items-end"
 								style="background-image: url(/userside/images/category-2.jpg);">
 								<div class="text px-3 py-1">
-									<h2 class="mb-0"><a href="#">Vegetables</a></h2>
+									<h2 class="mb-0"><a href="#">Gears</a></h2>
 								</div>
 							</div>
 						</div>
@@ -112,13 +112,13 @@
 					<div class="category-wrap ftco-animate img mb-4 d-flex align-items-end"
 						style="background-image: url(/userside/images/category-3.jpg);">
 						<div class="text px-3 py-1">
-							<h2 class="mb-0"><a href="#">Juices</a></h2>
+							<h2 class="mb-0"><a href="#">Motors</a></h2>
 						</div>
 					</div>
 					<div class="category-wrap ftco-animate img d-flex align-items-end"
 						style="background-image: url(/userside/images/category-4.jpg);">
 						<div class="text px-3 py-1">
-							<h2 class="mb-0"><a href="#">Dried</a></h2>
+							<h2 class="mb-0"><a href="#">More</a></h2>
 						</div>
 					</div>
 				</div>
@@ -132,45 +132,43 @@
 				<div class="col-md-12 heading-section text-center ftco-animate">
 					<span class="subheading">Featured Products</span>
 					<h2 class="mb-4">Our Products</h2>
-					<p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia</p>
+					<p>Best quality products at an affordable price/p>
 				</div>
 			</div>
 		</div>
-		<div class="container">
-			<div class="row">
+		<div class="container-fluid h-100">
+			<div class="row h-20">
 				<% products.forEach((product)=>{ %>
 
 				
-				<div class="col-md-6 col-lg-3 ftco-animate">
-					<div class="product">
-						<a href="#" class="img-prod"><img class="img-fluid" src="/images/products/<%= product.image[0] %>"
-								alt="<%= product.productName %>"/>
-							<span class="status">30%</span>
-							<div class="overlay"></div>
+				<div class="col-sm-6 col-md-4 col-lg-3 ftco-animate">
+					<div class="product" style="height: 350px;">
+						<a href="/product/<%= product._id %>" class="img-prod w-100"><img class="img-fluid" src="/images/products/<%= product.image[0] %>" 
+								style="width: 100%; height: 250px;  object-fit: contain;" alt="<%= product.productName %>"/>
+							<% if(product.discount){ %> 
+							<span class="status"><%= product.discount %>% Off</span>
+							<% } %>
 						</a>
-						<div class="text py-3 pb-4 px-3 text-center">
-							<div class="bottom-area d-flex px-3">
-								<div class="m-auto d-flex">
-									<a href="#"
-										class="add-to-cart d-flex justify-content-center align-items-center text-center">
-										<span><i class="ion-ios-menu"></i></span>
-									</a>
-									<a href="#" class="buy-now d-flex justify-content-center align-items-center mx-1">
-										<span><i class="ion-ios-cart"></i></span>
-									</a>
-									<a href="#" class="heart d-flex justify-content-center align-items-center ">
-										<span><i class="ion-ios-heart"></i></span>
-									</a>
-								</div>
-							</div>
-							<h3><a href="#"><%= product.productName %> </a></h3>
+						<div class="text py-3 pb-4 px-3 text-center" style="height: min-content;">
+							
+							<h3><a href="/product/<%= product._id %>"><%= product.productName %> </a></h3>
 							<div class="d-flex">
 								<div class="pricing">
 									<p class="price"><span class="mr-2 price-dc">$<%= product.mrp %> </span><span
 											class="price-sale">$<%= product.srp %> </span></p>
 								</div>
 							</div>
-							
+							<div class="bottom-area d-flex px-3">
+								<div class="m-auto d-flex">
+									<a href="#"
+										class="add-to-cart d-flex justify-content-center align-items-center">
+										<span><i class="ion-ios-menu"></i></span>
+									</a>
+									<a href="#" class="heart d-flex justify-content-center align-items-center">
+										<span><i class="ion-ios-heart"></i></span>
+									</a>
+								</div>
+							</div>
 						</div>
 					</div>
 				</div>

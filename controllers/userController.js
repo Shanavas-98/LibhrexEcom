@@ -43,7 +43,7 @@ const loginPage = async (req, res, next) => {
 
 const homePage = async (req, res, next) => {
     try {
-        const products = await ProductModel.find().limit(8)
+        const products = await ProductModel.find().limit(12)
         return res.render('user/index', { title: "Home", login: req.session, products });
     } catch (error) {
         next(error)
@@ -62,7 +62,10 @@ const shopPage = async (req, res, next) => {
 
 const productPage = async (req, res, next) => {
     try {
-        res.render('user/product', { title: "Product", login: req.session })
+        const productId = req.params.id;
+        const product = await ProductModel.findById({_id: productId});
+        const related = await ProductModel.find({cat_id: product.cat_id}).limit(4)
+        res.render('user/product', { title: "Product", login: req.session, product, related })
     } catch (error) {
         next(error)
     }
@@ -118,13 +121,6 @@ const checkoutPage = async (req, res, next) => {
         next(error)
     }
 }
-
-// async function getOtp(){
-//     otp = Math.floor(100000 + Math.random() * 900000);
-//     console.log(otp);
-//     await sendOtp.sendVerifyEmail(userEmail, otp);
-//     return
-// }
 
 const getOtp = async (req, res, next) => {
     let email = req.session.email;

@@ -5,6 +5,7 @@ const AdminModel = require("../models/adminModel");
 const CategoryModel = require("../models/categoryModel");
 const ProductModel = require('../models/productModel');
 const UserModel = require('../models/userModel');
+const BannerModel = require('../models/bannerModel')
 
 const Category = CategoryModel.category;
 const Subcategory = CategoryModel.subcategory;
@@ -110,8 +111,15 @@ const editProductPage = async (req, res, next) => {
     }
 }
 
-
-
+const addBannerPage = async (req, res, next) => {
+    console.log("<<add banner page rendering>>");
+    try {
+        const Banners = await BannerModel.find();
+        res.render('admin/banners', { title: "Banners", Banners })
+    } catch (error) {
+        next(error)
+    }
+}
 
 const doLogin = async (req, res, next) => {
     console.log("<<<do login work>>>", req.body);
@@ -256,6 +264,9 @@ const addProduct = async (req, res, next) => {
     try {
         let categ = req.body.category.trim();
         let subcateg = req.body.subcategory.trim();
+        let mrp = req.body.mrp;
+        let srp = req.body.srp;
+        let offer = ((mrp-srp)/mrp)*100;
         const image = req.files;
         image.forEach(img => { });
         const productimages = image != null ? image.map((img) => img.filename) : null
@@ -267,6 +278,7 @@ const addProduct = async (req, res, next) => {
             description: req.body.description,
             mrp: req.body.mrp,
             srp: req.body.srp,
+            discount: offer,
             qty: req.body.qty,
             image: productimages
         });
@@ -291,6 +303,9 @@ const editProduct = async (req, res, next) => {
 
         let categ = req.body.category.trim();
         let subcateg = req.body.subcategory.trim();
+        let mrp = req.body.mrp;
+        let srp = req.body.srp;
+        let offer = ((mrp-srp)/mrp)*100;
         const image = req.files;
         image.forEach(img => { });
         const productimages = image != null ? image.map((img) => img.filename) : null
@@ -304,6 +319,7 @@ const editProduct = async (req, res, next) => {
                     description: req.body.description,
                     mrp: req.body.mrp,
                     srp: req.body.srp,
+                    discount: offer,
                     qty: req.body.qty,
                     image: productimages
                 }

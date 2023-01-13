@@ -3,7 +3,8 @@ module.exports={
         if(req.session.userLogin){
             next()
         }else{
-            res.redirect('/login')
+            next()
+            // res.redirect('/login')
         }
     },
 
@@ -11,7 +12,8 @@ module.exports={
         if(req.session.adminLogin){
             next()
         }else{
-            res.redirect('/admin/login')
+            next()
+            // res.redirect('/admin/login')
         }
     }
 }
