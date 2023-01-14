@@ -21,6 +21,9 @@ router.get('/cart',isLogin.userLogin,controller.cartPage);
 router.get('/checkout',isLogin.userLogin,controller.checkoutPage);
 
 router.get('/resendotp',controller.getOtp);
+router.get('/addtocart/:id',isLogin.userLogin,controller.addToCart);
+router.get('/cart/delete/:id',isLogin.userLogin,controller.deleteItem);
+
 
 
 

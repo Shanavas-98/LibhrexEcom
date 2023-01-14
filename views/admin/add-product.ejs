@@ -81,9 +81,9 @@
                         </div>
                         <div class="card-body">
                             <div class="input-upload">
-                                <img src="/admin/imgs/theme/upload.svg" alt="upload image">
+                                <img src="/admin/imgs/theme/upload.svg" alt="upload image" id="imgView">
                                 <input type="file" multiple class="form-control" id="input-5" name="image" 
-                                    placeholder="Choose an image" required/>
+                                    placeholder="Choose an image" required onchange="viewImage(event)"/>
                             </div>
                         </div>
                     </div> <!-- card end// -->
@@ -94,5 +94,7 @@
 
             </div>
         </section> <!-- content-main end// -->
+
+        
 
         <%- include('../admin/layouts/admin-footer.ejs') %>

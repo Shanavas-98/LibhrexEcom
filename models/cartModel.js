@@ -4,12 +4,12 @@ const ObjectId = mongoose.Types.ObjectId;
 const cartSchema = mongoose.Schema({
     userId: {
         type: ObjectId,
-        ref: 'user'
+        ref: 'User'
     },
     cartItems: [{
-        productId: {
+        product: {
             type: ObjectId,
-            ref: 'product'
+            ref: 'Product'
         },
 
         quantity: {
@@ -19,4 +19,4 @@ const cartSchema = mongoose.Schema({
     }]
 });
 
-module.exports = mongoose.model('cart', cartSchema);
+module.exports = mongoose.model('Cart', cartSchema);

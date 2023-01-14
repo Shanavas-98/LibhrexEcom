@@ -11,6 +11,13 @@
 </footer>
 <!-- End of Footer -->
 </main>
+
+<script>
+  function viewImage(event){
+      document.getElementById("imgView").src = URL.createObjectURL(event.target.files[0])
+  }
+</script>
+
 <script src="/admin/js/vendors/jquery-3.6.0.min.js"></script>
 <script src="/admin/js/vendors/bootstrap.bundle.min.js"></script>
 <script src="/admin/js/vendors/select2.min.js"></script>

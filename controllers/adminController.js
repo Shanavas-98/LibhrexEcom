@@ -266,7 +266,7 @@ const addProduct = async (req, res, next) => {
         let subcateg = req.body.subcategory.trim();
         let mrp = req.body.mrp;
         let srp = req.body.srp;
-        let offer = ((mrp-srp)/mrp)*100;
+        let offer = Math.floor(Number((1-(srp/mrp))*100));
         const image = req.files;
         image.forEach(img => { });
         const productimages = image != null ? image.map((img) => img.filename) : null
@@ -305,7 +305,7 @@ const editProduct = async (req, res, next) => {
         let subcateg = req.body.subcategory.trim();
         let mrp = req.body.mrp;
         let srp = req.body.srp;
-        let offer = ((mrp-srp)/mrp)*100;
+        let offer = Math.floor(Number(((mrp-srp)/mrp)*100));
         const image = req.files;
         image.forEach(img => { });
         const productimages = image != null ? image.map((img) => img.filename) : null

@@ -2,10 +2,20 @@
 const bcrypt = require('bcrypt');
 const db = require('../config/connection');
 const session = require('express-session');
+const mongoose = require('mongoose');
+
+const sendOtp = require("../utils/nodemailer");
 
 const UserModel = require("../models/userModel");
 const ProductModel = require("../models/productModel");
-const sendOtp = require("../utils/nodemailer");
+const CategoryModel = require("../models/categoryModel");
+const CartModel = require("../models/cartModel");
+
+
+
+const Category = CategoryModel.category;
+const Subcategory = CategoryModel.subcategory;
+const ObjectId = mongoose.Types.ObjectId;
 
 let userErr = "";
 let passErr = "";
@@ -43,8 +53,8 @@ const loginPage = async (req, res, next) => {
 
 const homePage = async (req, res, next) => {
     try {
-        const products = await ProductModel.find().limit(12)
-        return res.render('user/index', { title: "Home", login: req.session, products });
+        const Products = await ProductModel.find().limit(12)
+        return res.render('user/index', { title: "Home", login: req.session, Products });
     } catch (error) {
         next(error)
     }
@@ -53,8 +63,11 @@ const homePage = async (req, res, next) => {
 const shopPage = async (req, res, next) => {
     try {
         console.log("<<shop page rendering>>");
-        console.log(req.session);
-        res.render('user/shop', { title: "Shop", login: req.session })
+        const Categories = await Category.find()
+        const Subcategories = await Subcategory.find({$not:[{flag: true}]})
+        const Products = await ProductModel.find()
+
+        res.render('user/shop', { title: "Shop", login: req.session, Categories, Subcategories, Products })
     } catch (error) {
         next(error)
     }
@@ -64,7 +77,12 @@ const productPage = async (req, res, next) => {
     try {
         const productId = req.params.id;
         const product = await ProductModel.findById({_id: productId});
-        const related = await ProductModel.find({cat_id: product.cat_id}).limit(4)
+        const related = await ProductModel.find({
+            $and:[
+                {cat_id: product.cat_id},
+                {_id:{$ne: productId}}
+            ]
+        }).limit(4)
         res.render('user/product', { title: "Product", login: req.session, product, related })
     } catch (error) {
         next(error)
@@ -108,7 +126,16 @@ const profilePage = async (req, res, next) => {
 
 const cartPage = async (req, res, next) => {
     try {
-        res.render('user/cart', { title: "Cart", login: req.session })
+        const userId = req.session.userId;
+        const user = await UserModel.findById({_id: userId});
+        let Cart = await CartModel.findOne({userId: userId}).populate('cartItems.product').lean();
+        
+        if (Cart) {
+            let Items = Cart.cartItems;
+            res.render('user/cart', {title:"Cart",login: req.session,user,Items,index:1});
+        } else {
+            res.send("Your Cart is Empty");
+        }
     } catch (error) {
         next(error)
     }
@@ -220,6 +247,52 @@ const doLogout = async (req, res, next) => {
     }
 }
 
+const addToCart = async (req, res, next) => {
+    try {
+        const userId = req.session.userId;
+        const product = req.params.id
+        const userCart = await CartModel.findOne({userId: userId});
+        if(userCart){
+            const isProduct = await CartModel.findOne({$and: [{userId: userId},{cartItems:{$elemMatch:{product}}}]})
+            if (isProduct) {
+                await CartModel.findOneAndUpdate({ $and: [{ userId }, { "cartItems.product": product }] }, { $inc: { "cartItems.$.quantity": 1 } });
+                res.send({ success: true });
+            } else {
+                await CartModel.updateOne({ userId }, { $push: { cartItems: { product, quantity: 1 } } });
+                res.send({ success: true });
+            }
+        } else {
+            const cartDetails = new CartModel ({
+                userId,
+                cartItems: [{
+                    product,
+                    quantity:1
+                }]
+            })
+            await cartDetails.save()
+                .then(()=>{
+                    res.send('success')
+                })
+                .catch((error)=>{
+                    next(error)
+                })
+        }
+    } catch (error) {
+        next(error)
+    }
+}
+
+const deleteItem = async(req,res,next)=>{
+    try{
+        const itemId = req.params.id
+        await CartModel.findOneAndDelete({_id: itemId})
+        res.redirect('/cart');
+    }catch(error) {
+        next(error)
+    }
+}
+
+
 module.exports = {
 
     signupPage,
@@ -238,6 +311,8 @@ module.exports = {
     verifyUser,
     doSignup,
     doLogin,
-    doLogout
+    doLogout,
+    addToCart,
+    deleteItem
 
 }
