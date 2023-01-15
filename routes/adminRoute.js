@@ -12,6 +12,7 @@ router.get('/products',isLogin.adminLogin,controller.productsPage);
 router.get('/products/add',isLogin.adminLogin,controller.addProductPage);
 router.get('/products/edit/:id',isLogin.adminLogin,controller.editProductPage);
 
+router.get('/logout',controller.doLogout);
 router.get('/products/flag/:id',isLogin.adminLogin,controller.flagProduct);
 router.get('/products/details/:id',isLogin.adminLogin,controller.editProductPage);
 router.get('/categories',isLogin.adminLogin,controller.categoriesPage);

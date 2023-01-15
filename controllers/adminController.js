@@ -147,6 +147,16 @@ const doLogin = async (req, res, next) => {
     }
 }
 
+const doLogout = async (req, res, next) => {
+    try {
+        req.session.adminLogin = false
+        req.session.destroy()
+        res.redirect('/')
+    } catch (error) {
+        next(error)
+    }
+}
+
 const blockUser = async (req, res, next) => {
     const userId = req.params.id
     try {
@@ -347,6 +357,7 @@ module.exports = {
     editProductPage,
     categoriesPage,
     doLogin,
+    doLogout,
     blockUser,
     viewUser,
     addCategory,

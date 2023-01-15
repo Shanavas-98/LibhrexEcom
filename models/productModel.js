@@ -4,12 +4,10 @@ const productSchema = new mongoose.Schema({
 
     cat_id:{
         type: ObjectId,
-        required: true,
         ref:"Categories"
     },
     subcat_id:{
         type: ObjectId,
-        required: true,
         ref:"Subcategories"
     },
     productName: {

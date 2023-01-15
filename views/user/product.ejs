@@ -44,7 +44,10 @@
 						</div>
 						<div class="w-100"></div>
 					</div>
-					<p><a href="/addtocart/<%= product._id %> " class="btn btn-black py-3 px-5">Add to Cart</a></p>
+					<button data-toggle="modal" onclick="addToCart('<%= product._id %>')" data-target="#exampleModal1"
+						class="btn rounded text-light"
+						style="background-color: rgb(255, 94, 0); width: 100%; height: 45px; font-weight: 700;">Add To Cart</button>
+					<p><a href="/cart/add/<%= product._id %> " class="btn btn-black py-3 px-5">Add to Cart</a></p>
 				</div>
 			</div>
 		</div>
@@ -100,4 +103,43 @@
 			</div>
 		</div>
 	</section>
+
+
+	<script>
+		let addToCartBtn = document.getElementById('add-to-cart');
+		let goToCartBtn = document.getElementById('go-to-cart');
+		function addToCart(productId) {
+			$.ajax({
+				url: '/add-to-cat/' + productId,
+				method: 'get',
+				success: (response) => {
+					if (response.status) {
+						let count = $('#cartCount').html()
+						$('#cartCount').html(response.cartCount)
+						addToCartBtn.style.display = 'none';
+						goToCartBtn.style.display = 'flex';
+					}
+				}
+			})
+		}
+	</script>
+
+	<%-include('../user/layouts/user-footer.ejs') %>
+
+	
+	<script>
+		function addToWishlist(productId) {
+			$.ajax({
+				url: '/add-to-wishList/' + productId,
+				method: 'get',
+				success: (response) => {
+					if (response.status) {
+						changeStyle()
+					} else {
+						alert("exits")
+					}
+				}
+			})
+		}
+	</script>
 	<%-include('../user/layouts/user-script.ejs') %>
