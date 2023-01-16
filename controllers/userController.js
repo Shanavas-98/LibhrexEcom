@@ -21,7 +21,7 @@ const ObjectId = mongoose.Types.ObjectId;
 let userErr = "";
 let passErr = "";
 let otp = "";
-let count="";
+let count = 0;
 
 const signupPage = async (req, res, next) => {
     try {
@@ -66,8 +66,8 @@ const shopPage = async (req, res, next) => {
     try {
         console.log("<<shop page rendering>>");
         const Categories = await Category.find()
-        const Subcategories = await Subcategory.find({flag:{$ne: true}})
-        const Products = await ProductModel.find({flag:{$ne: true}})
+        const Subcategories = await Subcategory.find({ flag: { $ne: true } })
+        const Products = await ProductModel.find({ flag: { $ne: true } })
 
         res.render('user/shop', { title: "Shop", login: req.session, Categories, Subcategories, Products, count })
     } catch (error) {
@@ -78,11 +78,11 @@ const shopPage = async (req, res, next) => {
 const productPage = async (req, res, next) => {
     try {
         const productId = req.params.id;
-        const product = await ProductModel.findById({_id: productId});
+        const product = await ProductModel.findById({ _id: productId });
         const related = await ProductModel.find({
-            $and:[
-                {cat_id: product.cat_id},
-                {_id:{$ne: productId}}
+            $and: [
+                { cat_id: product.cat_id },
+                { _id: { $ne: productId } }
             ]
         }).limit(4)
         res.render('user/product', { title: "Product", login: req.session, product, related, count })
@@ -113,15 +113,15 @@ const profilePage = async (req, res, next) => {
 const wishlistPage = async (req, res, next) => {
     try {
         const userId = req.session.userId;
-        const user = await UserModel.findById({_id: userId});
-        let Wishlist = await WishlistModel.findOne({userId: userId}).populate('wishItems.product').lean();
+        const user = await UserModel.findById({ _id: userId });
+        let Wishlist = await WishlistModel.findOne({ userId: userId }).populate('wishItems.product').lean();
         let Items
-        
+
         if (Wishlist) {
             Items = Wishlist.wishItems;
-            res.render('user/wishlist', {title:"Wishlist",login: req.session,user,Items,index:1, count});
-        }else{
-            res.render('user/wishlist', {title:"Wishlist",login: req.session,user,Items,index:1, count});
+            res.render('user/wishlist', { title: "Wishlist", login: req.session, user, Items, index: 1, count });
+        } else {
+            res.render('user/wishlist', { title: "Wishlist", login: req.session, user, Items, index: 1, count });
         }
     } catch (error) {
         next(error)
@@ -131,14 +131,16 @@ const wishlistPage = async (req, res, next) => {
 const cartPage = async (req, res, next) => {
     try {
         const userId = req.session.userId;
-        const user = await UserModel.findById({_id: userId});
-        let Cart = await CartModel.findOne({userId: userId}).populate('cartItems.product').lean();
+        const user = await UserModel.findById({ _id: userId });
+        let Cart = await CartModel.findOne({ userId: userId })
+            .populate('cartItems.product')
+            .lean();
         let Items
         if (Cart) {
             Items = Cart.cartItems;
-            res.render('user/cart', {title:"Cart",login: req.session,user,Items,index:1, count});
-        }else{
-            res.render('user/cart', {title:"Cart",login: req.session,user,Items,index:1, count});
+            res.render('user/cart', { title: "Cart", login: req.session, user, Items, index: 1, count });
+        } else {
+            res.render('user/cart', { title: "Cart", login: req.session, user, Items, index: 1, count });
         }
     } catch (error) {
         next(error)
@@ -197,7 +199,7 @@ const verifyUser = async (req, res, next) => {
                     otp = "";
                     res.redirect('/')
                 })
-                .catch((error)=>{
+                .catch((error) => {
                     next(error)
                 })
 
@@ -255,26 +257,39 @@ const addToWish = async (req, res, next) => {
         console.log("<<< add Wishlist works >>>");
         const userId = req.session.userId;
         const product = req.params.id
-        const Wishlist = await WishlistModel.findOne({userId: userId});
-        if(Wishlist){
-            const isProduct = await WishlistModel.findOne({$and: [{userId: userId},{wishItems:{$elemMatch:{product}}}]})
+        const Wishlist = await WishlistModel.findOne({ userId: userId });
+        if (Wishlist) {
+            const isProduct = await WishlistModel.findOne(
+                {
+                    $and:
+                        [{ userId: userId },
+                        {
+                            wishItems:
+                                { $elemMatch: { product } }
+                        }]
+                })
             console.log(isProduct);
             if (isProduct) {
-                res.json({status: false})
-            }else{
-                await WishlistModel.updateOne({ userId }, { $push: { wishItems: { product } } });
-                res.json({status: true})
+                res.json({ status: false })
+            } else {
+                await WishlistModel.updateOne(
+                    { userId },
+                    {
+                        $push:
+                            { wishItems: { product } }
+                    });
+                res.json({ status: true })
             }
         } else {
-            const wishlist = new WishlistModel ({
+            const wishlist = new WishlistModel({
                 userId,
                 wishItems: [product]
             })
             await wishlist.save()
-                .then(()=>{
-                    res.json({status: true})
+                .then(() => {
+                    res.json({ status: true })
                 })
-                .catch((error)=>{
+                .catch((error) => {
                     next(error)
                 })
         }
@@ -283,13 +298,13 @@ const addToWish = async (req, res, next) => {
     }
 }
 
-const delFromWish = async(req,res,next)=>{
-    try{
+const delFromWish = async (req, res, next) => {
+    try {
         const itemId = req.params.id
         const userId = req.session.userId
-        await WishlistModel.updateOne({userId: userId},{$pull: {wishItems:{_id: itemId}}})
+        await WishlistModel.updateOne({ userId: userId }, { $pull: { wishItems: { _id: itemId } } })
         res.redirect('/wishlist');
-    }catch(error) {
+    } catch (error) {
         next(error)
     }
 }
@@ -298,30 +313,55 @@ const addToCart = async (req, res, next) => {
     try {
         const userId = req.session.userId;
         const product = req.params.id
-        const userCart = await CartModel.findOne({userId: userId});
-        if(userCart){
-            const isProduct = await CartModel.findOne({$and: [{userId: userId},{cartItems:{$elemMatch:{product}}}]})
+        const userCart = await CartModel.findOne({ userId: userId });
+        if (userCart) {
+            const isProduct = await CartModel.findOne(
+                {
+                    $and:
+                        [{ userId: userId },
+                        {
+                            cartItems:
+                                { $elemMatch: { product } }
+                        }]
+                })
             if (isProduct) {
-                await CartModel.findOneAndUpdate({ $and: [{ userId }, { "cartItems.product": product }] }, { $inc: { "cartItems.$.quantity": 1 } });
-                res.json({status: true});
+                await CartModel.findOneAndUpdate(
+                    {
+                        $and:
+                            [{ userId },
+                            { "cartItems.product": product }]
+                    },
+                    {
+                        $inc:
+                            { "cartItems.$.quantity": 1 }
+                    });
+                res.json({ status: true });
             } else {
-                
-                await CartModel.updateOne({ userId }, { $push: { cartItems: { product, quantity: 1 } } });
-                res.json({status: true});
+
+                await CartModel.updateOne(
+                    { userId },
+                    {
+                        $push:
+                        {
+                            cartItems:
+                                { product, quantity: 1 }
+                        }
+                    });
+                res.json({ status: true });
             }
         } else {
-            const cartDetails = new CartModel ({
+            const cartDetails = new CartModel({
                 userId,
                 cartItems: [{
                     product,
-                    quantity:1
+                    quantity: 1
                 }]
             })
             await cartDetails.save()
-                .then(()=>{
-                    res.json({status: true});
+                .then(() => {
+                    res.json({ status: true });
                 })
-                .catch((error)=>{
+                .catch((error) => {
                     next(error)
                 })
         }
@@ -330,26 +370,89 @@ const addToCart = async (req, res, next) => {
     }
 }
 
-const delFromCart = async(req,res,next)=>{
-    try{
+const delFromCart = async (req, res, next) => {
+    try {
         const itemId = req.params.id
         const userId = req.session.userId
-        await CartModel.updateOne({userId: userId},{$pull: {cartItems:{_id: itemId}}})
+        await CartModel.updateOne({ userId: userId }, { $pull: { cartItems: { _id: itemId } } })
         res.redirect('/cart');
-    }catch(error) {
+    } catch (error) {
         next(error)
     }
 }
 
-const cartCount = async(req,res,next)=>{
-    try{
+const cartCount = async (req, res, next) => {
+    try {
         const userId = req.session.userId
-        count = await CartModel.findOne({userId: userId},{cartItems:{$size:"$cartItems"}})
+        const cart = await CartModel.findOne({ userId: userId })
+        count = cart.cartItems.length
         next()
-    }catch(error){
+    } catch (error) {
         next(error)
     }
 }
+
+// Get Cart Total
+// const getCartTotal = async (req, res, next) => {
+//     try {
+//         userId = req.session.userId
+//         const Cart = await CartModel.aggregate([
+//             {
+//                 $match: { _id: ObjectId(userId) }
+//             },
+//             {
+//                 $unwind: '$Cart.cartItems'
+//             },
+//             {
+//                 $project: {
+//                     product: '$Cart.cartItems.product',
+//                     quantity: '$Cart.cartItems.quantity'
+//                 }
+//             },
+//             {
+//                 $lookup: {
+//                     from: 'cartItems',
+//                     localField: 'product',
+//                     foreignField: '_id',
+//                     as: 'product'
+//                 }
+//             },
+//             {
+//                 $project: { _id: 1, quantity: 1, product: { $arrayElemAt: ['$product', 0] } }
+//             },
+//             {
+//                 $group: {
+//                     _id: null,
+//                     total: { $sum: { $multiply: ["$quantity", "$product.price"] } }
+//                 }
+//             }
+//         ]);
+//         if (Cart.length) {
+//             return user[0].total;
+//         } else {
+//             return false;
+//         }
+//     } catch (error) {
+//         next(error)
+//     }
+// }
+
+// // Add New Address
+// const addNewAddress = async (data, userId) => {
+//     try {
+//         data.default = false;
+//         data.id = Date.now() + '-' + Math.round(Math.random() * 1E9);
+
+//         const user = await UserModel.findByIdAndUpdate(userId, {
+//             $push: { address: data }
+//         }, { new: true });
+
+//         return user;
+//     } catch (err) {
+//         throw new Error(err);
+//     }
+// }
+
 
 module.exports = {
 
