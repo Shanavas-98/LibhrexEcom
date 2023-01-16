@@ -6,6 +6,7 @@ const logger = require('morgan');
 const session = require('express-session');
 const multer = require('multer')
 const file = require('./utils/multer')
+require('dotenv').config()
 
 
 
@@ -39,7 +40,7 @@ app.use(multer({ storage: file.storage }).array("image", 10));
 //session setup
 const oneHour = 1000*60*60;
 app.use(session({
-    secret: 'secretKey',
+    secret: process.env.SESSION_KEY,
     resave: true,
     saveUninitialized: true,
     cookie: {maxAge: oneHour}
