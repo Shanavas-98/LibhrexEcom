@@ -1,135 +1,151 @@
 <%-include('../user/layouts/user-header.ejs')%>
 
-      <div class="container">
-        <div class="row no-gutters slider-text align-items-center justify-content-center">
-          <div class="col-md-9 ftco-animate text-center">
-            <h1 class="mb-0 bread">My Cart</h1>
-          </div>
-        </div>
-      </div>
-	<% if(Items){ %> 
-    <section class="ftco-section ftco-cart">
-			<div class="container">
-				<div class="row">
-    			<div class="col-md-12 ftco-animate">
-    				<div class="cart-list">
-	    				<table class="table">
-						    <thead class="thead-primary">
-						      <tr class="text-center">
-						        <th>S.No</th>
-						        <th>Product</th>
-						        <th>Product name</th>
-						        <th>Price</th>
-						        <th>Quantity</th>
-						        <th>Total</th>
-								<th>Action</th>
-						      </tr>
-						    </thead>
-						    <tbody>
-								<% Items.forEach((item)=>{ %>
-						      <tr class="text-center">
-						        <td><%= index++ %> </td>
-						        <td class="image-prod"><div class="img" style="background-image:url('/images/products/<%= item.product.image[0] %>');"></div></td>
-						        
-						        <td class="product-name">
-						        	<h3><%= item.product.productName %> </h3>
-						        	<p><%= item.product.description %></p>
-						        </td>
-						        <td class="price"><%= item.product.srp %> </td>
-						        
-						        <td class="quantity">
-						        	<div class="input-group mx-5" style="width: 100px;">
-					             	<input type="number" name="quantity" class="quantity form-control input-number" 
-									value="<%= item.quantity %>" min="1" max="10" />
-									</div>
-								</td>
-						        
-						        <td class="total"> </td>
-								<td>
-									<div class="mb-3">
-									<a href="/cart/move/<%= item._id %>" class="btn btn-secondary">Move to Wishlist</a>
-									</div>
-									<div>
-									<a href="/cart/delete/<%= item._id %>">
-									<i class="bi bi-trash-fill" style="color: #cf0000; font-size: large;"
-										title="delete"></i></a>
-									</div>
-								</td>
-						      </tr>
-							  <% }) %> 
-						    </tbody>
-						  </table>
-					  </div>
-    			</div>
-    		</div>
-    		<div class="row justify-content-end">
-    			<div class="col-lg-4 mt-5 cart-wrap ftco-animate">
-    				<div class="cart-total mb-3">
-    					<h3>Coupon Code</h3>
-    					<p>Enter your coupon code if you have one</p>
-  						<form action="#" class="info">
-	              <div class="form-group">
-	              	<label for="">Coupon code</label>
-	                <input type="text" class="form-control text-left px-3" placeholder="">
-	              </div>
-	            </form>
-    				</div>
-    				<p><a href="checkout.html" class="btn btn-primary py-3 px-4">Apply Coupon</a></p>
-    			</div>
-    			<div class="col-lg-4 mt-5 cart-wrap ftco-animate">
-    				<div class="cart-total mb-3">
-    					<h3>Estimate shipping and tax</h3>
-    					<p>Enter your destination to get a shipping estimate</p>
-  						<form action="#" class="info">
-	              <div class="form-group">
-	              	<label for="">Country</label>
-	                <input type="text" class="form-control text-left px-3" placeholder="">
-	              </div>
-	              <div class="form-group">
-	              	<label for="country">State/Province</label>
-	                <input type="text" class="form-control text-left px-3" placeholder="">
-	              </div>
-	              <div class="form-group">
-	              	<label for="country">Zip/Postal Code</label>
-	                <input type="text" class="form-control text-left px-3" placeholder="">
-	              </div>
-	            </form>
-    				</div>
-    				<p><a href="checkout.html" class="btn btn-primary py-3 px-4">Estimate</a></p>
-    			</div>
-    			<div class="col-lg-4 mt-5 cart-wrap ftco-animate">
-    				<div class="cart-total mb-3">
-    					<h3>Cart Totals</h3>
-    					<p class="d-flex">
-    						<span>Subtotal</span>
-    						<span>$20.60</span>
-    					</p>
-    					<p class="d-flex">
-    						<span>Delivery</span>
-    						<span>$0.00</span>
-    					</p>
-    					<p class="d-flex">
-    						<span>Discount</span>
-    						<span>$3.00</span>
-    					</p>
-    					<hr>
-    					<p class="d-flex total-price">
-    						<span>Total</span>
-    						<span>$17.60</span>
-    					</p>
-    				</div>
-    				<p><a href="checkout.html" class="btn btn-primary py-3 px-4">Proceed to Checkout</a></p>
-    			</div>
-    		</div>
+	<div class="container-fluid">
+		<div class="row no-gutters slider-text align-items-center justify-content-center">
+			<div class="col-md-9 ftco-animate text-center">
+				<h1 class="mb-0 bread">My Cart</h1>
 			</div>
-		</section>
-		<% } else { %>
-			<section class="vh-100 d-flex align-items-center justify-content-center">
-				<div class="row ">
-				<h2>Your Cart is Empty!!!</h2>
+		</div>
+		<% if(count.cart && Items){ %>
+			<section class="ftco-section ftco-cart">
+				<div class="container">
+					<div class="row">
+						<div class="col-md-12 ftco-animate">
+							<div class="cart-list">
+								<table class="table">
+									<thead class="thead-primary">
+										<tr class="text-center">
+											<th>S.No</th>
+											<th>Product</th>
+											<th>Product name</th>
+											<th>Price</th>
+											<th>Quantity</th>
+											<th>Total</th>
+											<th>Action</th>
+										</tr>
+									</thead>
+									<tbody>
+										<% Items.forEach((item)=>{ %>
+											<tr class="text-center">
+												<td>
+													<%= index++ %>
+												</td>
+												<td class="image-prod">
+													<div class="img"
+														style="background-image:url('/images/products/<%= item.product.image[0] %>');">
+													</div>
+												</td>
+
+												<td class="product-name">
+													<h3>
+														<%= item.product.productName %>
+													</h3>
+													<p>
+														<%= item.product.description %>
+													</p>
+												</td>
+												<td class="price">
+													$<%= item.product.srp %>
+												</td>
+
+												<td class="quantity">
+													<button>-</button><span><%= item.quantity %></span><button>+</button>
+												</td>
+
+												<td class="total">$<%= item.price %> </td>
+												<td>
+													<div class="mb-3">
+														<a href="/cart/move/<%= item._id %>"
+															class="btn btn-secondary">Move to Wishlist</a>
+													</div>
+													<div>
+														<a href="/cart/delete/<%= item._id %>">
+															<i class="bi bi-trash-fill"
+																style="color: #cf0000; font-size: large;"
+																title="delete"></i></a>
+													</div>
+												</td>
+											</tr>
+											<% }) %>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+					<div class="row justify-content-end">
+						<div class="col-lg-4 mt-5 cart-wrap ftco-animate">
+							<div class="cart-total mb-3">
+								<h3>Coupon Code</h3>
+								<p>Enter your coupon code if you have one</p>
+								<form action="#" class="info">
+									<div class="form-group">
+										<label for="">Coupon code</label>
+										<input type="text" class="form-control text-left px-3" placeholder="">
+									</div>
+								</form>
+							</div>
+							<p><a href="checkout.html" class="btn btn-primary py-3 px-4">Apply Coupon</a></p>
+						</div>
+						<div class="col-lg-4 mt-5 cart-wrap ftco-animate">
+							<div class="cart-total mb-3">
+								<h3>Estimate shipping and tax</h3>
+								<p>Enter your destination to get a shipping estimate</p>
+								<form action="#" class="info">
+									<div class="form-group">
+										<label for="">Country</label>
+										<input type="text" class="form-control text-left px-3" placeholder="">
+									</div>
+									<div class="form-group">
+										<label for="country">State/Province</label>
+										<input type="text" class="form-control text-left px-3" placeholder="">
+									</div>
+									<div class="form-group">
+										<label for="country">Zip/Postal Code</label>
+										<input type="text" class="form-control text-left px-3" placeholder="">
+									</div>
+								</form>
+							</div>
+							<p><a href="checkout.html" class="btn btn-primary py-3 px-4">Estimate</a></p>
+						</div>
+						<div class="col-lg-4 mt-5 cart-wrap ftco-animate">
+							<div class="cart-total mb-3">
+								<h3>Cart Totals</h3>
+								<p class="d-flex">
+									<span>Subtotal</span>
+									<span>$<%= subtotal %> </span>
+								</p>
+								<p class="d-flex">
+									<span>Delivery</span>
+									<span>$0.00</span>
+								</p>
+								<p class="d-flex">
+									<span>Discount</span>
+									<span>$0.00</span>
+								</p>
+								<hr>
+								<p class="d-flex total-price">
+									<span>Total</span>
+									<span>$<%= subtotal %> </span>
+								</p>
+							</div>
+							<p><a href="checkout.html" class="btn btn-primary py-3 px-4">Proceed to Checkout</a></p>
+						</div>
+					</div>
 				</div>
 			</section>
-		<% } %>
+			<% } else { %>
+				<section class="vh-100">
+					<div></div>
+					<div class="row justify-content-center">
+						<h2>Your Cart is Empty!!!</h2>
+					</div>
+					<div class="row justify-content-center">
+						<p><a href="/shop" class="btn btn-primary">Shop Now</a></p>
+					</div>
+				</section>
+				<% } %>
+	</div>
+
 
 	<%-include('../user/layouts/user-footer.ejs') %>
 

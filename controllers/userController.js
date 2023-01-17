@@ -21,11 +21,11 @@ const ObjectId = mongoose.Types.ObjectId;
 let userErr = "";
 let passErr = "";
 let otp = "";
-let count = 0;
+let count = {}
 
 const signupPage = async (req, res, next) => {
     try {
-        res.render('user/signup', { title: "SignUp", login: req.session, count })
+        res.render('user/signup', { title: "SignUp", login: req.session })
     } catch (error) {
         next(error)
     }
@@ -33,7 +33,7 @@ const signupPage = async (req, res, next) => {
 
 const verifyPage = async (req, res, next) => {
     try {
-        res.render('user/verifyotp', { title: "Verification", login: req.session, count })
+        res.render('user/verifyotp', { title: "Verification", login: req.session })
     } catch (error) {
         next(error)
     }
@@ -42,7 +42,7 @@ const verifyPage = async (req, res, next) => {
 const loginPage = async (req, res, next) => {
     try {
         if (!req.session.userLogin) {
-            res.render('user/login', { title: "Login", login: req.session, userErr, passErr, count });
+            res.render('user/login', { title: "Login", login: req.session, userErr, passErr });
             userErr = ''
             passErr = ''
         } else {
@@ -113,15 +113,13 @@ const profilePage = async (req, res, next) => {
 const wishlistPage = async (req, res, next) => {
     try {
         const userId = req.session.userId;
-        const user = await UserModel.findById({ _id: userId });
         let Wishlist = await WishlistModel.findOne({ userId: userId }).populate('wishItems.product').lean();
-        let Items
 
         if (Wishlist) {
-            Items = Wishlist.wishItems;
-            res.render('user/wishlist', { title: "Wishlist", login: req.session, user, Items, index: 1, count });
+            let Items = Wishlist.wishItems;
+            res.render('user/wishlist', { title: "Wishlist", login: req.session, Items, index: 1, count });
         } else {
-            res.render('user/wishlist', { title: "Wishlist", login: req.session, user, Items, index: 1, count });
+            res.render('user/wishlist', { title: "Wishlist", login: req.session, Items:0, index: 1, count });
         }
     } catch (error) {
         next(error)
@@ -135,12 +133,12 @@ const cartPage = async (req, res, next) => {
         let Cart = await CartModel.findOne({ userId: userId })
             .populate('cartItems.product')
             .lean();
-        let Items
         if (Cart) {
-            Items = Cart.cartItems;
-            res.render('user/cart', { title: "Cart", login: req.session, user, Items, index: 1, count });
+            const subtotal = Cart.cartItems.map(item => item.price).reduce((acc, val) => acc + val, 0);
+            let Items = Cart.cartItems;
+            res.render('user/cart', { title: "Cart", login: req.session, user, Items, index: 1, count, subtotal });
         } else {
-            res.render('user/cart', { title: "Cart", login: req.session, user, Items, index: 1, count });
+            res.render('user/cart', { title: "Cart", login: req.session, user, Items:0, index: 1, count });
         }
     } catch (error) {
         next(error)
@@ -256,7 +254,7 @@ const addToWish = async (req, res, next) => {
     try {
         console.log("<<< add Wishlist works >>>");
         const userId = req.session.userId;
-        const product = req.params.id
+        const productId = req.params.id
         const Wishlist = await WishlistModel.findOne({ userId: userId });
         if (Wishlist) {
             const isProduct = await WishlistModel.findOne(
@@ -265,10 +263,9 @@ const addToWish = async (req, res, next) => {
                         [{ userId: userId },
                         {
                             wishItems:
-                                { $elemMatch: { product } }
+                                { $elemMatch: { product: productId } }
                         }]
                 })
-            console.log(isProduct);
             if (isProduct) {
                 res.json({ status: false })
             } else {
@@ -276,14 +273,14 @@ const addToWish = async (req, res, next) => {
                     { userId },
                     {
                         $push:
-                            { wishItems: { product } }
+                            { wishItems: { product: productId } }
                     });
                 res.json({ status: true })
             }
         } else {
             const wishlist = new WishlistModel({
                 userId,
-                wishItems: [product]
+                wishItems: {product: productId}
             })
             await wishlist.save()
                 .then(() => {
@@ -312,7 +309,8 @@ const delFromWish = async (req, res, next) => {
 const addToCart = async (req, res, next) => {
     try {
         const userId = req.session.userId;
-        const product = req.params.id
+        const productId = req.params.id
+        const product = await ProductModel.findById({ _id: productId })
         const userCart = await CartModel.findOne({ userId: userId });
         if (userCart) {
             const isProduct = await CartModel.findOne(
@@ -321,7 +319,7 @@ const addToCart = async (req, res, next) => {
                         [{ userId: userId },
                         {
                             cartItems:
-                                { $elemMatch: { product } }
+                                { $elemMatch: { product:productId } }
                         }]
                 })
             if (isProduct) {
@@ -329,13 +327,14 @@ const addToCart = async (req, res, next) => {
                     {
                         $and:
                             [{ userId },
-                            { "cartItems.product": product }]
+                            { "cartItems.product": productId }]
                     },
                     {
                         $inc:
-                            { "cartItems.$.quantity": 1 }
-                    });
-                res.json({ status: true });
+                            { "cartItems.$.quantity": 1, "cartItems.$.price": product.srp }
+                    }
+                );
+                res.json({ status: false });
             } else {
 
                 await CartModel.updateOne(
@@ -344,7 +343,7 @@ const addToCart = async (req, res, next) => {
                         $push:
                         {
                             cartItems:
-                                { product, quantity: 1 }
+                                { product: productId, quantity: 1, price: product.srp }
                         }
                     });
                 res.json({ status: true });
@@ -353,8 +352,9 @@ const addToCart = async (req, res, next) => {
             const cartDetails = new CartModel({
                 userId,
                 cartItems: [{
-                    product,
-                    quantity: 1
+                    product: productId,
+                    quantity: 1,
+                    price: product.srp
                 }]
             })
             await cartDetails.save()
@@ -381,16 +381,34 @@ const delFromCart = async (req, res, next) => {
     }
 }
 
-const cartCount = async (req, res, next) => {
+const Count = async (req, res, next) => {
     try {
         const userId = req.session.userId
         const cart = await CartModel.findOne({ userId: userId })
-        count = cart.cartItems.length
+        const wish = await WishlistModel.findOne({userId: userId})
+        if (cart) {
+            count.cart = cart.cartItems.length
+        }
+        if(wish){
+            count.wish = wish.wishItems.length
+        }
         next()
     } catch (error) {
         next(error)
     }
 }
+
+// const cartTotal = async(req, res, next)=>{
+//     const cart = CartModel.findOne({ userId: req.session.userId })
+//     .populate('cartItems.product')
+//     .exec(function (err, cart) {
+//         if (err) next(err);
+//         const subtotal = cart.cartItems.map(item => item.product.srp * item.quantity).reduce((acc, val) => acc + val, 0);
+//         return subtotal
+//     });
+// }
+
+
 
 // Get Cart Total
 // const getCartTotal = async (req, res, next) => {
@@ -427,6 +445,8 @@ const cartCount = async (req, res, next) => {
 //                 }
 //             }
 //         ]);
+//         console.log(Cart);
+//         next()
 //         if (Cart.length) {
 //             return user[0].total;
 //         } else {
@@ -476,6 +496,5 @@ module.exports = {
     delFromWish,
     addToCart,
     delFromCart,
-    cartCount
-
+    Count
 }

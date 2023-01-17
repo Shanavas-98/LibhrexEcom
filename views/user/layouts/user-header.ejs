@@ -1,82 +1,103 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <title><%= title %></title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    
-    <link href="https://fonts.googleapis.com/css?family=Poppins:200,300,400,500,600,700,800&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Lora:400,400i,700,700i&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Amatic+SC:400,700&display=swap" rel="stylesheet">
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css" />
 
-    <link rel="stylesheet" href="/userside/css/open-iconic-bootstrap.min.css">
-    <link rel="stylesheet" href="/userside/css/animate.css">
-    
-    <link rel="stylesheet" href="/userside/css/owl.carousel.min.css">
-    <link rel="stylesheet" href="/userside/css/owl.theme.default.min.css">
-    <link rel="stylesheet" href="/userside/css/magnific-popup.css">
+<head>
+  <title>
+    <%= title %>
+  </title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <link rel="stylesheet" href="/userside/css/aos.css">
-    <link rel="stylesheet" href="/userside/css/main.css">
+  <link href="https://fonts.googleapis.com/css?family=Poppins:200,300,400,500,600,700,800&display=swap"
+    rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Lora:400,400i,700,700i&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Amatic+SC:400,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css" />
+
+  <link rel="stylesheet" href="/userside/css/open-iconic-bootstrap.min.css">
+  <link rel="stylesheet" href="/userside/css/animate.css">
+
+  <link rel="stylesheet" href="/userside/css/owl.carousel.min.css">
+  <link rel="stylesheet" href="/userside/css/owl.theme.default.min.css">
+  <link rel="stylesheet" href="/userside/css/magnific-popup.css">
+
+  <link rel="stylesheet" href="/userside/css/aos.css">
+  <link rel="stylesheet" href="/userside/css/main.css">
 
 
-    <link rel="stylesheet" href="/userside/css/ionicons.min.css">
+  <link rel="stylesheet" href="/userside/css/ionicons.min.css">
 
-    <link rel="stylesheet" href="/userside/css/bootstrap-datepicker.css">
-    <link rel="stylesheet" href="/userside/css/jquery.timepicker.css">
+  <link rel="stylesheet" href="/userside/css/bootstrap-datepicker.css">
+  <link rel="stylesheet" href="/userside/css/jquery.timepicker.css">
 
-    
-    <link rel="stylesheet" href="/userside/css/flaticon.css">
-    <link rel="stylesheet" href="/userside/css/icomoon.css">
-    <link rel="stylesheet" href="/userside/css/style.css">
-	<!-- Custom fonts for this template-->
-    <link href="/adminside/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
-    <!-- Custom styles for this template-->
-    <link href="/adminside/css/sb-admin-2.min.css" rel="stylesheet">
-	<link rel="stylesheet" href="/stylesheets/style.css">
-  </head>
-  <body class="goto-here container-fluid">
-    <nav class="navbar navbar-expand-lg navbar-light ftco_navbar bg-grey ftco-navbar-dark" id="ftco-navbar">
-	    <div class="container">
-	      <a class="navbar-brand" href="/"><img src="/images/logo.png" alt="logo" class="img_logo"></a>
-	      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav" aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
-	        <span class="oi oi-menu"></span>
-	      </button>
 
-	      <div class="collapse navbar-collapse" id="ftco-nav">
-	        <ul class="navbar-nav ml-auto">
-	          <li class="nav-item active"><a href="/" class="nav-link">Home</a></li>
-	          <li class="nav-item"><a href="/shop" class="nav-link">Shop</a></li>
-            <% if (login.userLogin) { %>
-	          <li class="nav-item"><a href="/orders" class="nav-link">Orders</a></li>
-	          <li class="nav-item"><a href="/wishlist" class="nav-link">Wishlist</a></li>
-	          <li class="nav-item cta cta-colored"><a href="/cart" class="nav-link">
-              <span class="icon-shopping_cart" id="cartCount">[<%= count %>]</span></a></li>
+  <link rel="stylesheet" href="/userside/css/flaticon.css">
+  <link rel="stylesheet" href="/userside/css/icomoon.css">
+  <link rel="stylesheet" href="/userside/css/style.css">
+  <!-- Custom fonts for this template-->
+  <link href="/adminside/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+  <!-- Custom styles for this template-->
+  <link href="/adminside/css/sb-admin-2.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/stylesheets/style.css">
+</head>
+
+<body class="goto-here container-fluid">
+  <nav class="navbar navbar-expand-lg navbar-light ftco_navbar bg-grey ftco-navbar-dark border-bottom" id="ftco-navbar">
+    <div class="container">
+      <a class="navbar-brand" href="/"><img src="/images/logo.png" alt="logo" class="img_logo"></a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav"
+        aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="oi oi-menu"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="ftco-nav">
+        <ul class="navbar-nav ml-auto" style="font-size: large;">
+          <li class="nav-item active"><a href="/" class="nav-link">Home</a></li>
+          <li class="nav-item"><a href="/shop" class="nav-link">Shop</a></li>
+          <% if (login.userLogin) { %>
+            <li class="nav-item"><a href="/orders" class="nav-link">Orders</a></li>
+            <li class="nav-item" title="wishlist"><a href="/wishlist" class="nav-link">
+                <i class="bi bi-heart-fill"></i>
+                <% if(count.wish){ %>
+                  <span class="badge badge-pill badge-secondary" id="wishCount">
+                    <%= count.wish %>
+                  </span>
+                  <% } %>
+              </a></li>
+            <li class="nav-item cta cta-colored" title="cart"><a href="/cart" class="nav-link">
+                <i class="bi bi-cart-fill"></i>
+                <% if(count.cart){ %>
+                  <span class="badge badge-pill badge-secondary" id="cartCount">
+                    <%= count.cart %>
+                  </span>
+                  <% } %>
+              </a></li>
             <% } %>
 
-	          <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" id="dropdown04" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <% if (login.userLogin) { %>
-                  <%= login.username %>
-                <% } else { %>
-                  User
-                  <% } %>
-              </a>
-              <div class="dropdown-menu" aria-labelledby="dropdown04">
-                <% if (login.userLogin) { %>
-              	<a class="dropdown-item" href="/profile">Profile</a>
-              	<a class="dropdown-item" href="/settings">Settings</a>
-                <a class="dropdown-item" href="/logout">Logout</a>
-                <% } else { %>
-                <a class="dropdown-item" href="/login">Sigin</a>
-                <a class="dropdown-item" href="/signup">SignUp</a>
-                <% } %>
+              <li class="nav-item dropdown" title="user">
+                <a class="nav-link dropdown-toggle" id="dropdown04" data-toggle="dropdown" aria-haspopup="true"
+                  aria-expanded="false">
+                  <i class="bi bi-person-fill"></i>
+                </a>
+                <div class="dropdown-menu" aria-labelledby="dropdown04" id="profile-menu">
+                  <% if (login.userLogin) { %>
+                    <span>
+                      <b>
+                        <%= login.username %>
+                      </b>
+                    </span>
+                    <a class="dropdown-item" href="/profile">Profile</a>
+                    <a class="dropdown-item" href="/settings">Settings</a>
+                    <a class="dropdown-item" href="/logout">Logout</a>
+                    <% } else { %>
+                      <a class="dropdown-item" href="/login">Sigin</a>
+                      <a class="dropdown-item" href="/signup">SignUp</a>
+                      <% } %>
 
-              </div>
-            	</li>
-	        </ul>
-	      </div>
-	    </div>
-	  </nav>
-    <!-- END nav -->
+                </div>
+              </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <!-- END nav -->

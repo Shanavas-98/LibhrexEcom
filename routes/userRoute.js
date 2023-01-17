@@ -5,18 +5,18 @@ const controller = require('../controllers/userController');
 const isLogin = require('../middleware/isLogin');
 
 //GET Methods
-router.get('/',controller.cartCount,controller.homePage);
+router.get('/',controller.Count,controller.homePage);
 router.get('/signup',controller.signupPage);
 router.get('/verify',controller.verifyPage);
 router.get('/login',controller.loginPage);
-router.get('/shop',controller.cartCount,controller.shopPage);
-router.get('/product/:id',controller.cartCount,controller.productPage);
+router.get('/shop',controller.Count,controller.shopPage);
+router.get('/product/:id',controller.Count,controller.productPage);
 
-router.get('/orders',isLogin.userLogin,controller.cartCount,controller.ordersPage);
-router.get('/wishlist',isLogin.userLogin,controller.cartCount,controller.wishlistPage);
-router.get('/profile',isLogin.userLogin,controller.cartCount,controller.profilePage);
-router.get('/cart',isLogin.userLogin,controller.cartCount,controller.cartPage);
-router.get('/checkout',isLogin.userLogin,controller.cartCount,controller.checkoutPage);
+router.get('/orders',isLogin.userLogin,controller.Count,controller.ordersPage);
+router.get('/wishlist',isLogin.userLogin,controller.Count,controller.wishlistPage);
+router.get('/profile',isLogin.userLogin,controller.Count,controller.profilePage);
+router.get('/cart',isLogin.userLogin,controller.Count,controller.cartPage);
+router.get('/checkout',isLogin.userLogin,controller.Count,controller.checkoutPage);
 
 router.get('/resendotp',controller.getOtp);
 router.get('/logout',controller.doLogout);

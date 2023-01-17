@@ -26,23 +26,6 @@
 					<p>
 						<%= product.description %>
 					</p>
-					<div class="row mt-4">
-						<div class="w-100"></div>
-						<div class="input-group col-md-6 d-flex mb-3">
-							<span class="input-group-btn mr-2">
-								<button type="button" class="quantity-left-minus btn" data-type="minus" data-field="">
-									<i class="ion-ios-remove"></i>
-								</button>
-							</span>
-							<input type="text" id="quantity" name="quantity" class="form-control input-number" value="1"
-								min="1" max="100">
-							<span class="input-group-btn ml-2">
-								<button type="button" class="quantity-right-plus btn" data-type="plus" data-field="">
-									<i class="ion-ios-add"></i>
-								</button>
-							</span>
-						</div>
-					</div>
 					<button onclick="addToCart('<%= product._id %>')">Add to Cart</button>
 					<button onclick="addToWish('<%= product._id %>')">Add to wishlist</button>
 				</div>
@@ -113,7 +96,8 @@
 				success: (response) => {
 					if (response.status) {
 						let count = $('#cartCount').html()
-						$('#cartCount').html(response.cartCount)
+						count = parseInt(count)+1
+						$('#cartCount').html(count)
 						// addToCartBtn.style.display = 'none';
 						// goToCartBtn.style.display = 'flex';
 					}
@@ -127,8 +111,9 @@
 				method: 'get',
 				success: (response) => {
 					if (response.status) {
-						// changeStyle()
-
+						let count = $('#wishCount').html()
+						count = parseInt(count)+1
+						$('#wishCount').html(count)
 					} else {
 						alert("already exists")
 					}
