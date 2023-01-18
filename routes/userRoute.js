@@ -30,6 +30,8 @@ router.get('/wishlist/delete/:id',isLogin.userLogin,controller.delFromWish);
 router.post('/register',controller.doSignup,controller.getOtp)
 router.post('/signin',controller.doLogin)
 router.post('/verify-user',controller.verifyUser)
+router.post('/cart/quantity',isLogin.userLogin,controller.changeItemQty);
+
 
   
 module.exports = router;

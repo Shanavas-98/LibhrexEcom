@@ -119,7 +119,7 @@ const wishlistPage = async (req, res, next) => {
             let Items = Wishlist.wishItems;
             res.render('user/wishlist', { title: "Wishlist", login: req.session, Items, index: 1, count });
         } else {
-            res.render('user/wishlist', { title: "Wishlist", login: req.session, Items:0, index: 1, count });
+            res.render('user/wishlist', { title: "Wishlist", login: req.session, Items: 0, index: 1, count });
         }
     } catch (error) {
         next(error)
@@ -138,7 +138,7 @@ const cartPage = async (req, res, next) => {
             let Items = Cart.cartItems;
             res.render('user/cart', { title: "Cart", login: req.session, user, Items, index: 1, count, subtotal });
         } else {
-            res.render('user/cart', { title: "Cart", login: req.session, user, Items:0, index: 1, count });
+            res.render('user/cart', { title: "Cart", login: req.session, user, Items: 0, index: 1, count });
         }
     } catch (error) {
         next(error)
@@ -274,13 +274,16 @@ const addToWish = async (req, res, next) => {
                     {
                         $push:
                             { wishItems: { product: productId } }
-                    });
-                res.json({ status: true })
+                    }).then(() => {
+                        res.json({ status: true })
+                    }).catch((error) => {
+                        next(error)
+                    })
             }
         } else {
             const wishlist = new WishlistModel({
                 userId,
-                wishItems: {product: productId}
+                wishItems: { product: productId }
             })
             await wishlist.save()
                 .then(() => {
@@ -300,7 +303,11 @@ const delFromWish = async (req, res, next) => {
         const itemId = req.params.id
         const userId = req.session.userId
         await WishlistModel.updateOne({ userId: userId }, { $pull: { wishItems: { _id: itemId } } })
-        res.redirect('/wishlist');
+            .then(() => {
+                res.json({ status: true })
+            }).catch((error) => {
+                next(error)
+            })
     } catch (error) {
         next(error)
     }
@@ -319,24 +326,25 @@ const addToCart = async (req, res, next) => {
                         [{ userId: userId },
                         {
                             cartItems:
-                                { $elemMatch: { product:productId } }
+                                { $elemMatch: { product: productId } }
                         }]
                 })
             if (isProduct) {
                 await CartModel.findOneAndUpdate(
                     {
                         $and:
-                            [{ userId },
+                            [{ userId: userId },
                             { "cartItems.product": productId }]
                     },
                     {
-                        $inc:
-                            { "cartItems.$.quantity": 1, "cartItems.$.price": product.srp }
+                        $inc: { "cartItems.$.quantity": 1 }
                     }
-                );
-                res.json({ status: false });
+                ).then(() => {
+                    res.json({ status: false });
+                }).catch((error) => {
+                    next(error)
+                })
             } else {
-
                 await CartModel.updateOne(
                     { userId },
                     {
@@ -345,8 +353,11 @@ const addToCart = async (req, res, next) => {
                             cartItems:
                                 { product: productId, quantity: 1, price: product.srp }
                         }
-                    });
-                res.json({ status: true });
+                    }).then(() => {
+                        res.json({ status: true });
+                    }).catch((error) => {
+                        next(error)
+                    })
             }
         } else {
             const cartDetails = new CartModel({
@@ -373,9 +384,59 @@ const addToCart = async (req, res, next) => {
 const delFromCart = async (req, res, next) => {
     try {
         const itemId = req.params.id
+        await CartModel.updateOne({ userId: req.session.userId }, { $pull: { cartItems: { _id: itemId } } })
+            .then(() => {
+                res.json({ remove: true })
+            }).catch((error) => {
+                next(error)
+            })
+    } catch (error) {
+        next(error)
+    }
+}
+
+const changeItemQty = async (req, res, next) => {
+    try {
         const userId = req.session.userId
-        await CartModel.updateOne({ userId: userId }, { $pull: { cartItems: { _id: itemId } } })
-        res.redirect('/cart');
+        const itemId = req.body.item
+        const productId = req.body.product
+        const change = req.body.change
+        const quantity = await CartModel.findOne(
+            {$and:
+                [{ userId: userId },
+                { "cartItems.product": productId }]
+            },
+            { "cartItems.quantity":1 })
+            
+        const qty = quantity.cartItems[0].quantity
+        if (change == -1 && qty == 1) {
+            await CartModel.updateOne({
+                userId: userId
+            },
+                {
+                    $pull: { cartItems: { _id: itemId } }
+                }).then(() => {
+                    res.json({ remove: true })
+                }).catch((error) => {
+                    next(error)
+                })
+        } else {
+            await CartModel.findOneAndUpdate(
+                {
+                    $and:
+                        [{ userId: userId },
+                        { "cartItems.product": productId }]
+                },
+                {
+                    $inc:
+                        { "cartItems.$.quantity": change }
+                }
+            ).then(() => {
+                res.json({ status: true });
+            }).catch((error) => {
+                next(error)
+            })
+        }
     } catch (error) {
         next(error)
     }
@@ -385,12 +446,13 @@ const Count = async (req, res, next) => {
     try {
         const userId = req.session.userId
         const cart = await CartModel.findOne({ userId: userId })
-        const wish = await WishlistModel.findOne({userId: userId})
+        const wish = await WishlistModel.findOne({ userId: userId })
+        // ?? nullish operator
         if (cart) {
-            count.cart = cart.cartItems.length
+            count.cart = (cart.cartItems.length ?? 0)
         }
-        if(wish){
-            count.wish = wish.wishItems.length
+        if (wish) {
+            count.wish = (wish.wishItems.length ?? 0)
         }
         next()
     } catch (error) {
@@ -496,5 +558,6 @@ module.exports = {
     delFromWish,
     addToCart,
     delFromCart,
+    changeItemQty,
     Count
 }
