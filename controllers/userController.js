@@ -21,7 +21,7 @@ const ObjectId = mongoose.Types.ObjectId;
 let userErr = "";
 let passErr = "";
 let otp = "";
-let count = {}
+let count = { cart: 0, wish: 0 }
 
 const signupPage = async (req, res, next) => {
     try {
@@ -130,12 +130,12 @@ const cartPage = async (req, res, next) => {
     try {
         const userId = req.session.userId;
         const user = await UserModel.findById({ _id: userId });
-        let Cart = await CartModel.findOne({ userId: userId })
+        const Cart = await CartModel.findOne({ userId: userId })
             .populate('cartItems.product')
             .lean();
         if (Cart) {
-            const subtotal = Cart.cartItems.map(item => item.price).reduce((acc, val) => acc + val, 0);
-            let Items = Cart.cartItems;
+            let subtotal = Cart.cartItems.map(item => item.price).reduce((acc, val) => acc + val, 0);
+            const Items = Cart.cartItems;
             res.render('user/cart', { title: "Cart", login: req.session, user, Items, index: 1, count, subtotal });
         } else {
             res.render('user/cart', { title: "Cart", login: req.session, user, Items: 0, index: 1, count });
@@ -337,7 +337,7 @@ const addToCart = async (req, res, next) => {
                             { "cartItems.product": productId }]
                     },
                     {
-                        $inc: { "cartItems.$.quantity": 1 }
+                        $inc: { "cartItems.$.quantity": 1, "cartItems.$.price": product.srp }
                     }
                 ).then(() => {
                     res.json({ status: false });
@@ -401,14 +401,8 @@ const changeItemQty = async (req, res, next) => {
         const itemId = req.body.item
         const productId = req.body.product
         const change = req.body.change
-        const quantity = await CartModel.findOne(
-            {$and:
-                [{ userId: userId },
-                { "cartItems.product": productId }]
-            },
-            { "cartItems.quantity":1 })
-            
-        const qty = quantity.cartItems[0].quantity
+        const qty = req.body.qty
+        const product = await ProductModel.findById({ _id: productId })
         if (change == -1 && qty == 1) {
             await CartModel.updateOne({
                 userId: userId
@@ -429,10 +423,15 @@ const changeItemQty = async (req, res, next) => {
                 },
                 {
                     $inc:
-                        { "cartItems.$.quantity": change }
+                        { "cartItems.$.quantity": change, "cartItems.$.price": product.srp * change }
                 }
-            ).then(() => {
-                res.json({ status: true });
+            ).then(async () => {
+                let priceChange = product.srp * change
+                const Cart = await CartModel.findOne({ userId: userId })
+                    .populate('cartItems.product')
+                    .lean();
+                const subtotal = Cart.cartItems.map(item => item.price).reduce((acc, val) => acc + val, 0);
+                res.json({ status: true, price: priceChange, total: subtotal });
             }).catch((error) => {
                 next(error)
             })
@@ -442,7 +441,7 @@ const changeItemQty = async (req, res, next) => {
     }
 }
 
-const Count = async (req, res, next) => {
+const countItem = async (req, res, next) => {
     try {
         const userId = req.session.userId
         const cart = await CartModel.findOne({ userId: userId })
@@ -459,65 +458,6 @@ const Count = async (req, res, next) => {
         next(error)
     }
 }
-
-// const cartTotal = async(req, res, next)=>{
-//     const cart = CartModel.findOne({ userId: req.session.userId })
-//     .populate('cartItems.product')
-//     .exec(function (err, cart) {
-//         if (err) next(err);
-//         const subtotal = cart.cartItems.map(item => item.product.srp * item.quantity).reduce((acc, val) => acc + val, 0);
-//         return subtotal
-//     });
-// }
-
-
-
-// Get Cart Total
-// const getCartTotal = async (req, res, next) => {
-//     try {
-//         userId = req.session.userId
-//         const Cart = await CartModel.aggregate([
-//             {
-//                 $match: { _id: ObjectId(userId) }
-//             },
-//             {
-//                 $unwind: '$Cart.cartItems'
-//             },
-//             {
-//                 $project: {
-//                     product: '$Cart.cartItems.product',
-//                     quantity: '$Cart.cartItems.quantity'
-//                 }
-//             },
-//             {
-//                 $lookup: {
-//                     from: 'cartItems',
-//                     localField: 'product',
-//                     foreignField: '_id',
-//                     as: 'product'
-//                 }
-//             },
-//             {
-//                 $project: { _id: 1, quantity: 1, product: { $arrayElemAt: ['$product', 0] } }
-//             },
-//             {
-//                 $group: {
-//                     _id: null,
-//                     total: { $sum: { $multiply: ["$quantity", "$product.price"] } }
-//                 }
-//             }
-//         ]);
-//         console.log(Cart);
-//         next()
-//         if (Cart.length) {
-//             return user[0].total;
-//         } else {
-//             return false;
-//         }
-//     } catch (error) {
-//         next(error)
-//     }
-// }
 
 // // Add New Address
 // const addNewAddress = async (data, userId) => {
@@ -559,5 +499,5 @@ module.exports = {
     addToCart,
     delFromCart,
     changeItemQty,
-    Count
+    countItem
 }

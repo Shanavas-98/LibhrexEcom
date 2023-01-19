@@ -52,12 +52,12 @@
 												<td class="quantity">
 													<div style="height: 50px;">
 													<button style="width: 50px;" onclick="changeItemQty('<%= item._id %>','<%= item.product._id %>',-1)">-</button>
-													<span style="width: 50px;" id="itemCount"><%=item.quantity%></span>
+													<span style="width: 50px;" id="itemCount<%= item._id %>"><%=item.quantity%></span>
 													<button style="width: 50px;" onclick="changeItemQty('<%= item._id %>','<%= item.product._id %>',1)">+</button>
 													</div>
 												</td>
 
-												<td class="total">$<%= item.price %> </td>
+												<td class="total">$<span id="itemPrice<%= item._id %>"><%= item.price %></span></td>
 												<td>
 													<div class="mb-3">
 														<button class="btn btn-secondary" style="color: white;"
@@ -79,7 +79,7 @@
 						</div>
 					</div>
 					<div class="row justify-content-end">
-						<div class="col-lg-4 mt-5 cart-wrap ftco-animate">
+						<!-- <div class="col-lg-4 mt-5 cart-wrap ftco-animate">
 							<div class="cart-total mb-3">
 								<h3>Coupon Code</h3>
 								<p>Enter your coupon code if you have one</p>
@@ -91,50 +91,25 @@
 								</form>
 							</div>
 							<p><a href="checkout.html" class="btn btn-primary py-3 px-4">Apply Coupon</a></p>
-						</div>
-						<div class="col-lg-4 mt-5 cart-wrap ftco-animate">
-							<div class="cart-total mb-3">
-								<h3>Estimate shipping and tax</h3>
-								<p>Enter your destination to get a shipping estimate</p>
-								<form action="#" class="info">
-									<div class="form-group">
-										<label for="">Country</label>
-										<input type="text" class="form-control text-left px-3" placeholder="">
-									</div>
-									<div class="form-group">
-										<label for="country">State/Province</label>
-										<input type="text" class="form-control text-left px-3" placeholder="">
-									</div>
-									<div class="form-group">
-										<label for="country">Zip/Postal Code</label>
-										<input type="text" class="form-control text-left px-3" placeholder="">
-									</div>
-								</form>
-							</div>
-							<p><a href="checkout.html" class="btn btn-primary py-3 px-4">Estimate</a></p>
-						</div>
+						</div> -->
 						<div class="col-lg-4 mt-5 cart-wrap ftco-animate">
 							<div class="cart-total mb-3">
 								<h3>Cart Totals</h3>
 								<p class="d-flex">
 									<span>Subtotal</span>
-									<span>$<%= subtotal %> </span>
+									$<span id="total"><%= subtotal %> </span>
 								</p>
-								<p class="d-flex">
-									<span>Delivery</span>
-									<span>$0.00</span>
-								</p>
-								<p class="d-flex">
+								<!-- <p class="d-flex">
 									<span>Discount</span>
 									<span>$0.00</span>
 								</p>
 								<hr>
 								<p class="d-flex total-price">
 									<span>Total</span>
-									<span>$<%= subtotal %> </span>
-								</p>
+									<span>$subtotal - discount</span>
+								</p> -->
 							</div>
-							<p><a href="checkout.html" class="btn btn-primary py-3 px-4">Proceed to Checkout</a></p>
+							<p><a href="/checkout" class="btn btn-primary py-3 px-4">Proceed to Checkout</a></p>
 						</div>
 					</div>
 				</div>
