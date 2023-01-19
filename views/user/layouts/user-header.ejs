@@ -58,19 +58,15 @@
             <li class="nav-item"><a href="/orders" class="nav-link">Orders</a></li>
             <li class="nav-item" title="wishlist"><a href="/wishlist" class="nav-link">
                 <i class="bi bi-heart-fill"></i>
-                <% if(count.wish){ %>
-                  <span class="badge badge-pill badge-secondary" id="wishCount">
+                  <span class="badge badge-pill badge-primary" id="wishCount">
                     <%= count.wish %>
                   </span>
-                  <% } %>
               </a></li>
             <li class="nav-item cta cta-colored" title="cart"><a href="/cart" class="nav-link">
                 <i class="bi bi-cart-fill"></i>
-                <% if(count.cart){ %>
-                  <span class="badge badge-pill badge-secondary" id="cartCount">
+                  <span class="badge badge-pill badge-primary" id="cartCount">
                     <%= count.cart %>
                   </span>
-                  <% } %>
               </a></li>
             <% } %>
 

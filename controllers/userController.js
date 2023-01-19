@@ -304,7 +304,7 @@ const delFromWish = async (req, res, next) => {
         const userId = req.session.userId
         await WishlistModel.updateOne({ userId: userId }, { $pull: { wishItems: { _id: itemId } } })
             .then(() => {
-                res.json({ status: true })
+                res.json({ remove: true })
             }).catch((error) => {
                 next(error)
             })
@@ -449,10 +449,10 @@ const Count = async (req, res, next) => {
         const wish = await WishlistModel.findOne({ userId: userId })
         // ?? nullish operator
         if (cart) {
-            count.cart = (cart.cartItems.length ?? 0)
+            count.cart = cart.cartItems.length ?? 0
         }
         if (wish) {
-            count.wish = (wish.wishItems.length ?? 0)
+            count.wish = wish.wishItems.length ?? 0
         }
         next()
     } catch (error) {

@@ -38,7 +38,8 @@
 						        <td class="price"><%= item.product.srp %> </td>
 								<td>
 									<div class="mb-3">
-									<a href="/wishlist/move/<%= item._id %>" class="btn btn-success">Move to Cart</a>
+										<button class="btn btn-success px-3" style="color: white;"
+										onclick="moveToCart('<%= item._id %>','<%= item.product._id %>')">Move to Cart</button>
 									</div>
 									<div>
 									<a href="javascript:delWishItem('<%= item._id %>')">
