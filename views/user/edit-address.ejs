@@ -1,0 +1,84 @@
+<%-include('../user/layouts/user-header.ejs') %>
+
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="col-sm-10 col-lg-8 card o-hidden border-0 shadow-lg my-3">
+                <div class="p-3">
+                    <div class="text-center">
+                        <h1 class="h4 text-gray-900 my-3">Add New Address</h1>
+                    </div>
+                    <form action="/address/edit/<%= addr._id %> " class="user" method="POST">
+                        <div class="form-group row">
+                            <div class="col-sm-6 input-control">
+                                <label class="form-label">Full name*</label>
+                                <input type="text" class="form-control form-control-user" id="username" name="fullname"
+                                    required />
+                                <p class="valid_error"></p>
+                            </div>
+                            <div class="col-sm-6 input-control">
+                                <label class="form-label">Company/Shop*</label>
+                                <input type="text" class="form-control form-control-user" id="" name="company"
+                                    required />
+                                <p class="valid_error"></p>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-sm-6 input-control">
+                                <label class="form-label">Email*</label>
+                                <input type="email" class="form-control form-control-user" id="emailAddress"
+                                    name="email" required />
+                                <p class="valid_error"></p>
+                            </div>
+                            <div class="col-sm-6 input-control">
+                                <label class="form-label">Mobile*</label>
+                                <input type="tel" class="form-control form-control-user" id="" name="mobile"
+                                    pattern="[5-9]{1}[0-9]{9}" required />
+                                <p class="valid_error"></p>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-sm-6 input-control">
+                                <label class="form-label">Country*</label>
+                                <input type="text" class="form-control form-control-user" id="" name="country"
+                                    required />
+                                <p class="valid_error"></p>
+                            </div>
+                            <div class="col-sm-6 input-control">
+                                <label class="form-label">State*</label>
+                                <input type="text" class="form-control form-control-user" id="" name="state" required />
+                                <p class="valid_error"></p>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-sm-6 input-control">
+                                <label class="form-label">City/Town*</label>
+                                <input type="text" class="form-control form-control-user" id="" name="town" required />
+                                <p class="valid_error"></p>
+                            </div>
+                            <div class="col-sm-6 input-control">
+                                <label class="form-label">Postal Code/ZIP*</label>
+                                <input type="tel" class="form-control form-control-user" id="" name="zip"
+                                    pattern="[0-9]{4,7}" required />
+                                <p class="valid_error"></p>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-sm-12 input-control">
+                                <label class="form-label">Street Address*</label>
+                                <textarea placeholder="Building No/Name, Locality, Street, Post Office"
+                                    class="form-control" rows="3" id="" name="address" required></textarea>
+                            </div>
+                        </div>
+                        <div class="form-group row justify-content-center">
+                            <button type="submit" class="btn btn-primary btn-user px-5">
+                                Add Address
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <%-include('../user/layouts/user-footer.ejs') %>
+
+        <%-include('../user/layouts/user-script.ejs') %>

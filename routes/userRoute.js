@@ -17,6 +17,10 @@ router.get('/wishlist',isLogin.userLogin,controller.countItem,controller.wishlis
 router.get('/profile',isLogin.userLogin,controller.countItem,controller.profilePage);
 router.get('/cart',isLogin.userLogin,controller.countItem,controller.cartPage);
 router.get('/checkout',isLogin.userLogin,controller.countItem,controller.checkoutPage);
+router.get('/address/add',isLogin.userLogin,controller.countItem,controller.addressPage);
+router.get('/address/edit/:id',isLogin.userLogin,controller.countItem,controller.editaddressPage);
+
+router.get('/payment',isLogin.userLogin,controller.countItem,controller.paymentPage);
 
 router.get('/resendotp',controller.getOtp);
 router.get('/logout',controller.doLogout);
@@ -31,6 +35,7 @@ router.post('/register',controller.doSignup,controller.getOtp)
 router.post('/signin',controller.doLogin)
 router.post('/verify-user',controller.verifyUser)
 router.post('/cart/quantity',isLogin.userLogin,controller.changeItemQty);
+router.post('/address/add',isLogin.userLogin,controller.addAddress);
 
 
   

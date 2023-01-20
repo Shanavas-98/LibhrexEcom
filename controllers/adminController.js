@@ -16,7 +16,6 @@ let passErr = false;
 
 //const Brand = CategoryModel.brand;
 const loginPage = async (req, res, next) => {
-    console.log("<<login page rendering>>");
     try {
         if (!req.session.adminLogin) {
             res.render('admin/account-login', { title: "Admin Login", login: req.session, adminErr, passErr });
@@ -31,7 +30,6 @@ const loginPage = async (req, res, next) => {
 }
 
 const homePage = async (req, res, next) => {
-    console.log("<<homepage rendering>>");
     try {
         res.render('admin/home', { title: "Dashboard" })
     } catch (error) {
@@ -40,7 +38,6 @@ const homePage = async (req, res, next) => {
 }
 
 const profilePage = async (req, res, next) => {
-    console.log("<<profile page rendering>>");
     try {
         const admin = await AdminModel.findOne({ _id: req.session.adminId });
         res.render('admin/admin-profile', { title: "Profile", admin })
@@ -50,7 +47,6 @@ const profilePage = async (req, res, next) => {
 }
 
 const usersPage = async (req, res, next) => {
-    console.log("<<users page rendering>>");
     try {
         const Users = await UserModel.find();
         let index = 1;
@@ -61,7 +57,6 @@ const usersPage = async (req, res, next) => {
 }
 
 const categoriesPage = async (req, res, next) => {
-    console.log("<<categories page rendering>>");
     try {
         let index = 1;
         const Categories = await Category.find();
@@ -73,7 +68,6 @@ const categoriesPage = async (req, res, next) => {
 }
 
 const productsPage = async (req, res, next) => {
-    console.log("<<products page rendering>>");
     try {
         const Categories = await Category.find();
         const Subcategories = await Subcategory.find();
@@ -86,7 +80,6 @@ const productsPage = async (req, res, next) => {
 }
 
 const addProductPage = async (req, res, next) => {
-    console.log("<<add product page rendering>>");
     try {
         const Categories = await Category.find();
         const Subcategories = await Subcategory.find();
@@ -97,12 +90,9 @@ const addProductPage = async (req, res, next) => {
 }
 
 const editProductPage = async (req, res, next) => {
-    console.log("<<edit product page rendering>>");
     try {
-        const productId = ObjectId(req.params.id)
-        console.log(productId);
+        const productId = ObjectId(req.params.id);
         const Product = await ProductModel.findOne({ _id: productId });
-        console.log(Product);
         const Categories = await Category.find();
         const Subcategories = await Subcategory.find();
         return res.render('admin/edit-product', { title: "Products :: Edit Product", Product, Categories, Subcategories })
@@ -112,7 +102,6 @@ const editProductPage = async (req, res, next) => {
 }
 
 const addBannerPage = async (req, res, next) => {
-    console.log("<<add banner page rendering>>");
     try {
         const Banners = await BannerModel.find();
         res.render('admin/banners', { title: "Banners", Banners })
@@ -122,7 +111,6 @@ const addBannerPage = async (req, res, next) => {
 }
 
 const doLogin = async (req, res, next) => {
-    console.log("<<<do login work>>>", req.body);
     try {
         const { email, password } = req.body;
         const admin = await AdminModel.findOne({ email: email });
@@ -175,8 +163,7 @@ const blockUser = async (req, res, next) => {
 
 const viewUser = async (req, res, next) => {
     try {
-        const id = req.params.id
-        const user = await UserModel.findOne({ _id: id })
+        const user = await UserModel.findOne({ _id: req.params.id })
         return res.render('admin/user-detail', { title: "user details", user })
     } catch (error) {
         next(error)

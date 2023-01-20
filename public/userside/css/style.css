@@ -8866,7 +8866,7 @@ h1, h2, h3, h4, h5,
   padding: 16px 20px; }
 
 .ftco-cart button, .ftco-cart .form-control {
-  height: 54px !important;
+  height: 54px ;
   text-align: center;
   bordeR: 1px solid rgba(0, 0, 0, 0.05) !important;
   color: #000000 ;
