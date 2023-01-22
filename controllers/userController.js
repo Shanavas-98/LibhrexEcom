@@ -172,19 +172,25 @@ const addressPage = async (req, res, next) => {
 
 const editaddressPage = async (req, res, next) => {
     try {
-        const address = await UserModel.findOne(
+        const addrId = req.params.id
+        const user = await UserModel.findOne(
             {
                 $and: [
-                    { _id: req.params.userId },
-                    { "addresses._id": req.params.id }
+                    { _id: req.session.userId },
+                    { "addresses._id": addrId }
                 ]
-            })
-        console.log(address);
-        res.render('user/address', { title: "Address :: Edit", login: req.session, count })
+            },
+            {addresses:1});
+            const address = user.addresses
+            if(address){
+                res.render('user/edit-address', { title: "Address :: Edit", login: req.session, count, address, addrId })
+            }
     } catch (error) {
         next(error)
     }
 }
+
+
 
 const paymentPage = async (req, res, next) => {
     try {
@@ -517,22 +523,44 @@ const addAddress = async (req, res, next) => {
     }
 }
 
-// // Add New Address
-// const addNewAddress = async (data, userId) => {
-//     try {
-//         data.default = false;
-//         data.id = Date.now() + '-' + Math.round(Math.random() * 1E9);
+const updateAddress = async (req, res, next) => {
+    try {
+        console.log("update address",req.body);
+        await UserModel.updateOne(
+            {
+                _id:req.session.userId,
+                "addresses._id":req.params.id
+            },
+            {
+                $set:{"addresses.$":req.body}
+            })
+            .then(()=>{
+                res.redirect('/checkout')
+            })
+    } catch (error) {
+        next(error)
+    }
+}
 
-//         const user = await UserModel.findByIdAndUpdate(userId, {
-//             $push: { address: data }
-//         }, { new: true });
-
-//         return user;
-//     } catch (err) {
-//         throw new Error(err);
-//     }
-// }
-
+const deleteAddress = async (req, res, next) => {
+    try {
+        await UserModel.updateOne(
+            {
+                $and: [
+                    { _id: req.session.userId },
+                    { "addresses._id": req.params.id }
+                ]
+            },
+            {
+                $pull:{addresses: {_id: req.params.id}}
+            })
+            .then(()=>{
+                res.redirect('/checkout')
+            })
+    } catch (error) {
+        next(error)
+    }
+}
 
 module.exports = {
 
@@ -561,5 +589,7 @@ module.exports = {
     delFromCart,
     changeItemQty,
     countItem,
-    addAddress
+    addAddress,
+    updateAddress,
+    deleteAddress
 }
