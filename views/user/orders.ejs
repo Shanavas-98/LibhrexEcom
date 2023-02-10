@@ -1,0 +1,134 @@
+<%-include('../user/layouts/user-header.ejs')%>
+
+	<div class="container-fluid">
+		<div class="row no-gutters slider-text align-items-center justify-content-center">
+			<div class="col-md-9 ftco-animate text-center">
+				<h1 class="mb-0 bread">My Orders</h1>
+			</div>
+		</div>
+		<% if(orders){ %>
+			<section class="ftco-section ftco-cart">
+				<div class="container">
+					<div class="row">
+						<div class="col-md-12 ftco-animate">
+							<div class="cart-list">
+								<table class="table">
+									<thead class="thead-primary">
+										<tr class="text-center">
+											<th>Product</th>
+											<th>Product name</th>
+											<th>Price</th>
+											<th>Quantity</th>
+											<th>Total</th>
+											<th>Action</th>
+										</tr>
+									</thead>
+									<tbody>
+										<% orders.forEach((order)=>{ %>
+										<% order.orderItems.forEach((item)=>{ %>
+											<tr class="text-center">
+												<td class="image-prod">
+													<a href="/product/<%= item.product._id%>">
+													<div class="img"
+														style="background-image:url('/images/products/<%= item.product.image[0] %>');">
+													</div>
+													</a>
+												</td>
+
+												<td class="product-name">
+													<a href="/product/<%= item.product._id %>">
+													<h3>
+														<%= item.product.productName %>
+													</h3>
+													</a>
+													<p>
+														<%= item.product.description %>
+													</p>
+													
+												</td>
+												<td class="price">
+													$<%= item.product.srp %>
+												</td>
+
+												<td class="quantity">
+													<div style="height: 30px;">
+													<button style="width: 30px; height: 30px;" onclick="changeItemQty('<%= item._id %>','<%= item.product._id %>',-1)">-</button>
+													<span class="px-3" id="itemCount<%= item._id %>"><%=item.quantity%></span>
+													<button style="width: 30px; height: 30px;" onclick="changeItemQty('<%= item._id %>','<%= item.product._id %>',1)">+</button>
+													</div>
+												</td>
+
+												<td class="total">$<span id="itemPrice<%= item._id %>"><%= item.price %></span></td>
+												<td>
+													<div class="mb-3">
+														<button class="btn btn-secondary" style="color: white;"
+														onclick="moveToWish('<%= item._id %>','<%= item.product._id %>')">Move to Wishlist</button>
+													</div>
+													<div>
+														<a href="javascript:delCartItem('<%= item._id %>')">
+															<i class="bi bi-trash-fill"
+																style="color: #cf0000; font-size: large;"
+																title="delete"></i></a>
+													</div>
+												</td>
+											</tr>
+											<% }) %> 
+											<% }) %>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+					<div class="row justify-content-end">
+						<!-- <div class="col-lg-4 mt-5 cart-wrap ftco-animate">
+							<div class="cart-total mb-3">
+								<h3>Coupon Code</h3>
+								<p>Enter your coupon code if you have one</p>
+								<form action="#" class="info">
+									<div class="form-group">
+										<label for="">Coupon code</label>
+										<input type="text" class="form-control text-left px-3" placeholder="">
+									</div>
+								</form>
+							</div>
+							<p><a href="checkout.html" class="btn btn-primary py-3 px-4">Apply Coupon</a></p>
+						</div> -->
+						<div class="col-lg-4 mt-5 cart-wrap ftco-animate">
+							<div class="cart-total mb-3">
+								<h2>Cart Totals</h2>
+								<p class="d-flex" style="font-size: large;">
+									<span>Subtotal</span>
+									$<span id="total"><%= subtotal %> </span>
+								</p>
+								<!-- <p class="d-flex">
+									<span>Discount</span>
+									<span>$0.00</span>
+								</p>
+								<hr>
+								<p class="d-flex total-price">
+									<span>Total</span>
+									<span>$subtotal - discount</span>
+								</p> -->
+							</div>
+							<p><a href="/checkout" class="btn btn-primary py-3 px-4">Proceed to Checkout</a></p>
+						</div>
+					</div>
+				</div>
+			</section>
+			<% } else { %>
+				<section class="vh-100">
+					<div></div>
+					<div class="row justify-content-center">
+						<h2>No Orders!!!</h2>
+					</div>
+					<div class="row justify-content-center">
+						<p><a href="/shop" class="btn btn-primary">Shop Now</a></p>
+					</div>
+				</section>
+			<% } %>
+	</div>
+
+
+	<%-include('../user/layouts/user-footer.ejs') %>
+
+		<%-include('../user/layouts/user-script.ejs')%>

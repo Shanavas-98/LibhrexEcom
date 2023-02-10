@@ -10,10 +10,12 @@
 
 	<section class="ftco-section">
 		<div class="container-fluid">
+			<p class="ml-5"><a href="/address/add" class="btn btn-primary py-3 px-4 ">Add new Address</a></p>
 			<div class="row justify-content-center mx-md-3">
+				<form class="row" action="/place-order" id="checkout-form" method="post">
 				<div class="col-md-7 col-lg-8">
 					<div class="row">
-						<h3 class="mb-4 billing-heading">Billing Address</h3>
+						<h3 class="mb-4 billing-heading">Shipping Address</h3>
 						<div class="col-md-12 d-flex mb-5">
 							<div class="cart-detail cart-total p-3 overflow-auto"
 							style="max-width: 800px; max-height: 300px;">
@@ -40,14 +42,14 @@
 												<i class="bi bi-trash-fill" style="color: #cf0000; font-size: large;"
 													title="delete"></i>
 											</a>
-											<input type="radio" id="" name="addressId" value="<%= addr._id %>">
+											<input type="radio" id="" name="shipAddrId" value="<%= addr._id %>" required>
 										</div>
 									</div>
 									<% }) %>
 							</div>
 						</div>
 
-						<h3 class="mb-4 billing-heading">Shipping Address</h3>
+						<h3 class="mb-4 billing-heading">Billing Address</h3>
 
 						<div class="col-md-12 d-flex mb-3 ">
 							<div class="cart-detail cart-total p-3 p-md-4 overflow-auto" 
@@ -75,24 +77,23 @@
 												<i class="bi bi-trash-fill" style="color: #cf0000; font-size: large;"
 													title="delete"></i>
 											</a>
-											<input type="radio" id="" name="addressId" value="<%= addr._id %>">
+											<input type="radio" id="" name="billAddrId" value="<%= addr._id %>" required>
 										</div>
 									</div>
 									<% }) %>
 							</div>
 						</div>
-						<p class="ml-5"><a href="/address/add" class="btn btn-primary py-3 px-4 ">Add new Address</a></p>
 					</div>
 				</div>
 				<div class="col-md-5 col-lg-4">
 					<div class="row mt-3 pt-3">
-						<div class="col-md-12 d-flex mb-5">
+						<div class="col-12 d-flex mb-5">
 							<div class="cart-detail cart-total p-3 p-md-4">
 								<h3 class="billing-heading mb-4">Coupon</h3>
 								
 							</div>
 						</div>
-						<div class="col-md-12 d-flex mb-3">
+						<div class="col-12 d-flex mb-3">
 							<div class="cart-detail cart-total p-3 p-md-4">
 								<h3 class="billing-heading mb-4">Cart Total</h3>
 								<p class="d-flex">
@@ -114,9 +115,41 @@
 								</p>
 							</div>
 						</div>
-						<p class="ml-5"><a href="/payment" class="btn btn-primary py-3 px-4">Proceed to Payment</a></p>
+						<div class="col-12 d-flex flex-column mb-3">
+							<h3 class="billing-heading mb-4">Payment Method</h3>
+							<div class="form-group">
+								<div class="col-md-12">
+									<div class="radio">
+										<label><input type="radio" name="payment" class="mr-2" value="upi" required>UPI</label>
+									</div>
+								</div>
+							</div>
+							<div class="form-group">
+								<div class="col-md-12">
+									<div class="radio">
+										<label><input type="radio" name="payment" class="mr-2" value="cheque" required>Debit/Credit</label>
+									</div>
+								</div>
+							</div>
+							<div class="form-group">
+								<div class="col-md-12">
+									<div class="radio">
+										<label><input type="radio" name="payment" class="mr-2" value="bank" required>Net Banking</label>
+									</div>
+								</div>
+							</div>
+							<div class="form-group">
+								<div class="col-md-12">
+									<div class="radio">
+										<label><input type="radio" name="payment" class="mr-2" value="cod" required>Cash On Delivery</label>
+									</div>
+								</div>
+							</div>
+						</div>
 					</div>
-				</div> <!-- .col-md-8 -->
+				<button type="submit" class="btn btn-primary py-3 px-4">Place Order</button>
+				</div>
+			</form>
 			</div>
 		</div>
 	</section> <!-- .section -->

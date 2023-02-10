@@ -66,18 +66,18 @@ function changeItemQty(itemId, prodId, count) {
 			item: itemId,
 			product: prodId,
 			change: parseInt(count),
-			qty: $('#itemCount'+itemId).html()
+			qty: $('#itemCount' + itemId).html()
 		},
 		method: 'post',
 		success: (response) => {
 			if (response.status) {
-				let itemCount = $('#itemCount'+itemId).html()
+				let itemCount = $('#itemCount' + itemId).html()
 				itemCount = parseInt(itemCount) + parseInt(count)
-				$('#itemCount'+itemId).html(itemCount)
+				$('#itemCount' + itemId).html(itemCount)
 
-				let itemPrice = $('#itemPrice'+itemId).html()
+				let itemPrice = $('#itemPrice' + itemId).html()
 				itemPrice = parseInt(itemPrice) + parseInt(response.price)
-				$('#itemPrice'+itemId).html(itemPrice)
+				$('#itemPrice' + itemId).html(itemPrice)
 
 				$('#total').html(response.total)
 			}
@@ -97,3 +97,18 @@ function moveToWish(itemId, productId) {
 	delCartItem(itemId)
 	addToWish(productId)
 }
+
+//place order
+$('#checkout-form').submit((e) => {
+	e.preventDefault()
+	$.ajax({
+		url: '/place-order',
+		data: $('#checkout-form').serialize(),
+		method: 'post',
+		success: (response) => {
+			if(response.status){
+				location.href='/order-success'
+			}
+		}
+	})
+})

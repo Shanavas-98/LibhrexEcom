@@ -19,7 +19,8 @@ router.get('/cart',isLogin.userLogin,controller.countItem,controller.cartPage);
 router.get('/checkout',isLogin.userLogin,controller.countItem,controller.checkoutPage);
 router.get('/address/add',isLogin.userLogin,controller.countItem,controller.addressPage);
 router.get('/address/edit/:id',isLogin.userLogin,controller.countItem,controller.editaddressPage);
-router.get('/payment',isLogin.userLogin,controller.countItem,controller.paymentPage);
+router.get('/order-success',isLogin.userLogin,controller.countItem,controller.orderSuccess);
+//router.get('/payment',isLogin.userLogin,controller.countItem,controller.paymentPage);
 
 
 router.get('/resendotp',controller.getOtp);
@@ -38,6 +39,8 @@ router.post('/verify-user',controller.verifyUser)
 router.post('/cart/quantity',isLogin.userLogin,controller.changeItemQty);
 router.post('/address/add',isLogin.userLogin,controller.addAddress);
 router.post('/address/update/:id',isLogin.userLogin,controller.updateAddress);
+router.post('/place-order',isLogin.userLogin,controller.placeOrder);
+
 
 
 

@@ -1,9 +1,6 @@
-
+require('../config/connection');
 const bcrypt = require('bcrypt');
-const db = require('../config/connection');
-const session = require('express-session');
 const mongoose = require('mongoose');
-
 const sendOtp = require("../utils/nodemailer");
 
 const UserModel = require("../models/userModel");
@@ -11,9 +8,8 @@ const ProductModel = require("../models/productModel");
 const CategoryModel = require("../models/categoryModel");
 const CartModel = require("../models/cartModel");
 const WishlistModel = require("../models/wishlistModel");
-const userModel = require('../models/userModel');
-
-
+const OrderModel = require("../models/orderModel");
+const { request } = require('express');
 
 const Category = CategoryModel.category;
 const Subcategory = CategoryModel.subcategory;
@@ -93,7 +89,12 @@ const productPage = async (req, res, next) => {
 
 const ordersPage = async (req, res, next) => {
     try {
-        res.render('user/orders', { title: "Orders", login: req.session, count })
+        const data = await OrderModel.findOne({userId: req.session.userId})
+            .populate('data.orders.orderItem.product')
+            .lean()
+        const orders = data.orders
+        console.log(orders);
+        res.render('user/orders', { title: "Orders", login: req.session, count, orders})
     } catch (error) {
         next(error)
     }
@@ -104,7 +105,7 @@ const profilePage = async (req, res, next) => {
     try {
         console.log(req.session.userId);
         const user = await UserModel.findOne({ _id: req.session.userId });
-        res.render('user/user-profile', { title: "Profile", login: req.session, user, count })
+        res.render('user/profile', { title: "Profile", login: req.session, user, count })
     } catch (error) {
         next(error)
     }
@@ -180,17 +181,23 @@ const editaddressPage = async (req, res, next) => {
                     { "addresses._id": addrId }
                 ]
             },
-            {addresses:1});
-            const address = user.addresses
-            if(address){
-                res.render('user/edit-address', { title: "Address :: Edit", login: req.session, count, address, addrId })
-            }
+            { addresses: 1 });
+        const address = user.addresses
+        if (address) {
+            res.render('user/edit-address', { title: "Address :: Edit", login: req.session, count, address, addrId })
+        }
     } catch (error) {
         next(error)
     }
 }
 
-
+const orderSuccess = async(req,res,next)=>{
+    try{
+        res.render('user/order-success',{ title: "Checkout", login: req.session, count})
+    }catch(error){
+        next(error)
+    }
+}
 
 const paymentPage = async (req, res, next) => {
     try {
@@ -496,9 +503,13 @@ const countItem = async (req, res, next) => {
         // ?? nullish operator
         if (cart) {
             count.cart = cart.cartItems.length ?? 0
+        }else{
+            count.cart = 0
         }
         if (wish) {
             count.wish = wish.wishItems.length ?? 0
+        }else{
+            count.wish = 0
         }
         next()
     } catch (error) {
@@ -509,7 +520,7 @@ const countItem = async (req, res, next) => {
 const addAddress = async (req, res, next) => {
     try {
         const userId = req.session.userId
-        await userModel.updateOne(
+        await UserModel.updateOne(
             { _id: userId },
             {
                 $push:
@@ -525,16 +536,16 @@ const addAddress = async (req, res, next) => {
 
 const updateAddress = async (req, res, next) => {
     try {
-        console.log("update address",req.body);
+        console.log("update address", req.body);
         await UserModel.updateOne(
             {
-                _id:req.session.userId,
-                "addresses._id":req.params.id
+                _id: req.session.userId,
+                "addresses._id": req.params.id
             },
             {
-                $set:{"addresses.$":req.body}
+                $set: { "addresses.$": req.body }
             })
-            .then(()=>{
+            .then(() => {
                 res.redirect('/checkout')
             })
     } catch (error) {
@@ -552,11 +563,74 @@ const deleteAddress = async (req, res, next) => {
                 ]
             },
             {
-                $pull:{addresses: {_id: req.params.id}}
+                $pull: { addresses: { _id: req.params.id } }
             })
-            .then(()=>{
+            .then(() => {
                 res.redirect('/checkout')
             })
+    } catch (error) {
+        next(error)
+    }
+}
+
+const placeOrder = async (req, res, next) => {
+    try {
+        const Cart = await CartModel.findOne({ userId: req.session.userId })
+            .populate('cartItems.product',{_id:1,srp:1})
+            .lean();
+        const subtotal = Cart.cartItems.map(item => item.price).reduce((acc, val) => acc + val, 0);
+        // const Items = Cart.cartItems;
+        const Items = Cart.cartItems.map(item => {
+            const container = {
+                product: item.product._id,
+                price: item.product.srp,
+                qty: item.quantity,
+                total: item.price
+            }
+            return container
+        })
+        console.log(Items);
+        const userOrder = await OrderModel.findOne({ userId: req.session.userId });
+        if (userOrder) {
+            await OrderModel.updateOne(
+                { userId: req.session.userId },
+                {
+                    $push: {
+                        orders:
+                        {
+                            shipAddress: req.body.shipAddrId,
+                            billAddress: req.body.billAddrId,
+                            "payment.method": req.body.payment,
+                            orderStatus: req.body.payment == 'cod' ? "placed" : "pending",
+                            orderItems:Items,
+                            subtotal: subtotal,
+                            "deliveryStatus.ordered.state": true
+                        }
+                    }
+                }).then(async() => {
+                    await CartModel.deleteOne({ userId: req.session.userId })
+                    res.json({status:true});
+                }).catch((error) => {
+                    next(error)
+                })
+        } else {
+            await new OrderModel({
+                userId: req.session.userId,
+                orders: [{
+                    shipAddress: req.body.shipAddrId,
+                    billAddress: req.body.billAddrId,
+                    "payment.method": req.body.payment,
+                    orderStatus: req.body.payment === 'cod' ? "placed" : "pending",
+                    orderItems:Items,
+                    subtotal: subtotal,
+                    "deliveryStatus.ordered.state": true
+                }]
+            }).save()
+                .then(async() => {
+                    await CartModel.deleteOne({ userId: req.session.userId })
+                    res.json({status:true});
+                })
+        }
     } catch (error) {
         next(error)
     }
@@ -577,6 +651,7 @@ module.exports = {
     checkoutPage,
     addressPage,
     editaddressPage,
+    orderSuccess,
     paymentPage,
     getOtp,
     verifyUser,
@@ -591,5 +666,6 @@ module.exports = {
     countItem,
     addAddress,
     updateAddress,
-    deleteAddress
+    deleteAddress,
+    placeOrder
 }
