@@ -8,12 +8,12 @@ const orderSchema = mongoose.Schema({
     },
     orders: [{
         shipAddress: {
-            type: ObjectId,
-            ref: 'User.addresses'
+            type: Object,
+            required: true
         },
         billAddress: {
-            type: ObjectId,
-            ref: 'User.addresses'
+            type: Object,
+            required: true
         },
         payment: {
             id: String,

@@ -20,6 +20,7 @@ router.get('/checkout',isLogin.userLogin,controller.countItem,controller.checkou
 router.get('/address/add',isLogin.userLogin,controller.countItem,controller.addressPage);
 router.get('/address/edit/:id',isLogin.userLogin,controller.countItem,controller.editaddressPage);
 router.get('/order-success',isLogin.userLogin,controller.countItem,controller.orderSuccess);
+router.get('/order-details/:id',isLogin.userLogin,controller.countItem,controller.orderDetails);
 //router.get('/payment',isLogin.userLogin,controller.countItem,controller.paymentPage);
 
 
@@ -30,6 +31,9 @@ router.get('/cart/delete/:id',isLogin.userLogin,controller.delFromCart);
 router.get('/wishlist/add/:id',isLogin.userLogin,controller.addToWish);
 router.get('/wishlist/delete/:id',isLogin.userLogin,controller.delFromWish);
 router.get('/address/delete/:id',isLogin.userLogin,controller.deleteAddress);
+router.get('/order-cancel/:id',isLogin.userLogin,controller.cancelOrder);
+
+
 
 
 //POST Methods

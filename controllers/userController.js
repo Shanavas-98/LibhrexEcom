@@ -9,7 +9,6 @@ const CategoryModel = require("../models/categoryModel");
 const CartModel = require("../models/cartModel");
 const WishlistModel = require("../models/wishlistModel");
 const OrderModel = require("../models/orderModel");
-const { request } = require('express');
 
 const Category = CategoryModel.category;
 const Subcategory = CategoryModel.subcategory;
@@ -87,14 +86,46 @@ const productPage = async (req, res, next) => {
     }
 }
 
+const orderSuccess = async (req, res, next) => {
+    try {
+        res.render('user/order-success', { title: "Checkout", login: req.session, count })
+    } catch (error) {
+        next(error)
+    }
+}
+
 const ordersPage = async (req, res, next) => {
     try {
-        const data = await OrderModel.findOne({userId: req.session.userId})
-            .populate('data.orders.orderItem.product')
+        const data = await OrderModel.findOne({ userId: req.session.userId })
+            .populate('orders.orderItems.product')
             .lean()
         const orders = data.orders
-        console.log(orders);
-        res.render('user/orders', { title: "Orders", login: req.session, count, orders})
+        res.render('user/orders', { title: "Orders", login: req.session, count, orders })
+    } catch (error) {
+        next(error)
+    }
+}
+
+const orderDetails = async (req, res, next) => {
+    try {
+        const data = await OrderModel.aggregate([
+            {$match:{userId:ObjectId(req.session.userId)}},
+            { $unwind: '$orders' },
+            { $unwind: '$orders.orderItems' },
+           {$project:{
+            "orders.orderItems":1
+           }},
+            {$lookup:{
+                 from:"products",
+                 localField:"orders.orderItems.product",
+                 foreignField:"_id",
+                 as:"orderDetails"
+            }},
+            {$project:{
+                orderDetails:1
+            }}
+        ])
+        console.log(data[0].orderDetails[0]);
     } catch (error) {
         next(error)
     }
@@ -187,14 +218,6 @@ const editaddressPage = async (req, res, next) => {
             res.render('user/edit-address', { title: "Address :: Edit", login: req.session, count, address, addrId })
         }
     } catch (error) {
-        next(error)
-    }
-}
-
-const orderSuccess = async(req,res,next)=>{
-    try{
-        res.render('user/order-success',{ title: "Checkout", login: req.session, count})
-    }catch(error){
         next(error)
     }
 }
@@ -503,12 +526,12 @@ const countItem = async (req, res, next) => {
         // ?? nullish operator
         if (cart) {
             count.cart = cart.cartItems.length ?? 0
-        }else{
+        } else {
             count.cart = 0
         }
         if (wish) {
             count.wish = wish.wishItems.length ?? 0
-        }else{
+        } else {
             count.wish = 0
         }
         next()
@@ -575,8 +598,11 @@ const deleteAddress = async (req, res, next) => {
 
 const placeOrder = async (req, res, next) => {
     try {
+        const user = await UserModel.findOne({ _id: req.session.userId })
+        const shipAddr = user.addresses.id(req.body.shipAddrId)
+        const billAddr = user.addresses.id(req.body.billAddrId)
         const Cart = await CartModel.findOne({ userId: req.session.userId })
-            .populate('cartItems.product',{_id:1,srp:1})
+            .populate('cartItems.product', { _id: 1, srp: 1 })
             .lean();
         const subtotal = Cart.cartItems.map(item => item.price).reduce((acc, val) => acc + val, 0);
         // const Items = Cart.cartItems;
@@ -589,7 +615,6 @@ const placeOrder = async (req, res, next) => {
             }
             return container
         })
-        console.log(Items);
         const userOrder = await OrderModel.findOne({ userId: req.session.userId });
         if (userOrder) {
             await OrderModel.updateOne(
@@ -598,18 +623,18 @@ const placeOrder = async (req, res, next) => {
                     $push: {
                         orders:
                         {
-                            shipAddress: req.body.shipAddrId,
-                            billAddress: req.body.billAddrId,
+                            shipAddress: shipAddr,
+                            billAddress: billAddr,
                             "payment.method": req.body.payment,
                             orderStatus: req.body.payment == 'cod' ? "placed" : "pending",
-                            orderItems:Items,
+                            orderItems: Items,
                             subtotal: subtotal,
                             "deliveryStatus.ordered.state": true
                         }
                     }
-                }).then(async() => {
+                }).then(async () => {
                     await CartModel.deleteOne({ userId: req.session.userId })
-                    res.json({status:true});
+                    res.json({ status: true });
                 }).catch((error) => {
                     next(error)
                 })
@@ -617,20 +642,42 @@ const placeOrder = async (req, res, next) => {
             await new OrderModel({
                 userId: req.session.userId,
                 orders: [{
-                    shipAddress: req.body.shipAddrId,
-                    billAddress: req.body.billAddrId,
+                    shipAddress: shipAddr,
+                    billAddress: billAddr,
                     "payment.method": req.body.payment,
                     orderStatus: req.body.payment === 'cod' ? "placed" : "pending",
-                    orderItems:Items,
+                    orderItems: Items,
                     subtotal: subtotal,
                     "deliveryStatus.ordered.state": true
                 }]
             }).save()
-                .then(async() => {
+                .then(async () => {
                     await CartModel.deleteOne({ userId: req.session.userId })
-                    res.json({status:true});
+                    res.json({ status: true });
                 })
         }
+    } catch (error) {
+        next(error)
+    }
+}
+
+const cancelOrder = async (req, res, next) => {
+    try {
+        await OrderModel.updateOne(
+            {
+                $and:
+                    [{ userId: req.session.userId },
+                    {
+                        orders:
+                            { $elemMatch: { _id: req.params.id } }
+                    }]
+            },
+            {
+                $set: { "orders.$.deliveryStatus.cancelled.state": true }
+            }
+        ).then(() => {
+            res.json({ cancel: true })
+        })
     } catch (error) {
         next(error)
     }
@@ -667,5 +714,7 @@ module.exports = {
     addAddress,
     updateAddress,
     deleteAddress,
-    placeOrder
+    placeOrder,
+    orderDetails,
+    cancelOrder
 }

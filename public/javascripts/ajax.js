@@ -112,3 +112,17 @@ $('#checkout-form').submit((e) => {
 		}
 	})
 })
+
+//cancel order
+function cancelOrder(orderId) {
+	$.ajax({
+		url: '/order-cancel/' + orderId,
+		method: 'get',
+		success: (response) => {
+			if (response.cancel) {
+				$('#orderStatus').html('Cancelled')
+				// location.reload()
+			}
+		}
+	})
+}
