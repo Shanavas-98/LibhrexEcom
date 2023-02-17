@@ -21,8 +21,9 @@ router.get('/address/add',isLogin.userLogin,controller.countItem,controller.addr
 router.get('/address/edit/:id',isLogin.userLogin,controller.countItem,controller.editaddressPage);
 router.get('/order-success',isLogin.userLogin,controller.countItem,controller.orderSuccess);
 router.get('/order-details/:id',isLogin.userLogin,controller.countItem,controller.orderDetails);
-//router.get('/payment',isLogin.userLogin,controller.countItem,controller.paymentPage);
-
+router.get("/payment",isLogin.userLogin,controller.paymentPage);
+router.get("/payment-success/:orderId",isLogin.userLogin,controller.paymentSuccess);
+router.get("/payment-cancel/:orderId",isLogin.userLogin,controller.paymentCancel);
 
 router.get('/resendotp',controller.getOtp);
 router.get('/logout',controller.doLogout);
@@ -34,8 +35,6 @@ router.get('/address/delete/:id',isLogin.userLogin,controller.deleteAddress);
 router.get('/order-cancel/:id',isLogin.userLogin,controller.cancelOrder);
 
 
-
-
 //POST Methods
 router.post('/register',controller.doSignup,controller.getOtp)
 router.post('/signin',controller.doLogin)
@@ -44,9 +43,6 @@ router.post('/cart/quantity',isLogin.userLogin,controller.changeItemQty);
 router.post('/address/add',isLogin.userLogin,controller.addAddress);
 router.post('/address/update/:id',isLogin.userLogin,controller.updateAddress);
 router.post('/place-order',isLogin.userLogin,controller.placeOrder);
-
-
-
-
+router.post('/checkout-session/:orderId',isLogin.userLogin,controller.checkoutSession)
   
 module.exports = router;

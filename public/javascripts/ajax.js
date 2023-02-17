@@ -105,13 +105,30 @@ $('#checkout-form').submit((e) => {
 		url: '/place-order',
 		data: $('#checkout-form').serialize(),
 		method: 'post',
-		success: (response) => {
-			if(response.status){
-				location.href='/order-success'
+		success: (res) => {
+			if (res.status) {
+				location.href = '/order-success'
+			} else {
+				onlinePayment(res.items,res.orderId)
 			}
 		}
 	})
 })
+
+//online payment
+function onlinePayment(items,orderId){
+	$.ajax({
+		url:'/checkout-session/'+orderId,
+		headers:{
+			'Content-Type': 'application/json'
+		},
+		data:JSON.stringify(items),
+		method:'POST',
+		success:(res)=>{
+			location.href = res.url
+		}
+	})
+}
 
 //cancel order
 function cancelOrder(orderId) {
@@ -120,7 +137,7 @@ function cancelOrder(orderId) {
 		method: 'get',
 		success: (response) => {
 			if (response.cancel) {
-				$('#orderStatus').html('Cancelled')
+				$('#orderStatus' + orderId).html('Cancelled')
 				// location.reload()
 			}
 		}

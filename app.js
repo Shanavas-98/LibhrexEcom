@@ -9,7 +9,6 @@ const file = require('./utils/multer')
 require('dotenv').config()
 
 
-
 //routes setup
 let adminRoute = require('./routes/adminRoute');
 let userRoute = require('./routes/userRoute');

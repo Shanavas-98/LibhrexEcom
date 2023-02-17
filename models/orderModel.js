@@ -1,83 +1,76 @@
 const mongoose = require('mongoose');
-const ObjectId = mongoose.Types.ObjectId;
+const ObjectId = mongoose.Schema.Types.ObjectId;
 
 const orderSchema = mongoose.Schema({
-    userId: {
+    user: {
         type: ObjectId,
         ref: 'User'
     },
-    orders: [{
-        shipAddress: {
-            type: Object,
-            required: true
+    shipAddress: {
+        type: Object,
+        required: true
+    },
+    billAddress: {
+        type: Object,
+        required: true
+    },
+    payment: {
+        id: String,
+        method: { type: String, required: true },
+        status: { type: String, default: "pending" }
+    },
+    orderItems: [{
+        product: {
+            type: ObjectId,
+            ref: 'Product'
         },
-        billAddress: {
-            type: Object,
-            required: true
-        },
-        payment: {
-            id: String,
-            method: { type: String, required: true },
-            status: { type: String, default: "pending" }
-        },
-        orderItems: [{
-            product: {
-                type: ObjectId,
-                ref: 'Product'
-            },
-            price: {
-                type: Number,
-                default: 0
-            },
-            qty: {
-                type: Number,
-                default: 1
-            },
-            total: {
-                type: Number,
-                default: 0
-            }
-        }],
-        orderStatus: String,
-        subtotal: {
+        price: {
             type: Number,
             default: 0
         },
-        coupon: {
-            name: { type: String },
-            code: { type: String },
-            discount: { type: Number },
+        qty: {
+            type: Number,
+            default: 1
         },
-        discount_amount: Number,
-        grand_total: Number,
-        deliveryStatus: {
-            ordered: {
-                state: { type: Boolean, default: false },
-                date: Date
-            },
-            shipped: {
-                state: { type: Boolean, default: false },
-                date: Date
-            },
-            out_for_delivery: {
-                state: { type: Boolean, default: false },
-                date: Date
-            },
-            delivered: {
-                state: { type: Boolean, default: false },
-                date: Date
-            },
-            cancelled: {
-                state: { type: Boolean, default: false },
-                date: Date
-            }
-        },
-        orderDate: {
-            type: Date,
-            default: Date.now()
+        total: {
+            type: Number,
+            default: 0
         }
-    }]
-
+    }],
+    subtotal: {
+        type: Number,
+        default: 0
+    },
+    coupon:Object,
+    discount: Number,
+    grand_total: Number,
+    orderStatus: String,
+    orderDate: {
+        type: Date,
+        default: Date.now()
+    },
+    deliveryStatus: {
+        ordered: {
+            state: { type: Boolean, default: false },
+            date: Date
+        },
+        shipped: {
+            state: { type: Boolean, default: false },
+            date: Date
+        },
+        out_for_delivery: {
+            state: { type: Boolean, default: false },
+            date: Date
+        },
+        delivered: {
+            state: { type: Boolean, default: false },
+            date: Date
+        },
+        cancelled: {
+            state: { type: Boolean, default: false },
+            date: Date
+        }
+    }
 });
 
 module.exports = mongoose.model('Order', orderSchema);

@@ -16,13 +16,23 @@ router.get('/logout',controller.doLogout);
 router.get('/products/flag/:id',isLogin.adminLogin,controller.flagProduct);
 router.get('/products/details/:id',isLogin.adminLogin,controller.editProductPage);
 router.get('/categories',isLogin.adminLogin,controller.categoriesPage);
+router.get('/orders',isLogin.adminLogin,controller.ordersPage);
+router.get('/order-details/:id',isLogin.adminLogin,controller.orderDetails);
 
 router.get('/users',isLogin.adminLogin,controller.usersPage);
 router.get('/users/block/:id',isLogin.adminLogin,controller.blockUser);
-router.get('/users/details/:id',isLogin.adminLogin,controller.viewUser);
+router.get('/user-details/:id',isLogin.adminLogin,controller.viewUser);
 router.get('/categories/edit/:id',isLogin.adminLogin,controller.editCategory);
 router.get('/categories/flag/:id',isLogin.adminLogin,controller.flagCategory);
 router.get('/categories/delete/:id',isLogin.adminLogin,controller.deleteCategory);
+router.get('/order-ship/:id',isLogin.adminLogin,controller.orderShip);
+router.get('/order-delivery/:id',isLogin.adminLogin,controller.orderDelivery);
+router.get('/order-delivered/:id',isLogin.adminLogin,controller.orderDelivered);
+router.get('/order-cancel/:id',isLogin.adminLogin,controller.orderCancel);
+
+
+
+
 
 
 

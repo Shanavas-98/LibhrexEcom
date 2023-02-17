@@ -48,12 +48,37 @@
                             <p><b><a href="tel:<%= user.mobile %>"><%= user.mobile %></a></b></p>
                         </div> <!--  col.// -->
                         <div class="col-sm-6 col-lg-4 col-xl-3">
-                            <h6>Address</h6>
-                            <p>
-                                Country: California <br>
-                                Address: Ranchview Dr. Richardson <br>
-                                Postal code: 62639
-                            </p>
+                            
+                                <h6>Addresses</h6>
+                                <div class="cart-detail cart-total p-3 overflow-auto"
+                                style="max-width: 800px; max-height: 300px;">
+                                    <% user.addresses.forEach((addr)=>{ %>
+                                        <div class="row border-bottom p-3">
+                                            <div class="col-sm-9">
+                                                <p>
+                                                    <b>
+                                                        <%= addr.fullname %>,<%= addr.company %>
+                                                    </b><br>
+                                                    <b>
+                                                        <%= addr.mobile %>,<%= addr.email %>
+                                                    </b><br>
+                                                    <%= addr.address %>,<%= addr.zip %> <br>
+                                                    <%= addr.town %>,<%= addr.state %>,<%= addr.country %> <br>
+                                                </p>
+                                            </div>
+                                            <div class="col-sm-3 d-flex justify-content-around align-items-center">
+                                                <a href="/address/edit/<%= addr._id %>">
+                                                    <i class="bi bi-pencil-square" style="color: #0d6efd; font-size: large;"
+                                                        title="edit"></i>
+                                                </a>
+                                                <a href="/address/delete/<%= addr._id %>">
+                                                    <i class="bi bi-trash-fill" style="color: #cf0000; font-size: large;"
+                                                        title="delete"></i>
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <% }) %>
+                                </div>
                         </div> <!--  col.// -->
                          <!--  col.// -->
                     </div> <!--  row.// -->

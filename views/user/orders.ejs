@@ -15,68 +15,58 @@
 								<table class="table">
 									<thead class="thead-primary">
 										<tr class="text-center">
-											<th>Product</th>
-											<th>Product name</th>
-											<th>Price</th>
-											<th>Quantity</th>
-											<th>Total</th>
+											<th>Date</th>
+											<th>Products</th>
+											<th>Subtotal</th>
+											<th>Status</th>
+											<th>Action</th>
 										</tr>
 									</thead>
 									<tbody>
 										<% orders.forEach((order)=>{ %>
-										<% order.orderItems.forEach((item)=>{ %>
 											<tr class="text-center">
 												<td class="image-prod">
-													<a href="/product/<%= item.product._id%>">
-													<div class="img"
-														style="background-image:url('/images/products/<%= item.product.image[0] %>');">
-													</div>
-													</a>
+													<% let isoDate = new Date(order.orderDate); %>
+													<% let date = `${isoDate.getDate()}-${isoDate.getMonth()+1}-${isoDate.getFullYear()}`; %>
+													<%= date %>
 												</td>
-
 												<td class="product-name">
+												<% order.orderItems.forEach((item)=>{ %>
+
 													<a href="/product/<%= item.product._id %>">
 													<h3>
 														<%= item.product.productName %>
 													</h3>
-													</a>
+													</a><br>
+												<% }) %>
 												</td>
-												<td class="price">
-													$<%= item.price %>
-												</td>
-
-												<td class="quantity">
-													<%= item.qty %>
-												</td>
-
-												<td class="total">$<%= item.total %></td>
+												<td class="total">$<%= order.subtotal %></td>
+												<td id="orderStatus<%= order._id %>">
+												<% if(order.deliveryStatus.delivered.state){ %>
+													Delivered
+												<% }else if(order.deliveryStatus.cancelled.state){ %>
+													Cancelled
+												<% }else if(order.deliveryStatus.out_for_delivery.state){ %>
+													Out for Delivery
+												<% }else if(order.deliveryStatus.shipped.state){ %>
+													Shipped
+												<% }else if(order.deliveryStatus.ordered.state){ %>
+													Ordered
+												<% } %>
+											</td>
+											<td><a href="/order-details/<%= order._id %>" class="btn btn-primary">Details</a>
+											<br>
+											<% if((order.deliveryStatus.delivered.state) != true){ %>
+											<button class="btn btn-primary" onclick="cancelOrder('<%= order._id %>')">Cancel</button>
+											<% } %>
+											</td>
 											</tr>
-											<% }) %>
-												<tr>
-													<td class="total"></td>
-													<td><a href="/order-details/<%= order._id %>" class="btn btn-primary">Details</a></td>
-													<td><button class="btn btn-primary" onclick="cancelOrder('<%= order._id %>')">Cancel</button></td>
-													<td id="orderStatus"><% if(order.deliveryStatus.cancelled.state){ %>
-															Cancelled
-														<% }else if(order.deliveryStatus.delivered.state){ %>
-															Delivered
-														<% }else if(order.deliveryStatus.out_for_delivery.state){ %>
-															Out for Delivery
-														<% }else if(order.deliveryStatus.shipped.state){ %>
-															Shipped
-														<% }else if(order.deliveryStatus.ordered.state){ %>
-															Ordered
-														<% } %>
-													</td>
-													<td class="price">Subtotal : $<%= order.subtotal %></td>
-												</tr>
 										<% }) %>
 									</tbody>
 								</table>
 							</div>
 						</div>
 					</div>
-					
 				</div>
 			</section>
 			<% } else { %>

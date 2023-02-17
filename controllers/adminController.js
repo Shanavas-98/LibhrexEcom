@@ -6,6 +6,7 @@ const CategoryModel = require("../models/categoryModel");
 const ProductModel = require('../models/productModel');
 const UserModel = require('../models/userModel');
 const BannerModel = require('../models/bannerModel')
+const OrderModel = require('../models/orderModel')
 
 const Category = CategoryModel.category;
 const Subcategory = CategoryModel.subcategory;
@@ -110,6 +111,31 @@ const addBannerPage = async (req, res, next) => {
     }
 }
 
+const ordersPage = async (req, res, next) => {
+    try {
+        const Orders = await OrderModel.find()
+            .populate('user')
+            .sort({orderDate: -1})
+            .lean()
+        let index=1000
+        res.render('admin/orders-list', { title: "Orders", Orders, index })
+    } catch (error) {
+        next(error)
+    }
+}
+
+const orderDetails = async(req,res,next)=>{
+    try{
+        const order = await OrderModel.findOne({_id:req.params.id})
+        .populate(['user','orderItems.product'])
+        .lean()
+        console.log(order);
+        res.render('admin/order-details', { title: "Order-Details",order})
+    }catch(error){
+        next(error)
+    }
+}
+
 const doLogin = async (req, res, next) => {
     try {
         const { email, password } = req.body;
@@ -139,7 +165,7 @@ const doLogout = async (req, res, next) => {
     try {
         req.session.adminLogin = false
         req.session.destroy()
-        res.redirect('/')
+        res.redirect('/admin/login')
     } catch (error) {
         next(error)
     }
@@ -332,6 +358,62 @@ const editProduct = async (req, res, next) => {
     }
 }
 
+const orderShip = async (req, res, next) => {
+    const orderId = req.params.id;
+    try {
+        await OrderModel.findOneAndUpdate(
+            { _id: orderId },
+            {$set: {'deliveryStatus.shipped.state':true, 'deliveryStatus.shipped.date':new Date}}
+            ).then(()=>{
+                res.redirect('/admin/orders');
+            })
+    } catch (error) {
+        next(error);
+    }
+}
+
+const orderDelivery = async (req, res, next) => {
+    const orderId = req.params.id;
+    try {
+        await OrderModel.findOneAndUpdate(
+            { _id: orderId },
+            {$set: {'deliveryStatus.out_for_delivery.state':true, 'deliveryStatus.out_for_delivery.date':new Date}}
+            ).then(()=>{
+                res.redirect('/admin/orders');
+            })
+    } catch (error) {
+        next(error);
+    }
+}
+
+const orderDelivered = async (req, res, next) => {
+    const orderId = req.params.id;
+    try {
+        await OrderModel.findOneAndUpdate(
+            { _id: orderId },
+            {$set: {'deliveryStatus.delivered.state':true, 'deliveryStatus.delivered.date':new Date}}
+            ).then(()=>{
+                res.redirect('/admin/orders');
+            })
+    } catch (error) {
+        next(error);
+    }
+}
+
+const orderCancel = async (req, res, next) => {
+    const orderId = req.params.id;
+    try {
+        await OrderModel.findOneAndUpdate(
+            { _id: orderId },
+            {$set: {'deliveryStatus.cancelled.state':true, 'deliveryStatus.cancelled.date':new Date}}
+            ).then(()=>{
+                res.redirect('/admin/orders');
+            })
+    } catch (error) {
+        next(error);
+    }
+}
+
 
 module.exports = {
 
@@ -343,6 +425,8 @@ module.exports = {
     addProductPage,
     editProductPage,
     categoriesPage,
+    ordersPage,
+    orderDetails,
     doLogin,
     doLogout,
     blockUser,
@@ -353,6 +437,10 @@ module.exports = {
     deleteCategory,
     addProduct,
     flagProduct,
-    editProduct
+    editProduct,
+    orderShip,
+    orderDelivery,
+    orderDelivered,
+    orderCancel
 
 }
