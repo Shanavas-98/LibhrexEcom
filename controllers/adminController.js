@@ -7,7 +7,7 @@ const ProductModel = require('../models/productModel');
 const UserModel = require('../models/userModel');
 const BannerModel = require('../models/bannerModel');
 const OrderModel = require('../models/orderModel');
-const CouponModel = require('../models/couponModel')
+const CouponModel = require('../models/couponModel');
 
 const Category = CategoryModel.category;
 const Subcategory = CategoryModel.subcategory;
@@ -139,7 +139,10 @@ const orderDetails = async (req, res, next) => {
 
 const couponsPage = async (req, res, next) => {
     try {
-        res.render('admin/coupon-list', { title: "Coupons" })
+        await CouponModel.find()
+            .then((coupons) => {
+                res.render('admin/coupon-list', { title: "Coupons", coupons })
+            })
     } catch (error) {
         next(error)
     }
@@ -149,6 +152,17 @@ const addCouponPage = async (req, res, next) => {
     try {
         res.render('admin/add-coupon', { title: "Add Coupon" })
     } catch {
+        next(error)
+    }
+}
+
+const editCouponPage = async (req, res, next) => {
+    try {
+        await CouponModel.findOne({ _id: req.params.cpnId })
+            .then((coupon) => {
+                res.render('admin/edit-coupon', { title: "Edit Coupon", coupon })
+            })
+    } catch (error) {
         next(error)
     }
 }
@@ -351,7 +365,8 @@ const editProduct = async (req, res, next) => {
         image.forEach(img => { });
         const productimages = image != null ? image.map((img) => img.filename) : null
 
-        await ProductModel.findByIdAndUpdate({ _id: productId },
+        await ProductModel.findByIdAndUpdate(
+            { _id: productId },
             {
                 $set: {
                     cat_id: ObjectId(categ),
@@ -434,25 +449,59 @@ const orderCancel = async (req, res, next) => {
 
 const addCoupon = async (req, res, next) => {
     try {
-        console.log(req.body);
         const coupon = await CouponModel.findOne({ code: req.body.code })
         if (!coupon) {
             new CouponModel({
                 code: req.body.code,
-                discount: req.body.discount / 100,
+                discount: req.body.discount/100,
                 minBill: req.body.minBill,
                 maxDiscount: req.body.maxDiscount,
                 validity: req.body.validity
             }).save()
-            .then(()=>{
-                return res.redirect("/admin/coupons")
-            })
+                .then(() => {
+                    res.redirect("/admin/coupons")
+                })
         } else {
             throw ("coupon already exist")
         }
     } catch (error) {
-        console.log(error);
         next(error);
+    }
+}
+
+const editCoupon = async (req, res, next) => {
+    try {
+        console.log(req.params);
+        console.log(req.body);
+        await CouponModel.findByIdAndUpdate(
+            { _id: req.params.cpnId },
+            {
+                $set: {
+                    code: req.body.code,
+                    discount: req.body.discount/100,
+                    minBill: req.body.minBill,
+                    maxDiscount: req.body.maxDiscount,
+                    validity: req.body.validity
+                }
+            }).then(() => {
+                res.redirect("/admin/coupons")
+            }).catch((err) => {
+                console.log(err.message);
+                res.redirect("/admin/coupons")
+            })
+    } catch (error) {
+        next(error);
+    }
+}
+
+const deleteCoupon = async (req, res, next) => {
+    try {
+        await CouponModel.deleteOne({ _id: req.params.cpnId })
+            .then(() => {
+                res.redirect("/admin/coupons")
+            })
+    } catch {
+        next(error)
     }
 }
 
@@ -470,6 +519,7 @@ module.exports = {
     orderDetails,
     couponsPage,
     addCouponPage,
+    editCouponPage,
     doLogin,
     doLogout,
     blockUser,
@@ -485,6 +535,8 @@ module.exports = {
     orderDelivery,
     orderDelivered,
     orderCancel,
-    addCoupon
+    addCoupon,
+    editCoupon,
+    deleteCoupon
 
 }

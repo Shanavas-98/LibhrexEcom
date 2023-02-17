@@ -15,6 +15,7 @@ router.get('/product/:id',controller.countItem,controller.productPage);
 router.get('/orders',isLogin.userLogin,controller.countItem,controller.ordersPage);
 router.get('/wishlist',isLogin.userLogin,controller.countItem,controller.wishlistPage);
 router.get('/profile',isLogin.userLogin,controller.countItem,controller.profilePage);
+router.get('/coupons',isLogin.userLogin,controller.countItem,controller.couponsPage);
 router.get('/cart',isLogin.userLogin,controller.countItem,controller.cartPage);
 router.get('/checkout',isLogin.userLogin,controller.countItem,controller.checkoutPage);
 router.get('/address/add',isLogin.userLogin,controller.countItem,controller.addressPage);

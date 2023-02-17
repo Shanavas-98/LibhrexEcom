@@ -1,0 +1,78 @@
+<%-include('../user/layouts/user-header.ejs')%>
+    <section class="content-main">
+        <div class="content-header">
+            <div>
+                <h2 class="content-title card-title">Coupons</h2>
+            </div>
+        </div>
+        <div class="row justify-content-around"> <!-- col.// -->
+            <% coupons.forEach(coupon=> { %>
+                <% let date=coupon.validity; %>
+                <% let now=new Date();  %>
+                <% let strDate=date.toString().slice(0, 15); %> 
+                <% let diffms=date.getTime() - now.getTime();  %>
+                <% let diffDays=diffms/(1000*60*60*24);  %>
+                <% let days=Math.round(diffDays); %>
+                    <div class="col-md-6">
+                        <div class="card text-center" style="width: 25rem; border-radius: 20px;">
+                            <div class="d-flex justify-content-between"
+                                style="background-color: #f9f2ed; border-radius: 20px;">
+                                <div class="text-center p-3 ml-4">
+                                    <h2 class="card-title" id="cpnCode<%= coupon._id %>">
+                                        <%= coupon.code %>
+                                    </h2>
+                                    <h6 class="card-text">Valid Upto <br>
+                                        <%= strDate %>
+                                    </h6>
+                                    <p>
+                                        min order value <%= coupon.minBill %> <br>
+                                            max discount <%= coupon.maxDiscount %>
+                                    </p>
+                                </div>
+                                <div class="text-center pt-3"
+                                    style="background-color: #ffb562; border-radius: 0px 20px 20px 0px; width: 10rem;">
+                                    <h5>Discount</h5>
+                                    <h1>
+                                        <%= Math.round(coupon.discount*100) %>%
+                                    </h1>
+                                    <div class="m-2">
+                                        <button type="button" class="btn btn-primary"
+                                            onclick="Copy('cpnCode<%= coupon._id %>')">Copy</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer">Expire in <%= days %> days</div>
+                        </div>
+                    </div>
+                    <% }) %>
+        </div> <!-- row.// -->
+        <div class="pagination-area mt-15 mb-50">
+            <nav aria-label="Page navigation example">
+                <ul class="pagination justify-content-start">
+                    <li class="page-item active"><a class="page-link" href="#">01</a></li>
+                    <li class="page-item"><a class="page-link" href="#">02</a></li>
+                    <li class="page-item"><a class="page-link" href="#">03</a></li>
+                    <li class="page-item"><a class="page-link dot" href="#">...</a></li>
+                    <li class="page-item"><a class="page-link" href="#">16</a></li>
+                    <li class="page-item"><a class="page-link" href="#"><i
+                                class="material-icons md-chevron_right"></i></a></li>
+                </ul>
+            </nav>
+        </div>
+    </section>
+
+    <%-include('../user/layouts/user-footer.ejs')%>
+
+        <script>
+            function Copy(containerid) {
+                if (window.getSelection) {
+                    var range = document.createRange();
+                    range.selectNode(document.getElementById(containerid));
+                    window.getSelection().addRange(range);
+                    document.execCommand("copy");
+                    alert("Coupon code copied")
+                }
+            }
+        </script>
+
+        <%-include('../user/layouts/user-script.ejs')%>

@@ -4,40 +4,40 @@
             <div class="row">
                 <div class="col-9">
                     <div class="content-header">
-                        <h2 class="content-title">Add New Coupon</h2>
-                        <div>
-                            <button class="btn btn-light rounded font-sm mr-5 text-body hover-up">Save</button>
-                        </div>
+                        <h2 class="content-title">Edit Coupon</h2>
                     </div>
                 </div>
+                <form action="/admin/edit-coupon-form/<%= coupon._id %>" method="post">
                 <div class="col-lg-6">
                     <div class="card mb-4">
                         <div class="card-body">
                             <div class="mb-4">
                                 <label for="coupon_code" class="form-label">Coupon code</label>
-                                <input type="text" placeholder="code" class="form-control" name="coupon">
+                                <input type="text" placeholder="code" class="form-control" name="coupon" value="<%= coupon.code %>" required/>
                             </div>
                             <div class="row gx-3">
                                 <div class="col-md-4  mb-3">
                                     <label for="product_sku" class="form-label">Discount</label>
-                                    <input type="text" placeholder="percentage" class="form-control" name="discount">
+                                    <input type="text" placeholder="percentage" class="form-control" name="discount" value="<%= Math.round(coupon.discount*100) %>" required/>
                                 </div>
                                 <div class="col-md-4  mb-3">
                                     <label for="product_color" class="form-label">Min Order</label>
-                                    <input type="text" placeholder="amount" class="form-control" name="min_order">
+                                    <input type="text" placeholder="amount" class="form-control" name="minBill" value="<%= coupon.minBill %>" required/>
                                 </div>
                                 <div class="col-md-4  mb-3">
                                     <label for="product_size" class="form-label">Max Discount</label>
-                                    <input type="text" placeholder="amount" class="form-control" name="max_discount">
+                                    <input type="text" placeholder="amount" class="form-control" name="maxDiscount" value="<%= coupon.maxDiscount %>" required/>
                                 </div>
                             </div>
                             <div class="mb-4">
                                 <label for="product_brand" class="form-label">Validity Upto</label>
-                                <input type="date" placeholder="date" class="form-control" name="validity">
+                                <input type="date" placeholder="date" class="form-control" name="validity" value="<%= coupon.validity %>" required/>
                             </div>
+                            <button type="submit" class="btn btn-primary rounded font-sm mr-5 text-white hover-up">Save</button>
                         </div>
                     </div> <!-- card end// -->
                 </div>
+                </form>
             </div>
         </section>
         <%- include('../admin/layouts/admin-footer.ejs') %>

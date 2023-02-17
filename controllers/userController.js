@@ -11,6 +11,7 @@ const CategoryModel = require("../models/categoryModel");
 const CartModel = require("../models/cartModel");
 const WishlistModel = require("../models/wishlistModel");
 const OrderModel = require("../models/orderModel");
+const CouponModel = require('../models/couponModel');
 
 const Category = CategoryModel.category;
 const Subcategory = CategoryModel.subcategory;
@@ -217,6 +218,18 @@ const orderDetails = async (req, res, next) => {
 const paymentPage = async (req, res, next) => {
     try {
         res.render('user/payment')
+    } catch (error) {
+        next(error)
+    }
+}
+
+const couponsPage = async(req,res,next)=>{
+    try {
+        await CouponModel.find()
+        .then((coupons)=>{
+            res.render('user/coupons', { title: "Coupons", login: req.session, count, coupons })
+        })
+        
     } catch (error) {
         next(error)
     }
@@ -729,6 +742,7 @@ module.exports = {
     ordersPage,
     wishlistPage,
     profilePage,
+    couponsPage,
     cartPage,
     checkoutPage,
     addressPage,
