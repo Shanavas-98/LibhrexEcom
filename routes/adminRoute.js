@@ -18,6 +18,9 @@ router.get('/products/details/:id',isLogin.adminLogin,controller.editProductPage
 router.get('/categories',isLogin.adminLogin,controller.categoriesPage);
 router.get('/orders',isLogin.adminLogin,controller.ordersPage);
 router.get('/order-details/:id',isLogin.adminLogin,controller.orderDetails);
+router.get('/coupons',isLogin.adminLogin,controller.couponsPage);
+router.get('/add-coupon',isLogin.adminLogin,controller.addCouponPage);
+
 
 router.get('/users',isLogin.adminLogin,controller.usersPage);
 router.get('/users/block/:id',isLogin.adminLogin,controller.blockUser);
@@ -29,6 +32,8 @@ router.get('/order-ship/:id',isLogin.adminLogin,controller.orderShip);
 router.get('/order-delivery/:id',isLogin.adminLogin,controller.orderDelivery);
 router.get('/order-delivered/:id',isLogin.adminLogin,controller.orderDelivered);
 router.get('/order-cancel/:id',isLogin.adminLogin,controller.orderCancel);
+router.get('/add-coupon',isLogin.adminLogin,controller.addCouponPage);
+
 
 
 
@@ -41,6 +46,8 @@ router.post('/signin',controller.doLogin)
 router.post('/categories/add',controller.addCategory)
 router.post('/products/add-product',controller.addProduct);
 router.post('/products/edit-product/:id',controller.editProduct);
+router.post('/add-coupon-form',controller.addCoupon);
+
 
 
 module.exports = router;

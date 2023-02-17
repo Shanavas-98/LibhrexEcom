@@ -13,7 +13,7 @@ const CouponSchema = new mongoose.Schema({
     min: 0,
     max: 1
   },
-  minimumBill: {
+  minBill: {
     type: Number,
     required: true,
     min: 0
@@ -23,7 +23,7 @@ const CouponSchema = new mongoose.Schema({
     required: true,
     min: 0
   },
-  expiresAt: {
+  validity: {
     type: Date,
     required: true
   },
@@ -33,6 +33,4 @@ const CouponSchema = new mongoose.Schema({
   }
 });
 
-const Coupon = mongoose.model('Coupon', CouponSchema);
-
-module.exports = Coupon;
+module.exports = mongoose.model('Coupon', CouponSchema);

@@ -5,8 +5,9 @@ const AdminModel = require("../models/adminModel");
 const CategoryModel = require("../models/categoryModel");
 const ProductModel = require('../models/productModel');
 const UserModel = require('../models/userModel');
-const BannerModel = require('../models/bannerModel')
-const OrderModel = require('../models/orderModel')
+const BannerModel = require('../models/bannerModel');
+const OrderModel = require('../models/orderModel');
+const CouponModel = require('../models/couponModel')
 
 const Category = CategoryModel.category;
 const Subcategory = CategoryModel.subcategory;
@@ -115,23 +116,39 @@ const ordersPage = async (req, res, next) => {
     try {
         const Orders = await OrderModel.find()
             .populate('user')
-            .sort({orderDate: -1})
+            .sort({ orderDate: -1 })
             .lean()
-        let index=1000
+        let index = 1000
         res.render('admin/orders-list', { title: "Orders", Orders, index })
     } catch (error) {
         next(error)
     }
 }
 
-const orderDetails = async(req,res,next)=>{
-    try{
-        const order = await OrderModel.findOne({_id:req.params.id})
-        .populate(['user','orderItems.product'])
-        .lean()
+const orderDetails = async (req, res, next) => {
+    try {
+        const order = await OrderModel.findOne({ _id: req.params.id })
+            .populate(['user', 'orderItems.product'])
+            .lean()
         console.log(order);
-        res.render('admin/order-details', { title: "Order-Details",order})
-    }catch(error){
+        res.render('admin/order-details', { title: "Order-Details", order })
+    } catch (error) {
+        next(error)
+    }
+}
+
+const couponsPage = async (req, res, next) => {
+    try {
+        res.render('admin/coupon-list', { title: "Coupons" })
+    } catch (error) {
+        next(error)
+    }
+}
+
+const addCouponPage = async (req, res, next) => {
+    try {
+        res.render('admin/add-coupon', { title: "Add Coupon" })
+    } catch {
         next(error)
     }
 }
@@ -227,6 +244,7 @@ const addCategory = async (req, res, next) => {
         next(error);
     }
 }
+
 const editCategory = async (req, res, next) => {
     const subcat_id = req.params.id;
     // const brandn = req.body.brand;
@@ -289,7 +307,7 @@ const addProduct = async (req, res, next) => {
         let subcateg = req.body.subcategory.trim();
         let mrp = req.body.mrp;
         let srp = req.body.srp;
-        let offer = Math.floor(Number((1-(srp/mrp))*100));
+        let offer = Math.floor(Number((1 - (srp / mrp)) * 100));
         const image = req.files;
         image.forEach(img => { });
         const productimages = image != null ? image.map((img) => img.filename) : null
@@ -328,7 +346,7 @@ const editProduct = async (req, res, next) => {
         let subcateg = req.body.subcategory.trim();
         let mrp = req.body.mrp;
         let srp = req.body.srp;
-        let offer = Math.floor(Number(((mrp-srp)/mrp)*100));
+        let offer = Math.floor(Number(((mrp - srp) / mrp) * 100));
         const image = req.files;
         image.forEach(img => { });
         const productimages = image != null ? image.map((img) => img.filename) : null
@@ -363,10 +381,10 @@ const orderShip = async (req, res, next) => {
     try {
         await OrderModel.findOneAndUpdate(
             { _id: orderId },
-            {$set: {'deliveryStatus.shipped.state':true, 'deliveryStatus.shipped.date':new Date}}
-            ).then(()=>{
-                res.redirect('/admin/orders');
-            })
+            { $set: { 'deliveryStatus.shipped.state': true, 'deliveryStatus.shipped.date': new Date } }
+        ).then(() => {
+            res.redirect('/admin/orders');
+        })
     } catch (error) {
         next(error);
     }
@@ -377,10 +395,10 @@ const orderDelivery = async (req, res, next) => {
     try {
         await OrderModel.findOneAndUpdate(
             { _id: orderId },
-            {$set: {'deliveryStatus.out_for_delivery.state':true, 'deliveryStatus.out_for_delivery.date':new Date}}
-            ).then(()=>{
-                res.redirect('/admin/orders');
-            })
+            { $set: { 'deliveryStatus.out_for_delivery.state': true, 'deliveryStatus.out_for_delivery.date': new Date } }
+        ).then(() => {
+            res.redirect('/admin/orders');
+        })
     } catch (error) {
         next(error);
     }
@@ -391,10 +409,10 @@ const orderDelivered = async (req, res, next) => {
     try {
         await OrderModel.findOneAndUpdate(
             { _id: orderId },
-            {$set: {'deliveryStatus.delivered.state':true, 'deliveryStatus.delivered.date':new Date}}
-            ).then(()=>{
-                res.redirect('/admin/orders');
-            })
+            { $set: { 'deliveryStatus.delivered.state': true, 'deliveryStatus.delivered.date': new Date } }
+        ).then(() => {
+            res.redirect('/admin/orders');
+        })
     } catch (error) {
         next(error);
     }
@@ -405,15 +423,38 @@ const orderCancel = async (req, res, next) => {
     try {
         await OrderModel.findOneAndUpdate(
             { _id: orderId },
-            {$set: {'deliveryStatus.cancelled.state':true, 'deliveryStatus.cancelled.date':new Date}}
-            ).then(()=>{
-                res.redirect('/admin/orders');
-            })
+            { $set: { 'deliveryStatus.cancelled.state': true, 'deliveryStatus.cancelled.date': new Date } }
+        ).then(() => {
+            res.redirect('/admin/orders');
+        })
     } catch (error) {
         next(error);
     }
 }
 
+const addCoupon = async (req, res, next) => {
+    try {
+        console.log(req.body);
+        const coupon = await CouponModel.findOne({ code: req.body.code })
+        if (!coupon) {
+            new CouponModel({
+                code: req.body.code,
+                discount: req.body.discount / 100,
+                minBill: req.body.minBill,
+                maxDiscount: req.body.maxDiscount,
+                validity: req.body.validity
+            }).save()
+            .then(()=>{
+                return res.redirect("/admin/coupons")
+            })
+        } else {
+            throw ("coupon already exist")
+        }
+    } catch (error) {
+        console.log(error);
+        next(error);
+    }
+}
 
 module.exports = {
 
@@ -427,6 +468,8 @@ module.exports = {
     categoriesPage,
     ordersPage,
     orderDetails,
+    couponsPage,
+    addCouponPage,
     doLogin,
     doLogout,
     blockUser,
@@ -441,6 +484,7 @@ module.exports = {
     orderShip,
     orderDelivery,
     orderDelivered,
-    orderCancel
+    orderCancel,
+    addCoupon
 
 }

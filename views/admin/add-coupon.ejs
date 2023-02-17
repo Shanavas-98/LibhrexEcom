@@ -1,0 +1,43 @@
+<%- include('../admin/layouts/admin-sidebar.ejs') %>
+    <%- include('../admin/layouts/admin-navbar.ejs') %>
+        <section class="content-main">
+            <div class="row">
+                <div class="col-9">
+                    <div class="content-header">
+                        <h2 class="content-title">Add New Coupon</h2>
+                    </div>
+                </div>
+                <form action="/admin/add-coupon-form" method="post">
+                <div class="col-lg-6 col-sm-8">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <div class="mb-4">
+                                <label for="coupon_code" class="form-label">Coupon code</label>
+                                <input type="text" placeholder="code" class="form-control" name="code">
+                            </div>
+                            <div class="row gx-3">
+                                <div class="col-lg-4  mb-3">
+                                    <label for="product_sku" class="form-label">Discount</label>
+                                    <input type="text" placeholder="percentage" class="form-control" name="discount">
+                                </div>
+                                <div class="col-lg-4  mb-3">
+                                    <label for="product_color" class="form-label">Min Bill</label>
+                                    <input type="text" placeholder="amount" class="form-control" name="minBill">
+                                </div>
+                                <div class="col-lg-4  mb-3">
+                                    <label for="product_size" class="form-label">Max Discount</label>
+                                    <input type="text" placeholder="amount" class="form-control" name="maxDiscount">
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <label for="product_brand" class="form-label">Validity Upto</label>
+                                <input type="date" placeholder="date" class="form-control" name="validity">
+                            </div>
+                            <button type="submit" class="btn btn-primary rounded font-sm mr-5 text-white hover-up">Save</button>
+                        </div>
+                    </div> <!-- card end// -->
+                </div>
+            </form>
+            </div>
+        </section>
+        <%- include('../admin/layouts/admin-footer.ejs') %>
