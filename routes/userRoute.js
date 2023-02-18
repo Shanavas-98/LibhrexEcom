@@ -43,6 +43,7 @@ router.post('/verify-user',controller.verifyUser)
 router.post('/cart/quantity',isLogin.userLogin,controller.changeItemQty);
 router.post('/address/add',isLogin.userLogin,controller.addAddress);
 router.post('/address/update/:id',isLogin.userLogin,controller.updateAddress);
+router.post('/apply-coupon',isLogin.userLogin,controller.applyCoupon);
 router.post('/place-order',isLogin.userLogin,controller.placeOrder);
 router.post('/checkout-session/:orderId',isLogin.userLogin,controller.checkoutSession)
   

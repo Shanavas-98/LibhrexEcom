@@ -98,6 +98,26 @@ function moveToWish(itemId, productId) {
 	addToWish(productId)
 }
 
+function applyCoupon(){
+	$.ajax({
+		url:'/apply-coupon',
+		data: {
+			coupon: $('#coupon').val()
+		},
+		method: 'post',
+		success:(res)=>{
+			if(res.err){
+				$('#err_message').html(res.err);
+			}else{
+				$('#err_message').html('');
+				$('#success_msg').html(res.message);
+				$('#discount').html(res.discount);
+				$('#grand_total').html(res.grand);
+			}
+		}
+	})
+}
+
 //place order
 $('#checkout-form').submit((e) => {
 	e.preventDefault()
@@ -107,6 +127,7 @@ $('#checkout-form').submit((e) => {
 		method: 'post',
 		success: (res) => {
 			if (res.status) {
+				console.log(res);
 				location.href = '/order-success'
 			} else {
 				onlinePayment(res.items,res.orderId)

@@ -141,7 +141,8 @@ const checkoutPage = async (req, res, next) => {
         const Cart = await CartModel.findOne({ userId: req.session.userId })
             .populate('cartItems.product')
             .lean();
-        const subtotal = Cart.cartItems.map(item => item.price).reduce((acc, val) => acc + val, 0);
+        let subtotal = Cart.cartItems.map(item => item.price).reduce((acc, val) => acc + val, 0);
+        subtotal = subtotal.toFixed(2)
         const addresses = user.addresses
         if (addresses && subtotal) {
             res.render('user/checkout', { title: "Checkout", login: req.session, count, addresses, subtotal })
@@ -223,13 +224,12 @@ const paymentPage = async (req, res, next) => {
     }
 }
 
-const couponsPage = async(req,res,next)=>{
+const couponsPage = async (req, res, next) => {
     try {
         await CouponModel.find()
-        .then((coupons)=>{
-            res.render('user/coupons', { title: "Coupons", login: req.session, count, coupons })
-        })
-        
+            .then((coupons) => {
+                res.render('user/coupons', { title: "Coupons", login: req.session, count, coupons })
+            })
     } catch (error) {
         next(error)
     }
@@ -485,9 +485,8 @@ const changeItemQty = async (req, res, next) => {
         const qty = req.body.qty
         const product = await ProductModel.findById({ _id: productId })
         if (change == -1 && qty == 1) {
-            await CartModel.updateOne({
-                userId: userId
-            },
+            await CartModel.updateOne(
+                { userId: userId },
                 {
                     $pull: { cartItems: { _id: itemId } }
                 }).then(() => {
@@ -600,16 +599,59 @@ const deleteAddress = async (req, res, next) => {
     }
 }
 
-const placeOrder = async (req, res, next) => {
+const applyCoupon = async (req, res, next) => {
     try {
-        const user = await UserModel.findOne({ _id: req.session.userId })
-        const shipAddr = user.addresses.id(req.body.shipAddrId)
-        const billAddr = user.addresses.id(req.body.billAddrId)
+        let cpn_code = req.body.coupon.toUpperCase().trim();
+        const coupon = await CouponModel.findOne({ code: cpn_code });
+
+        if (!coupon) {
+            return res.json({ err: "coupon not found" })
+        }
+
+        let date = coupon.validity;
+        let now = new Date();
+
+        if (date < now) {
+            return res.json({ err: "coupon expired" })
+        }
+
         const Cart = await CartModel.findOne({ userId: req.session.userId })
             .populate('cartItems.product', { _id: 1, srp: 1 })
             .lean();
         const subtotal = Cart.cartItems.map(item => item.price).reduce((acc, val) => acc + val, 0);
-        // const Items = Cart.cartItems;
+
+        if (subtotal < coupon.minBill) {
+            return res.json({ err: `total bill should be $${coupon.minBill} or more` })
+        }
+        let discountAmt = subtotal * coupon.discount / 100;
+        if (discountAmt >= coupon.maxDiscount) {
+            discountAmt = coupon.maxDiscount;
+        }
+        let grandTotal = subtotal - discountAmt;
+        grandTotal = grandTotal.toFixed(2)
+        discountAmt = discountAmt.toFixed(2)
+        return res.json({ grand: grandTotal, discount: discountAmt, message: `coupon ${coupon.code} applied` })
+
+    } catch (error) {
+        next(error)
+    }
+}
+
+const placeOrder = async (req, res, next) => {
+    try {
+        console.log("reached place order",req.body);
+        const user = await UserModel.findOne({ _id: req.session.userId })
+        
+        //getting address using address id
+        const shipAddr = user.addresses.id(req.body.shipAddrId)
+        const billAddr = user.addresses.id(req.body.billAddrId)
+        
+        //getting cart with populated product details
+        const Cart = await CartModel.findOne({ userId: req.session.userId })
+            .populate('cartItems.product', { _id: 1, srp: 1 })
+            .lean();
+
+        // maping cartItems to required format
         const items = Cart.cartItems.map(item => {
             const container = {
                 product: item.product._id,
@@ -619,6 +661,30 @@ const placeOrder = async (req, res, next) => {
             }
             return container
         })
+
+        //find coupon object
+        let cpn_code = req.body.coupon.toUpperCase().trim();
+        const couponObj = await CouponModel.findOne({ code: cpn_code });
+        console.log(couponObj);
+
+        //calculating subtotal,discount,grandtotal
+        const subtotal = Cart.cartItems.map(item => item.price).reduce((acc, val) => acc + val, 0);
+        let discountAmt=0;
+        let grandTotal=subtotal;
+        let date = couponObj.validity;
+        let now = new Date();
+        if (!couponObj || date < now || subtotal < couponObj.minBill) {
+            couponObj = {};
+        } else {
+            discountAmt = subtotal * couponObj.discount / 100;
+            if (discountAmt >= couponObj.maxDiscount) {
+                discountAmt = couponObj.maxDiscount;
+            }
+            grandTotal = subtotal - discountAmt;
+            grandTotal = Number(grandTotal.toFixed(2))
+            discountAmt = Number(discountAmt.toFixed(2))
+        }
+        //creating the order with the above datas
         await new OrderModel({
             user: req.session.userId,
             shipAddress: shipAddr,
@@ -626,6 +692,9 @@ const placeOrder = async (req, res, next) => {
             "payment.method": req.body.payment,
             orderItems: items,
             subtotal: subtotal,
+            coupon: couponObj,
+            discount: discountAmt,
+            grandtotal: grandTotal,
             orderStatus: req.body.payment === 'cod' ? "placed" : "pending",
             "deliveryStatus.ordered.state": true,
             "deliveryStatus.ordered.date": new Date
@@ -766,6 +835,7 @@ module.exports = {
     addAddress,
     updateAddress,
     deleteAddress,
+    applyCoupon,
     placeOrder,
     orderDetails,
     cancelOrder

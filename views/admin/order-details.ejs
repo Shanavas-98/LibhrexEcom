@@ -134,8 +134,12 @@
                                                         <dd>$0.00</dd>
                                                     </dl>
                                                     <dl class="dlist">
+                                                        <dt>Discount:</dt>
+                                                        <dd><%= order.discount %></dd>
+                                                    </dl>
+                                                    <dl class="dlist">
                                                         <dt>Grand total:</dt>
-                                                        <dd> <b class="h5"><%= order.subtotal %></b> </dd>
+                                                        <dd> <b class="h5"><%= order.grandtotal %></b> </dd>
                                                     </dl>
                                                     <dl class="dlist">
                                                         <dt class="text-muted">Pay method:</dt>

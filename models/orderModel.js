@@ -39,11 +39,12 @@ const orderSchema = mongoose.Schema({
     }],
     subtotal: {
         type: Number,
+        min:0,
         default: 0
     },
     coupon:Object,
     discount: Number,
-    grand_total: Number,
+    grandtotal: Number,
     orderStatus: String,
     orderDate: {
         type: Date,

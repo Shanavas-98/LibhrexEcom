@@ -17,7 +17,7 @@
 										<tr class="text-center">
 											<th>Date</th>
 											<th>Products</th>
-											<th>Subtotal</th>
+											<th>GrandTotal</th>
 											<th>Status</th>
 											<th>Action</th>
 										</tr>
@@ -40,7 +40,7 @@
 													</a><br>
 												<% }) %>
 												</td>
-												<td class="total">$<%= order.subtotal %></td>
+												<td class="total">$<%= order.grandtotal %></td>
 												<td id="orderStatus<%= order._id %>">
 												<% if(order.deliveryStatus.delivered.state){ %>
 													Delivered

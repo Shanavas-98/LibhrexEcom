@@ -10,12 +10,16 @@
 
 	<section class="ftco-section">
 		<div class="container-fluid">
-			<p class="ml-5"><a href="/address/add" class="btn btn-primary py-3 px-4 ">Add new Address</a></p>
 			<div class="row justify-content-center mx-md-3">
+			<p class="ml-5"></p>
+
 				<form class="row" action="/place-order" id="checkout-form" method="post">
 				<div class="col-md-7 col-lg-8">
 					<div class="row">
+						<div class="col-md-12 d-flex justify-content-between my-2">
 						<h3 class="mb-4 billing-heading">Shipping Address</h3>
+						<a href="/address/add" class="btn btn-primary pt-3">Add new Address</a>
+						</div>
 						<div class="col-md-12 d-flex mb-5">
 							<div class="cart-detail cart-total p-3 overflow-auto"
 							style="max-width: 800px; max-height: 300px;">
@@ -90,28 +94,31 @@
 						<div class="col-12 d-flex mb-5">
 							<div class="cart-detail cart-total p-3 p-md-4">
 								<h3 class="billing-heading mb-4">Coupon</h3>
-								
+								<p id="err_message" class="text-danger"></p>
+								<input type="text" id="coupon" class="form-control form-control-user" style="text-transform: uppercase;" name="coupon"/>
+								<button type="button" class="btn btn-primary my-2" id="apply-coupon" style="width:50%" onclick="applyCoupon()">Apply</button>
+							<p id="success_msg" class="text-success"></p>
 							</div>
 						</div>
 						<div class="col-12 d-flex mb-3">
 							<div class="cart-detail cart-total p-3 p-md-4">
 								<h3 class="billing-heading mb-4">Cart Total</h3>
 								<p class="d-flex">
-									<span>Subtotal</span>
-									<span>$<%= subtotal %></span>
+									<span>Total</span>
+									$<span><%= subtotal %></span>
 								</p>
 								<p class="d-flex">
 									<span>Delivery</span>
-									<span>$0.00</span>
+									$<span>0.00</span>
 								</p>
 								<p class="d-flex">
 									<span>Discount</span>
-									<span>$0.00</span>
+									$<span id="discount">0.00</span>
 								</p>
 								<hr>
 								<p class="d-flex total-price">
-									<span>Total</span>
-									<span>$<%= subtotal %></span>
+									<span>GrandTotal</span>
+									$<span id="grand_total"><%= subtotal %></span>
 								</p>
 							</div>
 						</div>
@@ -141,4 +148,4 @@
 	</section> <!-- .section -->
 
 	<%-include('../user/layouts/user-footer.ejs') %>
-		<%-include('../user/layouts/user-script.ejs') %>
+	<%-include('../user/layouts/user-script.ejs') %>

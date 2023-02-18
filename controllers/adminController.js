@@ -449,11 +449,12 @@ const orderCancel = async (req, res, next) => {
 
 const addCoupon = async (req, res, next) => {
     try {
-        const coupon = await CouponModel.findOne({ code: req.body.code })
+        let cpn_code=req.body.code.toUpperCase().trim()
+        const coupon = await CouponModel.findOne({ code: cpn_code })
         if (!coupon) {
             new CouponModel({
-                code: req.body.code,
-                discount: req.body.discount/100,
+                code: cpn_code,
+                discount: req.body.discount,
                 minBill: req.body.minBill,
                 maxDiscount: req.body.maxDiscount,
                 validity: req.body.validity
@@ -471,14 +472,13 @@ const addCoupon = async (req, res, next) => {
 
 const editCoupon = async (req, res, next) => {
     try {
-        console.log(req.params);
-        console.log(req.body);
+        let cpn_code=req.body.code.toUpperCase().trim()
         await CouponModel.findByIdAndUpdate(
             { _id: req.params.cpnId },
             {
                 $set: {
-                    code: req.body.code,
-                    discount: req.body.discount/100,
+                    code: cpn_code,
+                    discount: req.body.discount,
                     minBill: req.body.minBill,
                     maxDiscount: req.body.maxDiscount,
                     validity: req.body.validity

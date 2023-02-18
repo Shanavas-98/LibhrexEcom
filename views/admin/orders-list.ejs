@@ -53,7 +53,7 @@
                                     <td><%= index++ %></td>
                                     <td><b><%= order.user.fullname %></b></td>
                                     <td><%= order.user.email %></td>
-                                    <td><%= order.subtotal %></td>
+                                    <td><%= order.grandtotal %></td>
                                     <td>
                                         <% if(order.deliveryStatus.delivered.state){ %>
                                             <span class="badge rounded-pill alert-success">Delivered</span>

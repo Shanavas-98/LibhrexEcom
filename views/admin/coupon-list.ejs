@@ -19,13 +19,13 @@
                             <h2 class="card-title"><%= coupon.code %></h2>
                             <h6 class="card-text">Valid Upto <br> <%= date %> </h6>
                             <p>
-                                min order value <%= coupon.minBill %> <br>
-                                max discount <%= coupon.maxDiscount %>
+                                min order value $<%= coupon.minBill %> <br>
+                                max discount $<%= coupon.maxDiscount %>
                             </p>
                         </div>
                         <div class="text-center p-5" style="background-color: #ffb562; border-radius: 0px 20px 20px 0px;">
                             <h5>Discount</h5>
-                            <h1><%= Math.round(coupon.discount*100) %>%</h1>
+                            <h1><%= Math.round(coupon.discount) %>%</h1>
                             
                         </div>
                     </div>

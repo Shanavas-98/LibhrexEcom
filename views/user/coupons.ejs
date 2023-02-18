@@ -8,43 +8,54 @@
         <div class="row justify-content-around"> <!-- col.// -->
             <% coupons.forEach(coupon=> { %>
                 <% let date=coupon.validity; %>
-                <% let now=new Date();  %>
-                <% let strDate=date.toString().slice(0, 15); %> 
-                <% let diffms=date.getTime() - now.getTime();  %>
-                <% let diffDays=diffms/(1000*60*60*24);  %>
-                <% let days=Math.round(diffDays); %>
-                    <div class="col-md-6">
-                        <div class="card text-center" style="width: 25rem; border-radius: 20px;">
-                            <div class="d-flex justify-content-between"
-                                style="background-color: #f9f2ed; border-radius: 20px;">
-                                <div class="text-center p-3 ml-4">
-                                    <h2 class="card-title" id="cpnCode<%= coupon._id %>">
-                                        <%= coupon.code %>
-                                    </h2>
-                                    <h6 class="card-text">Valid Upto <br>
-                                        <%= strDate %>
-                                    </h6>
-                                    <p>
-                                        min order value <%= coupon.minBill %> <br>
-                                            max discount <%= coupon.maxDiscount %>
-                                    </p>
-                                </div>
-                                <div class="text-center pt-3"
-                                    style="background-color: #ffb562; border-radius: 0px 20px 20px 0px; width: 10rem;">
-                                    <h5>Discount</h5>
-                                    <h1>
-                                        <%= Math.round(coupon.discount*100) %>%
-                                    </h1>
-                                    <div class="m-2">
-                                        <button type="button" class="btn btn-primary"
-                                            onclick="Copy('cpnCode<%= coupon._id %>')">Copy</button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card-footer">Expire in <%= days %> days</div>
-                        </div>
-                    </div>
-                    <% }) %>
+                    <% let strDate=date.toString().slice(0, 15); %>
+                        <% let now=new Date(); %>
+                            <% let diffms=date.getTime() - now.getTime(); %>
+                                <% let diffDays=diffms/(1000*60*60*24); %>
+                                    <% let days=Math.round(diffDays); %>
+                                        <div class="col-md-6">
+                                            <div class="card text-center" style="width: 25rem; border-radius: 20px;">
+                                                <div class="d-flex justify-content-between"
+                                                    style="background-color: #f9f2ed; border-radius: 20px;">
+                                                    <div class="text-center p-3 ml-4">
+                                                        <h2 class="card-title" id="cpnCode<%= coupon._id %>">
+                                                            <%= coupon.code %>
+                                                        </h2>
+                                                        <h6 class="card-text">Valid Upto <br>
+                                                            <%= strDate %>
+                                                        </h6>
+                                                        <p>
+                                                            min order value $<%= coupon.minBill %> <br>
+                                                                max discount $<%= coupon.maxDiscount %>
+                                                        </p>
+                                                    </div>
+                                                    <div class="text-center pt-3"
+                                                        style="background-color: #ffb562; border-radius: 0px 20px 20px 0px; width: 10rem;">
+                                                        <h5>Discount</h5>
+                                                        <h1>
+                                                            <%= coupon.discount %>%
+                                                        </h1>
+                                                        <% if(days>=0){ %>
+                                                            <div class="m-2">
+                                                                <button type="button" class="btn btn-primary"
+                                                                    onclick="Copy('cpnCode<%= coupon._id %>')">Copy</button>
+                                                            </div>
+                                                            <% } %>
+
+                                                    </div>
+                                                </div>
+                                                <div class="card-footer">
+                                                    <% if(days<0){ %>
+                                                        <p class="text-danger">Expired</p>
+                                                        <% }else if(day=0){ %>
+                                                            <p class="text-warning">Expires Today</p>
+                                                            <% }else{ %>
+                                                                <p>Expire in <%= days %> days</p>
+                                                                <% } %>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <% }) %>
         </div> <!-- row.// -->
         <div class="pagination-area mt-15 mb-50">
             <nav aria-label="Page navigation example">

@@ -48,7 +48,9 @@
 				<div class="row flex-column mt-5">
 					<h6>Payment Details</h6>
 					<p><%= order.payment.method %><br>
-					$<%= order.subtotal %> <br>
+					Total $<%= order.subtotal %> <br>
+					Discount $<%= order.discount %> <br>
+					GrandTotal $<%= order.grandtotal %> <br>
 					<%= order.payment.status %></p>
 				</div>
 			</div>

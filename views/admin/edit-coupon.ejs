@@ -13,12 +13,12 @@
                         <div class="card-body">
                             <div class="mb-4">
                                 <label for="coupon_code" class="form-label">Coupon code</label>
-                                <input type="text" placeholder="code" class="form-control" name="coupon" value="<%= coupon.code %>" required/>
+                                <input type="text" placeholder="code" class="form-control" name="coupon" style="text-transform: uppercase;" value="<%= coupon.code %>" required/>
                             </div>
                             <div class="row gx-3">
                                 <div class="col-md-4  mb-3">
                                     <label for="product_sku" class="form-label">Discount</label>
-                                    <input type="text" placeholder="percentage" class="form-control" name="discount" value="<%= Math.round(coupon.discount*100) %>" required/>
+                                    <input type="text" placeholder="percentage" class="form-control" name="discount" value="<%= coupon.discount %>" required/>
                                 </div>
                                 <div class="col-md-4  mb-3">
                                     <label for="product_color" class="form-label">Min Order</label>
