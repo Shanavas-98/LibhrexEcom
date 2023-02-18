@@ -130,7 +130,6 @@ const orderDetails = async (req, res, next) => {
         const order = await OrderModel.findOne({ _id: req.params.id })
             .populate(['user', 'orderItems.product'])
             .lean()
-        console.log(order);
         res.render('admin/order-details', { title: "Order-Details", order })
     } catch (error) {
         next(error)
@@ -397,12 +396,26 @@ const orderShip = async (req, res, next) => {
         await OrderModel.findOneAndUpdate(
             { _id: orderId },
             { $set: { 'deliveryStatus.shipped.state': true, 'deliveryStatus.shipped.date': new Date } }
-        ).then(() => {
+        ).then((order) => {
+            manageStock(order)
             res.redirect('/admin/orders');
         })
     } catch (error) {
         next(error);
     }
+}
+
+const manageStock = async (order) => {
+    let items = order.orderItems;
+    items.forEach(async (item) => {
+            await ProductModel.updateOne(
+                { _id: item.product },
+                {
+                    $inc:
+                        { qty: -(item.qty) }
+                }
+            )
+        })
 }
 
 const orderDelivery = async (req, res, next) => {
@@ -449,7 +462,7 @@ const orderCancel = async (req, res, next) => {
 
 const addCoupon = async (req, res, next) => {
     try {
-        let cpn_code=req.body.code.toUpperCase().trim()
+        let cpn_code = req.body.code.toUpperCase().trim()
         const coupon = await CouponModel.findOne({ code: cpn_code })
         if (!coupon) {
             new CouponModel({
@@ -472,7 +485,7 @@ const addCoupon = async (req, res, next) => {
 
 const editCoupon = async (req, res, next) => {
     try {
-        let cpn_code=req.body.code.toUpperCase().trim()
+        let cpn_code = req.body.code.toUpperCase().trim()
         await CouponModel.findByIdAndUpdate(
             { _id: req.params.cpnId },
             {

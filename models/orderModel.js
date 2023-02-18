@@ -42,7 +42,10 @@ const orderSchema = mongoose.Schema({
         min:0,
         default: 0
     },
-    coupon:Object,
+    coupon:{
+        type:mongoose.Schema.Types.Mixed,
+        default:null
+    },
     discount: Number,
     grandtotal: Number,
     orderStatus: String,

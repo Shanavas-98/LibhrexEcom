@@ -63,7 +63,6 @@ const homePage = async (req, res, next) => {
 
 const shopPage = async (req, res, next) => {
     try {
-        console.log("<<shop page rendering>>");
         const Categories = await Category.find()
         const Subcategories = await Subcategory.find({ flag: { $ne: true } })
         const Products = await ProductModel.find({ flag: { $ne: true } })
@@ -90,9 +89,7 @@ const productPage = async (req, res, next) => {
 }
 
 const profilePage = async (req, res, next) => {
-    console.log("<<profile page rendering>>");
     try {
-        console.log(req.session.userId);
         const user = await UserModel.findOne({ _id: req.session.userId });
         res.render('user/profile', { title: "Profile", login: req.session, user, count })
     } catch (error) {
@@ -284,7 +281,6 @@ const verifyUser = async (req, res, next) => {
                 })
 
         } else {
-            console.log("otp doesnt match");
             return res.redirect('/verify')
         }
     } catch (error) {
@@ -333,7 +329,6 @@ const doLogout = async (req, res, next) => {
 
 const addToWish = async (req, res, next) => {
     try {
-        console.log("<<< add Wishlist works >>>");
         const userId = req.session.userId;
         const productId = req.params.id
         const Wishlist = await WishlistModel.findOne({ userId: userId });
@@ -562,7 +557,6 @@ const addAddress = async (req, res, next) => {
 
 const updateAddress = async (req, res, next) => {
     try {
-        console.log("update address", req.body);
         await UserModel.updateOne(
             {
                 _id: req.session.userId,
@@ -639,13 +633,12 @@ const applyCoupon = async (req, res, next) => {
 
 const placeOrder = async (req, res, next) => {
     try {
-        console.log("reached place order",req.body);
         const user = await UserModel.findOne({ _id: req.session.userId })
-        
+
         //getting address using address id
         const shipAddr = user.addresses.id(req.body.shipAddrId)
         const billAddr = user.addresses.id(req.body.billAddrId)
-        
+
         //getting cart with populated product details
         const Cart = await CartModel.findOne({ userId: req.session.userId })
             .populate('cartItems.product', { _id: 1, srp: 1 })
@@ -665,24 +658,25 @@ const placeOrder = async (req, res, next) => {
         //find coupon object
         let cpn_code = req.body.coupon.toUpperCase().trim();
         const couponObj = await CouponModel.findOne({ code: cpn_code });
-        console.log(couponObj);
 
         //calculating subtotal,discount,grandtotal
         const subtotal = Cart.cartItems.map(item => item.price).reduce((acc, val) => acc + val, 0);
-        let discountAmt=0;
-        let grandTotal=subtotal;
-        let date = couponObj.validity;
-        let now = new Date();
-        if (!couponObj || date < now || subtotal < couponObj.minBill) {
-            couponObj = {};
-        } else {
-            discountAmt = subtotal * couponObj.discount / 100;
-            if (discountAmt >= couponObj.maxDiscount) {
-                discountAmt = couponObj.maxDiscount;
+        let discountAmt = 0;
+        let grandTotal = subtotal;
+        if (couponObj) {
+            let date = couponObj.validity;
+            let now = new Date();
+            if (date < now || subtotal < couponObj.minBill) {
+                couponObj = null;
+            } else {
+                discountAmt = subtotal * couponObj.discount / 100;
+                if (discountAmt >= couponObj.maxDiscount) {
+                    discountAmt = couponObj.maxDiscount;
+                }
+                grandTotal = subtotal - discountAmt;
+                grandTotal = Number(grandTotal.toFixed(2))
+                discountAmt = Number(discountAmt.toFixed(2))
             }
-            grandTotal = subtotal - discountAmt;
-            grandTotal = Number(grandTotal.toFixed(2))
-            discountAmt = Number(discountAmt.toFixed(2))
         }
         //creating the order with the above datas
         await new OrderModel({
@@ -736,14 +730,13 @@ const cancelOrder = async (req, res, next) => {
 
 const checkoutSession = async (req, res, next) => {
     try {
+        const itemsData = req.body
         //get user details
-
         const user = await UserModel.findById({ _id: req.session.userId })
 
         //convert array of items to required format
-
         const items = await Promise.all(
-            req.body.map(async (item) => {
+            itemsData.map(async (item) => {
                 const product = await ProductModel.findById({ _id: item.product })
                 const container = {
                     price_data: {
@@ -758,7 +751,6 @@ const checkoutSession = async (req, res, next) => {
         )
 
         //create checkout session
-
         const session = await stripe.checkout.sessions.create({
             mode: 'payment',
             payment_method_types: ['card'],

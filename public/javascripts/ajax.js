@@ -127,7 +127,6 @@ $('#checkout-form').submit((e) => {
 		method: 'post',
 		success: (res) => {
 			if (res.status) {
-				console.log(res);
 				location.href = '/order-success'
 			} else {
 				onlinePayment(res.items,res.orderId)
