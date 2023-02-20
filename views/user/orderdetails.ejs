@@ -1,5 +1,67 @@
 <%-include('../user/layouts/user-header.ejs') %>
+	<style>
+		body{margin-top:20px;}
+.timeline-steps {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap
+}
 
+.timeline-steps .timeline-step {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    margin: 1rem
+}
+
+@media (min-width:768px) {
+    .timeline-steps .timeline-step:not(:last-child):after {
+        content: "";
+        display: block;
+        border-top: .25rem dotted #3b82f6;
+        width: 3.46rem;
+        position: absolute;
+        left: 7.5rem;
+        top: .3125rem
+    }
+    .timeline-steps .timeline-step:not(:first-child):before {
+        content: "";
+        display: block;
+        border-top: .25rem dotted #3b82f6;
+        width: 3.8125rem;
+        position: absolute;
+        right: 7.5rem;
+        top: .3125rem
+    }
+}
+
+.timeline-steps .timeline-content {
+    width: 10rem;
+    text-align: center
+}
+
+.timeline-steps .timeline-content .inner-circle {
+    border-radius: 1.5rem;
+    height: 1rem;
+    width: 1rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #3b82f6
+}
+
+.timeline-steps .timeline-content .inner-circle:before {
+    content: "";
+    background-color: #3b82f6;
+    display: inline-block;
+    height: 3rem;
+    width: 3rem;
+    min-width: 3rem;
+    border-radius: 6.25rem;
+    opacity: .5
+}
+	</style>
 
 	<div class="container">
 		<div class="row no-gutters slider-text align-items-center justify-content-center">
@@ -8,55 +70,130 @@
 			</div>
 		</div>
 	</div>
-
+	<% if(order){ %>
 	<section class="ftco-section">
 		<div class="container-fluid">
 			<div class="row">
-			<div class="col-md-6">
-			<% order.orderItems.forEach((item)=>{ %>
-				<div class="row">
-				<div class="col-md-4 mb-5 ftco-animate">
-					<img src="/images/products/<%= item.product.image[0] %>" 
-						class="img-fluid" style="width: 250px; height: 150px;"
-							alt="Product">
+				<div class="col-md-6">
+					<% order.orderItems.forEach((item)=>{ %>
+						<div class="row">
+							<div class="col-md-4 mb-5 ftco-animate">
+								<img src="/images/products/<%= item.product.image[0] %>" class="img-fluid"
+									style="width: 250px; height: 150px;" alt="Product">
+							</div>
+							<div class="col-md-8 product-details pl-md-5 ftco-animate">
+								<h5 style="color: black;">
+									<%= item.product.productName %>
+								</h5>
+								<h6 style="color: black;"><span>$<%= item.price %> </span></h6>
+								<p>
+									<%= item.product.description %>
+								</p>
+							</div>
+						</div>
+						<% }) %>
 				</div>
-				<div class="col-md-8 product-details pl-md-5 ftco-animate">
-					<h5 style="color: black;">
-						<%= item.product.productName %>
-					</h5>
-					<h6 style="color: black;"><span>$<%= item.price %> </span></h6>
-					<p>
-						<%= item.product.description %>
-					</p>
-				</div>
-				</div>
-			<% }) %>
-			</div>
 
-			<div class="col-md-6">
-				<div class="row flex-column">
-					<h6>Shipping Details</h6>
-					<p><%= order.shipAddress.fullname %> <br>
-						<%= order.shipAddress.address %> <br>
-						<%= order.shipAddress.zip %>
-						<%= order.shipAddress.town %> <br>
-						<%= order.shipAddress.state %>
-						<%= order.shipAddress.country %>
-					</p>
-					<p><strong><%= order.shipAddress.mobile %></strong></p>
-				</div>
-				<div class="row flex-column mt-5">
-					<h6>Payment Details</h6>
-					<p><%= order.payment.method %><br>
-					Total $<%= order.subtotal %> <br>
-					Discount $<%= order.discount %> <br>
-					GrandTotal $<%= order.grandtotal %> <br>
-					<%= order.payment.status %></p>
+				<div class="col-md-6">
+					<div class="row flex-column">
+						<h6>Shipping Details</h6>
+						<p>
+							<%= order.shipAddress.fullname %> <br>
+								<%= order.shipAddress.address %> <br>
+									<%= order.shipAddress.zip %>
+										<%= order.shipAddress.town %> <br>
+											<%= order.shipAddress.state %>
+												<%= order.shipAddress.country %>
+						</p>
+						<p><strong>
+								<%= order.shipAddress.mobile %>
+							</strong></p>
+					</div>
+					<div class="row flex-column mt-5">
+						<h6>Payment Details</h6>
+						<p>
+							<%= order.payment.method %><br>
+								Total $<%= order.subtotal %> <br>
+									Discount $<%= order.discount %> <br>
+										GrandTotal $<%= order.grandtotal %> <br>
+											<%= order.payment.status %>
+						</p>
+					</div>
 				</div>
 			</div>
+			
+		</div>
+		<div class="container">
+			<div class="row">
+				<div class="col">
+					<% let status = order.deliveryStatus %>
+					<div class="timeline-steps aos-init aos-animate" data-aos="fade-up">
+					<% if(status.placed.state){ %>
+						<div class="timeline-step">
+							<div class="timeline-content" data-toggle="popover" data-trigger="hover" data-placement="top" title="" data-content="And here's some amazing content. It's very engaging. Right?" data-original-title="2003">
+								<div class="inner-circle"></div>
+								<p class="h6 mt-3 mb-1">Order Placed</p>
+								<p class="h6 text-muted mb-0 mb-lg-0">
+									<% let placed = status.placed.date %>
+									<%= placed.toString().slice(0, 15); %>
+								</p>
+							</div>
+						</div>
+					<% } %>	
+					<% if(status.shipped.state){ %>
+						<div class="timeline-step">
+							<div class="timeline-content" data-toggle="popover" data-trigger="hover" data-placement="top" title="" data-content="And here's some amazing content. It's very engaging. Right?" data-original-title="2005">
+								<div class="inner-circle"></div>
+								<p class="h6 mt-3 mb-1">Shipped</p>
+								<p class="h6 text-muted mb-0 mb-lg-0">
+									<% let shipped = status.shipped.date %>
+									<%= shipped.toString().slice(0, 15); %>
+								</p>
+							</div>
+						</div>
+					<% } %>
+					<% if(status.delivery.state){ %>
+						<div class="timeline-step">
+							<div class="timeline-content" data-toggle="popover" data-trigger="hover" data-placement="top" title="" data-content="And here's some amazing content. It's very engaging. Right?" data-original-title="2010">
+								<div class="inner-circle"></div>
+								<p class="h6 mt-3 mb-1">Out for Delivery</p>
+								<p class="h6 text-muted mb-0 mb-lg-0">
+									<% let delivery = status.delivery.date %>
+									<%= delivery.toString().slice(0, 15); %>
+								</p>
+							</div>
+						</div>
+						<% } %>
+						<% if(status.delivered.state){ %>
+						
+						<div class="timeline-step mb-0">
+							<div class="timeline-content" data-toggle="popover" data-trigger="hover" data-placement="top" title="" data-content="And here's some amazing content. It's very engaging. Right?" data-original-title="2020">
+								<div class="inner-circle"></div>
+								<p class="h6 mt-3 mb-1">Delivered</p>
+								<p class="h6 text-muted mb-0 mb-lg-0">
+									<% let delivered = status.delivered.date %>
+									<%= delivered.toString().slice(0, 15); %>
+								</p>
+							</div>
+						</div>
+						<% }else if(status.cancelled.state){ %>
+						<div class="timeline-step mb-0">
+							<div class="timeline-content" data-toggle="popover" data-trigger="hover" data-placement="top" title="" data-content="And here's some amazing content. It's very engaging. Right?" data-original-title="2020">
+								<div class="inner-circle"></div>
+								<p class="h6 mt-3 mb-1">Cancelled</p>
+								<p class="h6 text-muted mb-0 mb-lg-0">
+									<% let cancelled = status.cancelled.date %>
+									<%= cancelled.toString().slice(0, 15); %>
+								</p>
+							</div>
+						</div>
+						<% } %>
+					</div>
+				</div>
 			</div>
 		</div>
 	</section>
+	<% } %>
 
 	<%-include('../user/layouts/user-footer.ejs') %>
-	<%-include('../user/layouts/user-script.ejs') %>
+		<%-include('../user/layouts/user-script.ejs') %>

@@ -650,18 +650,16 @@ const placeOrder = async (req, res, next) => {
         })
 
         //manage out of stock
-        let i=0;
-        for(i=0; i<items.length; i++){
-            let product=await ProductModel.findOne({_id: items[i].product})
-            console.log("product"+i+" : "+product);
+        let i = 0;
+        for (i = 0; i < items.length; i++) {
+            let product = await ProductModel.findOne({ _id: items[i].product })
             if (product.qty == 0) {
                 return res.json({ err: `${product.productName} is out of stock` });
             } else if (product.qty < items[i].qty) {
                 return res.json({ err: `${product.productName} is available only ${product.qty} quantity` })
             }
         }
-        console.log("i=",i);
-        if (i==items.length) {
+        if (i == items.length) {
             console.log("creating order");
             const user = await UserModel.findOne({ _id: req.session.userId })
 
@@ -705,11 +703,10 @@ const placeOrder = async (req, res, next) => {
                 discount: discountAmt,
                 grandtotal: grandTotal,
                 orderStatus: req.body.payment === 'cod' ? "placed" : "pending",
-                "deliveryStatus.ordered.state": true,
-                "deliveryStatus.ordered.date": new Date
+                "deliveryStatus.placed.state": true,
+                "deliveryStatus.placed.date": new Date
             }).save()
                 .then(async (order) => {
-                    console.log("order details",order);
                     manageStock(order)
                     if (req.body.payment === 'cod') {
                         await CartModel.deleteOne({ userId: req.session.userId })
@@ -717,7 +714,14 @@ const placeOrder = async (req, res, next) => {
                         return res.json({ cod: true });
                     } else {
                         console.log("online payment");
-                        return res.json({ online: true, items: items, orderId: order._id })
+                        return res.json(
+                            {
+                                online: true,
+                                total: order.subtotal,
+                                discount: order.discount,
+                                grandtotal: order.grandtotal,
+                                orderId: order._id
+                            })
                     }
                 })
         }
@@ -760,37 +764,46 @@ const cancelOrder = async (req, res, next) => {
 
 const checkoutSession = async (req, res, next) => {
     try {
-        const itemsData = req.body
+        const orderData = req.body
+        console.log("order details", orderData);
+        console.log(orderData.grandtotal);
         //get user details
         const user = await UserModel.findById({ _id: req.session.userId })
 
         //convert array of items to required format
-        const items = await Promise.all(
-            itemsData.map(async (item) => {
-                const product = await ProductModel.findById({ _id: item.product })
-                const container = {
-                    price_data: {
-                        currency: 'inr',
-                        product_data: { name: product.productName },
-                        unit_amount: item.price * 86 * 100
-                    },
-                    quantity: item.qty
-                }
-                return container
-            })
-        )
+        // const items = await Promise.all(
+        //     itemsData.map(async (item) => {
+        //         const product = await ProductModel.findById({ _id: item.product })
+        //         const container = {
+        //             price_data: {
+        //                 currency: 'inr',
+        //                 product_data: { name: product.productName },
+        //                 unit_amount: item.price * 82.5 * 100
+        //             },
+        //             quantity: item.qty
+        //         }
+        //         return container
+        //     })
+        // )
 
         //create checkout session
         const session = await stripe.checkout.sessions.create({
             mode: 'payment',
             payment_method_types: ['card'],
-            line_items: items,
+            line_items: [{
+                price_data: {
+                    currency: 'inr',
+                    product_data: { name:"Grand Total" },
+                    unit_amount: parseInt(orderData.grandtotal * 82.5 * 100)
+                },
+                quantity: 1
+            }],
             customer_email: user.email,
-            client_reference_id: req.params.orderId,
-            success_url: 'http://localhost:3000/payment-success/' + req.params.orderId,
-            cancel_url: 'http://localhost:3000/payment-cancel/' + req.params.orderId
+            client_reference_id: orderData.id,
+            success_url: 'http://localhost:3000/payment-success/' + orderData.id,
+            cancel_url: 'http://localhost:3000/payment-cancel/' + orderData.id
         })
-        console.log(session);
+        console.log("<<Payment session>>\n", session);
         res.json({ url: session.url });
     } catch (error) {
         next(error)

@@ -25,11 +25,11 @@
                                 <span class="badge rounded-pill alert-success">Delivered</span>
                             <% }else if(order.deliveryStatus.cancelled.state){ %>
                                 <span class="badge rounded-pill alert-danger">Cancelled</span>
-                            <% }else if(order.deliveryStatus.out_for_delivery.state){ %>
+                            <% }else if(order.deliveryStatus.delivery.state){ %>
                                 <span class="badge rounded-pill alert-primary">Out for delivery</span>
                             <% }else if(order.deliveryStatus.shipped.state){ %>
                                 <span class="badge rounded-pill alert-secondary">Shipped</span>
-                            <% }else if(order.deliveryStatus.ordered.state){ %>
+                            <% }else if(order.deliveryStatus.placed.state){ %>
                                 <span class="badge rounded-pill alert-warning">Pending</span>
                             <% } %>
                         </div>

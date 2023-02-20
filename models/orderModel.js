@@ -54,7 +54,7 @@ const orderSchema = mongoose.Schema({
         default: Date.now()
     },
     deliveryStatus: {
-        ordered: {
+        placed: {
             state: { type: Boolean, default: false },
             date: Date
         },
@@ -62,7 +62,7 @@ const orderSchema = mongoose.Schema({
             state: { type: Boolean, default: false },
             date: Date
         },
-        out_for_delivery: {
+        delivery: {
             state: { type: Boolean, default: false },
             date: Date
         },

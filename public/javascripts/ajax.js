@@ -133,20 +133,23 @@ $('#checkout-form').submit((e) => {
 				location.href = '/order-success';
 			}
 			if(res.online){
-				onlinePayment(res.items,res.orderId)
+				const orderData = {
+					id: res.orderId,
+					total: res.total,
+					discount: res.discount,
+					grandtotal: res.grandtotal
+				}
+				onlinePayment(orderData)
 			}
 		}
 	})
 })
 
 //online payment
-function onlinePayment(items,orderId){
+function onlinePayment(order){
 	$.ajax({
-		url:'/checkout-session/'+orderId,
-		headers:{
-			'Content-Type': 'application/json'
-		},
-		data:JSON.stringify(items),
+		url:'/checkout-session',
+		data:order,
 		method:'POST',
 		success:(res)=>{
 			console.log(res);

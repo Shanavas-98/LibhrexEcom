@@ -46,11 +46,11 @@
 													Delivered
 												<% }else if(order.deliveryStatus.cancelled.state){ %>
 													Cancelled
-												<% }else if(order.deliveryStatus.out_for_delivery.state){ %>
+												<% }else if(order.deliveryStatus.delivery.state){ %>
 													Out for Delivery
 												<% }else if(order.deliveryStatus.shipped.state){ %>
 													Shipped
-												<% }else if(order.deliveryStatus.ordered.state){ %>
+												<% }else if(order.deliveryStatus.placed.state){ %>
 													Ordered
 												<% } %>
 											</td>

@@ -396,8 +396,7 @@ const orderShip = async (req, res, next) => {
         await OrderModel.findOneAndUpdate(
             { _id: orderId },
             { $set: { 'deliveryStatus.shipped.state': true, 'deliveryStatus.shipped.date': new Date } }
-        ).then((order) => {
-            manageStock(order)
+        ).then(() => {
             res.redirect('/admin/orders');
         })
     } catch (error) {
@@ -412,7 +411,7 @@ const orderDelivery = async (req, res, next) => {
     try {
         await OrderModel.findOneAndUpdate(
             { _id: orderId },
-            { $set: { 'deliveryStatus.out_for_delivery.state': true, 'deliveryStatus.out_for_delivery.date': new Date } }
+            { $set: { 'deliveryStatus.delivery.state': true, 'deliveryStatus.delivery.date': new Date } }
         ).then(() => {
             res.redirect('/admin/orders');
         })
