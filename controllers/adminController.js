@@ -405,18 +405,7 @@ const orderShip = async (req, res, next) => {
     }
 }
 
-const manageStock = async (order) => {
-    let items = order.orderItems;
-    items.forEach(async (item) => {
-            await ProductModel.updateOne(
-                { _id: item.product },
-                {
-                    $inc:
-                        { qty: -(item.qty) }
-                }
-            )
-        })
-}
+
 
 const orderDelivery = async (req, res, next) => {
     const orderId = req.params.id;

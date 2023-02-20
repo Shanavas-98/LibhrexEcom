@@ -633,12 +633,6 @@ const applyCoupon = async (req, res, next) => {
 
 const placeOrder = async (req, res, next) => {
     try {
-        const user = await UserModel.findOne({ _id: req.session.userId })
-
-        //getting address using address id
-        const shipAddr = user.addresses.id(req.body.shipAddrId)
-        const billAddr = user.addresses.id(req.body.billAddrId)
-
         //getting cart with populated product details
         const Cart = await CartModel.findOne({ userId: req.session.userId })
             .populate('cartItems.product', { _id: 1, srp: 1 })
@@ -655,58 +649,94 @@ const placeOrder = async (req, res, next) => {
             return container
         })
 
-        //find coupon object
-        let cpn_code = req.body.coupon.toUpperCase().trim();
-        const couponObj = await CouponModel.findOne({ code: cpn_code });
-
-        //calculating subtotal,discount,grandtotal
-        const subtotal = Cart.cartItems.map(item => item.price).reduce((acc, val) => acc + val, 0);
-        let discountAmt = 0;
-        let grandTotal = subtotal;
-        if (couponObj) {
-            let date = couponObj.validity;
-            let now = new Date();
-            if (date < now || subtotal < couponObj.minBill) {
-                couponObj = null;
-            } else {
-                discountAmt = subtotal * couponObj.discount / 100;
-                if (discountAmt >= couponObj.maxDiscount) {
-                    discountAmt = couponObj.maxDiscount;
-                }
-                grandTotal = subtotal - discountAmt;
-                grandTotal = Number(grandTotal.toFixed(2))
-                discountAmt = Number(discountAmt.toFixed(2))
+        //manage out of stock
+        let i=0;
+        for(i=0; i<items.length; i++){
+            let product=await ProductModel.findOne({_id: items[i].product})
+            console.log("product"+i+" : "+product);
+            if (product.qty == 0) {
+                return res.json({ err: `${product.productName} is out of stock` });
+            } else if (product.qty < items[i].qty) {
+                return res.json({ err: `${product.productName} is available only ${product.qty} quantity` })
             }
         }
-        //creating the order with the above datas
-        await new OrderModel({
-            user: req.session.userId,
-            shipAddress: shipAddr,
-            billAddress: billAddr,
-            "payment.method": req.body.payment,
-            orderItems: items,
-            subtotal: subtotal,
-            coupon: couponObj,
-            discount: discountAmt,
-            grandtotal: grandTotal,
-            orderStatus: req.body.payment === 'cod' ? "placed" : "pending",
-            "deliveryStatus.ordered.state": true,
-            "deliveryStatus.ordered.date": new Date
+        console.log("i=",i);
+        if (i==items.length) {
+            console.log("creating order");
+            const user = await UserModel.findOne({ _id: req.session.userId })
 
-        }).save()
-            .then(async (response) => {
-                if (req.body.payment === 'cod') {
-                    await CartModel.deleteOne({ userId: req.session.userId })
-                    console.log("cash on delivery");
-                    res.json({ status: true });
+            //getting address using address id
+            const shipAddr = user.addresses.id(req.body.shipAddrId)
+            const billAddr = user.addresses.id(req.body.billAddrId)
+
+            //find coupon object
+            let cpn_code = req.body.coupon.toUpperCase().trim();
+            const couponObj = await CouponModel.findOne({ code: cpn_code });
+
+            //calculating subtotal,discount,grandtotal
+            const subtotal = Cart.cartItems.map(item => item.price).reduce((acc, val) => acc + val, 0);
+            let discountAmt = 0;
+            let grandTotal = subtotal;
+            if (couponObj) {
+                let date = couponObj.validity;
+                let now = new Date();
+                if (date < now || subtotal < couponObj.minBill) {
+                    couponObj = null;
                 } else {
-                    console.log("online payment");
-                    res.json({ status: false, items: items, orderId: response._id })
+                    discountAmt = subtotal * couponObj.discount / 100;
+                    if (discountAmt >= couponObj.maxDiscount) {
+                        discountAmt = couponObj.maxDiscount;
+                    }
+                    grandTotal = subtotal - discountAmt;
+                    grandTotal = Number(grandTotal.toFixed(2))
+                    discountAmt = Number(discountAmt.toFixed(2))
                 }
-            })
+            }
+
+            //creating the order with the given datas
+            await new OrderModel({
+                user: req.session.userId,
+                shipAddress: shipAddr,
+                billAddress: billAddr,
+                "payment.method": req.body.payment,
+                orderItems: items,
+                subtotal: subtotal,
+                coupon: couponObj,
+                discount: discountAmt,
+                grandtotal: grandTotal,
+                orderStatus: req.body.payment === 'cod' ? "placed" : "pending",
+                "deliveryStatus.ordered.state": true,
+                "deliveryStatus.ordered.date": new Date
+            }).save()
+                .then(async (order) => {
+                    console.log("order details",order);
+                    manageStock(order)
+                    if (req.body.payment === 'cod') {
+                        await CartModel.deleteOne({ userId: req.session.userId })
+                        console.log("cash on delivery");
+                        return res.json({ cod: true });
+                    } else {
+                        console.log("online payment");
+                        return res.json({ online: true, items: items, orderId: order._id })
+                    }
+                })
+        }
     } catch (error) {
         next(error)
     }
+}
+
+const manageStock = async (order) => {
+    let items = order.orderItems;
+    items.forEach(async (item) => {
+        await ProductModel.updateOne(
+            { _id: item.product },
+            {
+                $inc:
+                    { qty: -(item.qty) }
+            }
+        )
+    })
 }
 
 const cancelOrder = async (req, res, next) => {

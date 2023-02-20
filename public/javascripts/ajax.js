@@ -126,9 +126,13 @@ $('#checkout-form').submit((e) => {
 		data: $('#checkout-form').serialize(),
 		method: 'post',
 		success: (res) => {
-			if (res.status) {
-				location.href = '/order-success'
-			} else {
+			if(res.err){
+				alert(res.err);
+			}
+			if (res.cod) {
+				location.href = '/order-success';
+			}
+			if(res.online){
 				onlinePayment(res.items,res.orderId)
 			}
 		}
@@ -145,6 +149,7 @@ function onlinePayment(items,orderId){
 		data:JSON.stringify(items),
 		method:'POST',
 		success:(res)=>{
+			console.log(res);
 			location.href = res.url
 		}
 	})
