@@ -12,6 +12,7 @@ const CartModel = require("../models/cartModel");
 const WishlistModel = require("../models/wishlistModel");
 const OrderModel = require("../models/orderModel");
 const CouponModel = require('../models/couponModel');
+const OtpModel = require('../models/otpModel');
 
 const Category = CategoryModel.category;
 const Subcategory = CategoryModel.subcategory;
@@ -232,19 +233,12 @@ const couponsPage = async (req, res, next) => {
     }
 }
 
-let salt
-const salting = async()=>{
-    salt = await bcrypt.genSalt(10);
-}
-salting()
 const doSignup = async (req, res, next) => {
     try {
         console.log("form otp",req.body.otp);
         let otpString = req.body.otp.toString().trim()
-        let salt = await bcrypt.genSalt(10);
-        let otp = await bcrypt.hash(otpString, salt);
-        console.log("form hash otp",otp);
-        if (req.session.otp == otp) {
+        const isOtp = await bcrypt.compare(otpString, req.session.otp);
+        if (isOtp) {
              await new UserModel({
                 fullname: req.body.fullname,
                 mobile: req.body.mobile,
@@ -274,12 +268,22 @@ const doSignup = async (req, res, next) => {
 const sendOtp = async (req, res, next) => {
     try {
         let email = req.body.email.trim();
+        //await OtpModel.deleteOne({email:email})
         otp = Math.floor(100000 + Math.random() * 900000);
         let otpString = otp.toString().trim()
         console.log("send otp",otpString);
-        let salt = await bcrypt.genSalt(10);
-        req.session.otp = await bcrypt.hash(otpString, salt)
-        console.log("send hash otp",req.session.otp);
+        req.session.otp = await bcrypt.hash(otpString,10)
+        // let now = new Date()
+        // console.log("current time",now);
+        // let tenMin= new Date(now.getTime()+10*60000)
+        // console.log("validity 10 min",tenMin);
+
+        // await new OtpModel({
+        //     email: email,
+        //     otp: await bcrypt.hash(otpString, 10),
+        //     validity: tenMin
+        // }).save()
+
         await emailOtp.sendVerifyEmail(email, otp)
             .then(() => {
                 res.json({ msg: "otp sent successfully" });
