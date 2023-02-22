@@ -9,7 +9,7 @@ router.get('/',isLogin.adminLogin,controller.homePage);
 router.get('/login',controller.loginPage);
 router.get('/profile',isLogin.adminLogin,controller.profilePage);
 router.get('/products',isLogin.adminLogin,controller.productsPage);
-router.get('/products/add',isLogin.adminLogin,controller.addProductPage);
+router.get('/products-add',isLogin.adminLogin,controller.addProductPage);
 router.get('/products/edit/:id',isLogin.adminLogin,controller.editProductPage);
 
 router.get('/logout',controller.doLogout);
@@ -40,7 +40,7 @@ router.get('/delete-coupon/:cpnId',isLogin.adminLogin,controller.deleteCoupon);
 // POST Methods
 router.post('/signin',controller.doLogin)
 router.post('/categories/add',controller.addCategory)
-router.post('/products/add-product',controller.addProduct);
+router.post('/add-product',controller.addProduct);
 router.post('/products/edit-product/:id',controller.editProduct);
 router.post('/add-coupon-form',controller.addCoupon);
 router.post('/edit-coupon-form/:cpnId',controller.editCoupon);

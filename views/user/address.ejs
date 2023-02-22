@@ -7,66 +7,69 @@
                     <div class="text-center">
                         <h1 class="h4 text-gray-900 my-3">Add New Address</h1>
                     </div>
-                    <form action="/address/add" class="user" method="POST">
+                    <form action="/address-add" class="user" method="post" id="address_form">
                         <div class="form-group row">
                             <div class="col-sm-6 input-control">
                                 <label class="form-label">Full name*</label>
-                                <input type="text" class="form-control form-control-user" id="username" name="fullname"
-                                    required />
-                                <p class="valid_error"></p>
+                                <input type="text" class="form-control form-control-user" 
+                                id="username" name="fullname"/>
+                                <p class="valid_error text-danger"></p>
                             </div>
                             <div class="col-sm-6 input-control">
                                 <label class="form-label">Company/Shop*</label>
-                                <input type="text" class="form-control form-control-user" id="" name="company"
-                                    required />
-                                <p class="valid_error"></p>
+                                <input type="text" class="form-control form-control-user" 
+                                id="company" name="company" />
+                                <p class="valid_error text-danger"></p>
                             </div>
                         </div>
                         <div class="form-group row">
                             <div class="col-sm-6 input-control">
                                 <label class="form-label">Email*</label>
-                                <input type="email" class="form-control form-control-user" id="emailAddress"
-                                    name="email" required />
-                                <p class="valid_error"></p>
+                                <input type="email" class="form-control form-control-user" 
+                                id="emailAddress" name="email" />
+                                <p class="valid_error text-danger"></p>
                             </div>
                             <div class="col-sm-6 input-control">
                                 <label class="form-label">Mobile*</label>
-                                <input type="tel" class="form-control form-control-user" id="" name="mobile"
-                                    pattern="[5-9]{1}[0-9]{9}" required />
-                                <p class="valid_error"></p>
+                                <input type="tel" class="form-control form-control-user" 
+                                id="mobile" name="mobile"/>
+                                <p class="valid_error text-danger"></p>
                             </div>
                         </div>
                         <div class="form-group row">
                             <div class="col-sm-6 input-control">
                                 <label class="form-label">Country*</label>
-                                <input type="text" class="form-control form-control-user" id="" name="country"
-                                    required />
-                                <p class="valid_error"></p>
+                                <input type="text" class="form-control form-control-user" 
+                                id="country" name="country"/>
+                                <p class="valid_error text-danger"></p>
                             </div>
                             <div class="col-sm-6 input-control">
                                 <label class="form-label">State*</label>
-                                <input type="text" class="form-control form-control-user" id="" name="state" required />
-                                <p class="valid_error"></p>
+                                <input type="text" class="form-control form-control-user"
+                                 id="state" name="state"/>
+                                <p class="valid_error text-danger"></p>
                             </div>
                         </div>
                         <div class="form-group row">
                             <div class="col-sm-6 input-control">
                                 <label class="form-label">City/Town*</label>
-                                <input type="text" class="form-control form-control-user" id="" name="town" required />
-                                <p class="valid_error"></p>
+                                <input type="text" class="form-control form-control-user"
+                                 id="town" name="town" />
+                                <p class="valid_error text-danger"></p>
                             </div>
                             <div class="col-sm-6 input-control">
                                 <label class="form-label">Postal Code/ZIP*</label>
-                                <input type="tel" class="form-control form-control-user" id="" name="zip"
-                                    pattern="[0-9]{4,7}" required />
-                                <p class="valid_error"></p>
+                                <input type="tel" class="form-control form-control-user"
+                                 id="zip" name="zip"/>
+                                <p class="valid_error text-danger"></p>
                             </div>
                         </div>
                         <div class="form-group row">
                             <div class="col-sm-12 input-control">
                                 <label class="form-label">Street Address*</label>
                                 <textarea placeholder="Building No/Name, Locality, Street, Post Office"
-                                    class="form-control" rows="3" id="" name="address" required></textarea>
+                                    class="form-control" rows="3" id="address" name="address"></textarea>
+                                    <p class="valid_error text-danger"></p>
                             </div>
                         </div>
                         <div class="form-group row justify-content-center">
@@ -80,5 +83,5 @@
         </div>
     </div>
     <%-include('../user/layouts/user-footer.ejs') %>
-
+    <script src="/javascripts/validations/address_val.js"></script>
         <%-include('../user/layouts/user-script.ejs') %>

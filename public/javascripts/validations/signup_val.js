@@ -1,6 +1,8 @@
 const form = document.getElementById('signup_form');
 const username = document.getElementById('username');
+const mobile = document.getElementById('mobile');
 const email = document.getElementById('emailAddress');
+const otp = document.getElementById('otp');
 const password = document.getElementById('pswd');
 const password2 = document.getElementById('pswd2');
 
@@ -27,8 +29,13 @@ const setSuccess = element => {
     inputControl.classList.remove('valid_error');
 };
 
+const isValidMobile = (mobile) =>{
+    const regexMob = /^[5-9]{1}[0-9]{9}$/;
+    return regexMob.test(mobile);
+  }
+
 const isValidEmail = email => {
-    const regexMail = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    const regexMail = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-z\-0-9]+\.)+[a-z]{2,10}))$/;
     return regexMail.test(String(email).toLowerCase());
 }
 
@@ -37,9 +44,16 @@ const isValidPassword = password =>{
     return regexPass.test(password);
 }
 
+const isValidOtp = (otp) =>{
+    const regexOtp = /^[0-9]{6}$/;
+    return regexOtp.test(otp);
+}
+
 const validateInputs = () => {
     const usernameValue = username.value.trim();
+    const mobileValue = mobile.value.trim();
     const emailValue = email.value.trim();
+    const otpValue = otp.value.trim();
     const passwordValue = password.value.trim();
     const password2Value = password2.value.trim();
 
@@ -50,6 +64,16 @@ const validateInputs = () => {
         setSuccess(username);
     }
 
+    if(mobileValue === '') {
+        setError(mobile, 'Mobile is required');
+        return;
+    } else if (!isValidMobile(mobileValue)) {
+        setError(mobile, 'Provide a valid 10-digit mobile number');
+        return;
+    } else {
+      setSuccess(mobile);
+    }
+
     if(emailValue === '') {
         setError(email, 'Email is required');
         return;
@@ -58,6 +82,16 @@ const validateInputs = () => {
         return;
     } else {
         setSuccess(email);
+    }
+
+    if(otpValue === '') {
+        setError(otp, 'OTP is required');
+        return;
+    } else if (!isValidOtp(otpValue)) {
+        setError(otp, 'Provide a valid 6-digit OTP');
+        return;
+    } else {
+      setSuccess(otp);
     }
 
     if(passwordValue === '') {
@@ -72,8 +106,7 @@ const validateInputs = () => {
     }else if(!isValidPassword(passwordValue)){
         setError(password, 'Password must contain uppercase,lowercase,number,special character.');
         return;
-    }
-     else {
+    }else {
         setSuccess(password);
     }
 
@@ -84,10 +117,10 @@ const validateInputs = () => {
         setError(password2, "Passwords doesn't match");
         return;
     } else {
-        setSuccess(password2);
+        setSuccess();
     }
     form.submit();
-};
+}
 
 const togglePassword = document.querySelector("#togglePassword");
 

@@ -18,7 +18,7 @@
 					<div class="row">
 						<div class="col-md-12 d-flex justify-content-between my-2">
 						<h3 class="mb-4 billing-heading">Shipping Address</h3>
-						<a href="/address/add" class="btn btn-primary pt-3">Add new Address</a>
+						<a href="/address-add" class="btn btn-primary pt-3">Add new Address</a>
 						</div>
 						<div class="col-md-12 d-flex mb-5">
 							<div class="cart-detail cart-total p-3 overflow-auto"
@@ -38,11 +38,11 @@
 											</p>
 										</div>
 										<div class="col-sm-3 d-flex justify-content-around align-items-center">
-											<a href="/address/edit/<%= addr._id %>">
+											<a href="/address-edit/<%= addr._id %>">
 												<i class="bi bi-pencil-square" style="color: #0d6efd; font-size: large;"
 													title="edit"></i>
 											</a>
-											<a href="/address/delete/<%= addr._id %>">
+											<a href="/address-delete/<%= addr._id %>">
 												<i class="bi bi-trash-fill" style="color: #cf0000; font-size: large;"
 													title="delete"></i>
 											</a>
@@ -73,11 +73,11 @@
 											</p>
 										</div>
 										<div class="col-sm-3 d-flex justify-content-around align-items-center">
-											<a href="/address/edit/<%= addr._id %>">
+											<a href="/address-edit/<%= addr._id %>">
 												<i class="bi bi-pencil-square" style="color: #0d6efd; font-size: large;"
 													title="edit"></i>
 											</a>
-											<a href="/address/delete/<%= addr._id %>">
+											<a href="/address-delete/<%= addr._id %>">
 												<i class="bi bi-trash-fill" style="color: #cf0000; font-size: large;"
 													title="delete"></i>
 											</a>
@@ -97,6 +97,7 @@
 								<p id="err_message" class="text-danger"></p>
 								<input type="text" id="coupon" class="form-control form-control-user" style="text-transform: uppercase;" name="coupon"/>
 								<button type="button" class="btn btn-primary my-2" id="apply-coupon" style="width:50%" onclick="applyCoupon()">Apply</button>
+								<button type="button" class="btn btn-primary my-2" id="apply-coupon" style="width:50%" onclick="removeCoupon()">Remove</button>
 							<p id="success_msg" class="text-success"></p>
 							</div>
 						</div>

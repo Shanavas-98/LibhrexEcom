@@ -18,8 +18,6 @@ const Category = CategoryModel.category;
 const Subcategory = CategoryModel.subcategory;
 const ObjectId = mongoose.Types.ObjectId;
 
-let userErr = "";
-let passErr = "";
 let count = { cart: 0, wish: 0 }
 
 const signupPage = async (req, res, next) => {
@@ -30,10 +28,9 @@ const signupPage = async (req, res, next) => {
     }
 }
 
-const verifyPage = async (req, res, next) => {
+const forgotPage = async (req, res, next) => {
     try {
-        let email = req.session.email
-        res.render('user/verifyotp', { title: "Verification", login: req.session, email })
+        res.render('user/forgot', { title: "Reset Password", login: req.session })
     } catch (error) {
         next(error)
     }
@@ -42,9 +39,7 @@ const verifyPage = async (req, res, next) => {
 const loginPage = async (req, res, next) => {
     try {
         if (!req.session.userLogin) {
-            res.render('user/login', { title: "Login", login: req.session, userErr, passErr });
-            userErr = ''
-            passErr = ''
+            res.render('user/login', { title: "Login", login: req.session});
         } else {
             res.redirect('/');
         }
@@ -235,29 +230,29 @@ const couponsPage = async (req, res, next) => {
 
 const doSignup = async (req, res, next) => {
     try {
-        console.log("form otp", req.body.otp);
-        let otpString = req.body.otp.toString().trim()
+        let otpString = req.body.otp.trim()
         //const isOtp = await bcrypt.compare(otpString, req.session.otp);
-        const otpData = await OtpModel.findOne({ email: req.body.email.trim() })
-        console.log("otp details/n", otpData);
-        if (new Date() > otpData.validity) {
-            return res.json({ err: "otp expired" })
-        }
+        const otpData = await OtpModel.findOne({ email: req.body.email.trim() });
+        
         const isOtp = await bcrypt.compare(otpString, otpData.otp);
         if (!isOtp) {
             return res.json({ err: "incorrect otp" })
         }
+        if (new Date() > otpData.expiry) {
+            return res.json({ err: "otp expired" })
+        }
+
         await new UserModel({
             fullname: req.body.fullname,
             mobile: req.body.mobile,
             email: req.body.email.trim(),
             password: await bcrypt.hash(req.body.password, 10),
-            password2: req.body.password2,
             verified: true
         }).save()
             .then(async(user) => {
                 //delete otp after signup
                 await OtpModel.deleteOne({ email: user.email })
+                res.redirect('/login')
             })
             .catch(() => {
                 res.json({ err: "this email already registered!" })
@@ -275,19 +270,17 @@ const sendOtp = async (req, res, next) => {
         await OtpModel.deleteOne({ email: email })
         //generate new otp
         otp = Math.floor(100000 + Math.random() * 900000);
-        let otpString = otp.toString().trim()
+        let otpString = otp.toString()
         //req.session.otp = await bcrypt.hash(otpString,10)
 
         //generate validity of otp
         let now = new Date()
-        console.log("current time", now);
         let tenMin = new Date(now.getTime() + 10 * 60000)
-        console.log("validity 10 min", tenMin);
         //store otp details in database
         await new OtpModel({
             email: email,
             otp: await bcrypt.hash(otpString, 10),
-            validity: tenMin
+            expiry: tenMin
         }).save()
         //send otp using nodemailer
         await emailOtp.sendVerifyEmail(email, otp)
@@ -303,21 +296,34 @@ const sendOtp = async (req, res, next) => {
 
 }
 
-const verifyUser = async (req, res, next) => {
+const resetPassword = async (req, res, next) => {
     try {
-        if (req.body.otp == otp) {
-            await UserModel.findOneAndUpdate({ email: req.session.email }, { $set: { verified: true } })
-                .then(() => {
-                    otp = "";
-                    res.redirect('/')
-                })
-                .catch((error) => {
-                    next(error)
-                })
-
-        } else {
-            return res.redirect('/verify')
+        const email = req.body.email.trim()
+        const user = await UserModel.findOne({email: email})
+        if(!user){
+            return res.json({err: "user not found check emailid"})
         }
+        let otpString = req.body.otp.trim()
+        const otpData = await OtpModel.findOne({ email: email})
+        
+        const isOtp = await bcrypt.compare(otpString, otpData.otp);
+        if (!isOtp) {
+            return res.json({ err: "incorrect otp" })
+        }
+        if (new Date() > otpData.expiry) {
+            return res.json({ err: "otp expired" })
+        }
+
+        await UserModel.updateOne(
+            {email: email},
+            {$set:{
+                password:await bcrypt.hash(req.body.password, 10)
+            }}
+            ).then(async(user)=>{
+                await OtpModel.deleteOne({ email: user.email })
+                res.redirect('/login')
+            })
+
     } catch (error) {
         next(error)
     }
@@ -325,28 +331,28 @@ const verifyUser = async (req, res, next) => {
 
 const doLogin = async (req, res, next) => {
     try {
-        const { email, password } = req.body;
-        const user = await UserModel.findOne({ email: email });
+        const password = req.body.password;
+        const user = await UserModel.findOne({ email: req.body.email.trim() });
         if (!user) {
-            userErr = 'user doesnot exist';
             req.session.userLogin = false;
-            return res.redirect('/login');
+            res.json({userErr:"user doesnot exist"});
+            return;
         }
         if (user.blocked) {
-            userErr = 'sorry user blocked';
             req.session.userLogin = false;
-            return res.redirect('/login');
+            res.json({userErr:"user is blocked"});
+            return;
         }
         const isPass = await bcrypt.compare(password, user.password);
         if (!isPass) {
-            passErr = 'incorrect password';
             req.session.userLogin = false;
-            return res.redirect('/login');
+            res.json({passErr:"wrong password"});
+            return;
         }
         req.session.username = user.fullname
         req.session.userId = user._id
         req.session.userLogin = true
-        res.redirect('/');
+        res.json({success:true})
     } catch (error) {
         next(error)
     }
@@ -799,8 +805,7 @@ const cancelOrder = async (req, res, next) => {
 
 const checkoutSession = async (req, res, next) => {
     try {
-        const orderData = req.body
-        console.log("order details", orderData);
+        const orderData = req.body;
         console.log(orderData.grandtotal);
         //get user details
         const user = await UserModel.findById({ _id: req.session.userId })
@@ -873,7 +878,7 @@ const paymentCancel = async (req, res, next) => {
 
 module.exports = {
     signupPage,
-    verifyPage,
+    forgotPage,
     loginPage,
     homePage,
     shopPage,
@@ -892,7 +897,7 @@ module.exports = {
     paymentSuccess,
     paymentCancel,
     sendOtp,
-    verifyUser,
+    resetPassword,
     doSignup,
     doLogin,
     doLogout,

@@ -343,7 +343,7 @@ const addProduct = async (req, res, next) => {
                 res.redirect("/admin/products");
             }).catch((err) => {
                 console.log(err.message);
-                res.redirect("/admin/products/add");
+                res.redirect("/admin/products-add");
             });
 
     } catch (err) {

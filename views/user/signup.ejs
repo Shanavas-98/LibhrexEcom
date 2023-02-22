@@ -7,46 +7,45 @@
                     <div class="text-center">
                         <h1 class="h4 text-gray-900 my-3">Create an Account!</h1>
                     </div>
-                    <form action="/register" class="user" method="POST" id="signup_form">
+                    <form action="/register" class="user" method="post" id="signup_form">
                         <div class="form-group row">
                             <div class="col-md-6 input-control">
                             <input type="text" class="form-control form-control-user" id="username" name="fullname"
-                                placeholder="Full Name" required />
-                            <p class="valid_error"></p>
+                                placeholder="Full Name"  />
+                            <p class="valid_error text-danger"></p>
                             </div>
                             <div class="col-md-6 input-control">
-                                <input type="tel" class="form-control form-control-user" id="" name="mobile"
-                                    placeholder="Mobile" pattern="[5-9]{1}[0-9]{9}" required />
-                                <p class="valid_error"></p>
+                                <input type="tel" class="form-control form-control-user" id="mobile" name="mobile"
+                                    placeholder="Mobile"  />
+                                <p class="valid_error text-danger"></p>
                             </div>
-                            
                         </div>
                         <div class="form-group row">
                             <div class="col-md-6 input-control">
-                                <input type="text" class="form-control form-control-user" id="emailAddress"
-                                    name="email" placeholder="Email Address" pattern="[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\.[a-zA-Z]{2,4}" required />
-                                <p class="valid_error" id="email_error"></p>
+                                <input type="email" class="form-control form-control-user" id="emailAddress"
+                                    name="email" placeholder="Email Address" />
+                                <p class="valid_error text-danger" id="email_error"></p>
                             </div>
                             <div class="col-md-6 d-flex input-control">
                                 <div class="d-inline-flex">
                                 <input type="tel" class="form-control form-control-user" id="otp" name="otp"
-                                    placeholder="OTP" pattern="[0-9]{6}" required />
+                                    placeholder="OTP" />
                                 <button type="button" class="btn btn-primary px-3 py-0" onclick="sendOtp()">Send OTP</button>
                                 </div>
-                                <p class="valid_error"></p>
+                                <p class="valid_error text-danger"></p>
                             </div>
                         </div>
                         <div class="form-group row">
                             <div class="col-md-6 mb-3 mb-sm-0 input-control text-center">
                                 <input type="password" class="form-control form-control-user" id="pswd" name="password"
-                                    placeholder="New Password" required />
+                                    placeholder="New Password" />
                                 <i class="bi bi-eye-slash" id="togglePassword"></i>
-                                <p class="valid_error"></p>
+                                <p class="valid_error text-danger"></p>
                             </div>
                             <div class="col-md-6 input-control">
                                 <input type="password" class="form-control form-control-user" id="pswd2"
-                                    name="password2" placeholder="Confirm Password" required />
-                                <p class="valid_error"></p>
+                                    placeholder="Confirm Password" />
+                                <p class="valid_error text-danger"></p>
                             </div>
                         </div>
                         <div class="form-group row justify-content-center">
@@ -56,6 +55,9 @@
                             </button>
                         </div>
                     </form>
+                    <div class="text-center mt-3 mb-2">
+                        <a class="small" href="/forgot">Forgot Password?</a>
+                    </div>
                     <div class="text-center mt-3">
                         <p class="small">Already have an account? <a href="/login">Login here</a></p>
                     </div>
@@ -64,5 +66,5 @@
         </div>
     </div>
 	<%-include('../user/layouts/user-footer.ejs') %>
-
+    <script src="/javascripts/validations/signup_val.js"></script>
     <%-include('../user/layouts/user-script.ejs') %>

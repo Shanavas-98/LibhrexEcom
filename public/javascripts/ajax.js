@@ -14,18 +14,70 @@ $('#signup_form').submit((e) => {
 	})
 })
 
-function sendOtp() {
-		$.ajax({
-			url: '/send-otp',
-			data: {
-				email: $('#emailAddress').val()
-			},
-			method: 'post',
-			success: (res) => {
-				alert(res.msg);
+$('#login_form').submit((e) => {
+	e.preventDefault()
+	const email = $('#emailAddress').val();
+	const password = $('#pswd').val();
+	const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-z\-0-9]+\.)+[a-z]{2,10}))$/;
+	if(!email){
+		$('#user_err').html("Email is required");
+		return;
+	}
+	if (!emailRegex.test(email)) {
+		$('#user_err').html("Provide a valid email address");
+		return;
+	}
+	$('#user_err').html('');
+	if(!password){
+		$('#pswd_err').html("Password required");
+		return;
+	}
+	$('#pswd_err').html('');
+
+	$.ajax({
+		url: '/signin',
+		data: $('#login_form').serialize(),
+		method: 'post',
+		success: (res) => {
+			console.log(res);
+			if (res.userErr) {
+				$('#user_err').html(res.userErr);
+				return;
 			}
-		})
-	
+			if(res.passErr){
+				$('#pswd_err').html(res.passErr);
+				return;
+			}
+			if(res.success){
+				location.href='/'
+			}
+		}
+	})
+})
+
+function sendOtp() {
+	const email = $('#emailAddress').val();
+	const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-z\-0-9]+\.)+[a-z]{2,10}))$/;
+	if(!email){
+		$('#email_error').html("Email is required")
+		return;
+	}
+	if (!emailRegex.test(email)) {
+		$('#email_error').html("Provide a valid email address")
+		return;
+	}
+	$('#email_error').html('')
+	$.ajax({
+		url: '/send-otp',
+		data: {
+			email: $('#emailAddress').val()
+		},
+		method: 'post',
+		success: (res) => {
+			alert(res.msg);
+		}
+	})
+
 }
 
 function verifyOtp() {
@@ -44,7 +96,7 @@ function verifyOtp() {
 
 function addToCart(productId) {
 	$.ajax({
-		url: '/cart/add/' + productId,
+		url: '/cart-add/' + productId,
 		method: 'get',
 		success: (res) => {
 			if (res.status) {
@@ -58,7 +110,7 @@ function addToCart(productId) {
 
 function delCartItem(itemId) {
 	$.ajax({
-		url: '/cart/delete/' + itemId,
+		url: '/cart-delete/' + itemId,
 		method: 'get',
 		success: (res) => {
 			if (res.remove) {
@@ -73,7 +125,7 @@ function delCartItem(itemId) {
 
 function addToWish(productId) {
 	$.ajax({
-		url: '/wishlist/add/' + productId,
+		url: '/wishlist-add/' + productId,
 		method: 'get',
 		success: (res) => {
 			if (res.status) {
@@ -89,7 +141,7 @@ function addToWish(productId) {
 
 function delWishItem(itemId) {
 	$.ajax({
-		url: '/wishlist/delete/' + itemId,
+		url: '/wishlist-delete/' + itemId,
 		method: 'get',
 		success: (res) => {
 			if (res.remove) {
@@ -104,7 +156,7 @@ function delWishItem(itemId) {
 
 function changeItemQty(itemId, prodId, count) {
 	$.ajax({
-		url: '/cart/quantity',
+		url: '/cart-qty',
 		data: {
 			item: itemId,
 			product: prodId,
@@ -142,10 +194,15 @@ function moveToWish(itemId, productId) {
 }
 
 function applyCoupon() {
+	const couponCode = $('#coupon').val();
+	if(!couponCode){
+		$('#err_message').html("enter a couponcode");
+		return;
+	}
 	$.ajax({
 		url: '/apply-coupon',
 		data: {
-			coupon: $('#coupon').val()
+			coupon: couponCode
 		},
 		method: 'post',
 		success: (res) => {
@@ -159,6 +216,11 @@ function applyCoupon() {
 			}
 		}
 	})
+}
+
+function removeCoupon() {
+	$('#coupon').val('')
+	location.reload()
 }
 
 //place order

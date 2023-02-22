@@ -7,29 +7,19 @@
                     <div class="text-center">
                         <h1 class="h4 text-gray-900 my-3">Welcome Back!</h1>
                     </div>
-                    <form action="/signin" class="user" method="POST" id="">
+                    <form action="/signin" class="user" method="post" id="login_form">
                         <div class="form-group row justify-content-center">
                             <div class="col-md-10 input-control">
                                 <input type="email" class="form-control form-control-user" id="emailAddress"
-                                    name="email" placeholder="Email Address"
-                                    pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" required />
-                                <p style="color: red;">
-                                    <% if (userErr) { %>
-                                        <%= userErr %>
-                                            <% } %>
-
-                                </p>
+                                    name="email" placeholder="Email Address"/>
+                                <p class="valid_error text-danger" id="user_err"></p>
                             </div>
                         </div>
                         <div class="form-group row justify-content-center">
                             <div class="col-md-10 mb-3 mb-sm-0 input-control text-center">
-                                <input type="password" class="form-control form-control-user" id="pswd" name="password"
-                                    placeholder="Password" required />
-                                <p style="color: red;">
-                                    <% if(passErr) { %>
-                                        <%= passErr %>
-                                            <% } %>
-                                </p>
+                                <input type="password" class="form-control form-control-user" id="pswd"
+                                 name="password" placeholder="Password" />
+                                <p class="valid_error text-danger" id="pswd_err"></p>
                             </div>
                         </div>
                         <div class="form-group row justify-content-center">
@@ -40,7 +30,7 @@
                         </div>
                     </form>
                     <div class="text-center mt-3 mb-2">
-                        <a class="small" href="forgot-password.html">Forgot Password?</a>
+                        <a class="small" href="/forgot">Forgot Password?</a>
                     </div>
                     <div class="text-center">
                         <p class="small">Don't have an account? <a href="/signup">Signup
@@ -52,5 +42,5 @@
     </div>
 
 	<%-include('../user/layouts/user-footer.ejs') %>
-
+    <script src="/javascripts/validations/login_val.js"></script>
     <%-include('../user/layouts/user-script.ejs') %>
