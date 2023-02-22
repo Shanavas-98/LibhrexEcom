@@ -235,31 +235,34 @@ const couponsPage = async (req, res, next) => {
 
 const doSignup = async (req, res, next) => {
     try {
-        console.log("form otp",req.body.otp);
+        console.log("form otp", req.body.otp);
         let otpString = req.body.otp.toString().trim()
-        const isOtp = await bcrypt.compare(otpString, req.session.otp);
-        if (isOtp) {
-             await new UserModel({
-                fullname: req.body.fullname,
-                mobile: req.body.mobile,
-                email: req.body.email,
-                password: await bcrypt.hash(req.body.password, 10),
-                password2: req.body.password2,
-                verified: true
-            }).save()
-                .then((user) => {
-                    console.log("new user\n", user);
-                    res.json({ email: user.email })
-                    //next();
-                })
-                .catch((error) => {
-                    console.log(error);
-                    res.json({ err: "this email already registered!" })
-                    //res.redirect("/register");
-                })
-        } else {
-            res.json({ err: "incorrect otp" })
+        //const isOtp = await bcrypt.compare(otpString, req.session.otp);
+        const otpData = await OtpModel.findOne({ email: req.body.email.trim() })
+        console.log("otp details/n", otpData);
+        if (new Date() > otpData.validity) {
+            return res.json({ err: "otp expired" })
         }
+        const isOtp = await bcrypt.compare(otpString, otpData.otp);
+        if (!isOtp) {
+            return res.json({ err: "incorrect otp" })
+        }
+        await new UserModel({
+            fullname: req.body.fullname,
+            mobile: req.body.mobile,
+            email: req.body.email.trim(),
+            password: await bcrypt.hash(req.body.password, 10),
+            password2: req.body.password2,
+            verified: true
+        }).save()
+            .then(async(user) => {
+                //delete otp after signup
+                await OtpModel.deleteOne({ email: user.email })
+            })
+            .catch(() => {
+                res.json({ err: "this email already registered!" })
+            })
+
     } catch (error) {
         next(error);
     }
@@ -267,27 +270,29 @@ const doSignup = async (req, res, next) => {
 
 const sendOtp = async (req, res, next) => {
     try {
+        //delete previous otp
         let email = req.body.email.trim();
-        //await OtpModel.deleteOne({email:email})
+        await OtpModel.deleteOne({ email: email })
+        //generate new otp
         otp = Math.floor(100000 + Math.random() * 900000);
         let otpString = otp.toString().trim()
-        console.log("send otp",otpString);
-        req.session.otp = await bcrypt.hash(otpString,10)
-        // let now = new Date()
-        // console.log("current time",now);
-        // let tenMin= new Date(now.getTime()+10*60000)
-        // console.log("validity 10 min",tenMin);
+        //req.session.otp = await bcrypt.hash(otpString,10)
 
-        // await new OtpModel({
-        //     email: email,
-        //     otp: await bcrypt.hash(otpString, 10),
-        //     validity: tenMin
-        // }).save()
-
+        //generate validity of otp
+        let now = new Date()
+        console.log("current time", now);
+        let tenMin = new Date(now.getTime() + 10 * 60000)
+        console.log("validity 10 min", tenMin);
+        //store otp details in database
+        await new OtpModel({
+            email: email,
+            otp: await bcrypt.hash(otpString, 10),
+            validity: tenMin
+        }).save()
+        //send otp using nodemailer
         await emailOtp.sendVerifyEmail(email, otp)
             .then(() => {
                 res.json({ msg: "otp sent successfully" });
-                //res.redirect('/verify');
             }).catch(() => {
                 res.json({ err: "otp sending failed" })
             })

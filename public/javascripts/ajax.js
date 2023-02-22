@@ -6,6 +6,7 @@ $('#signup_form').submit((e) => {
 		data: $('#signup_form').serialize(),
 		method: 'post',
 		success: (res) => {
+			console.log(res);
 			if (res.err) {
 				alert(res.err);
 			}
@@ -161,11 +162,11 @@ function applyCoupon() {
 }
 
 //place order
-$('#checkout-form').submit((e) => {
+$('#checkout_form').submit((e) => {
 	e.preventDefault()
 	$.ajax({
 		url: '/place-order',
-		data: $('#checkout-form').serialize(),
+		data: $('#checkout_form').serialize(),
 		method: 'post',
 		success: (res) => {
 			if (res.err) {
