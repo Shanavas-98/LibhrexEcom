@@ -2,7 +2,7 @@ require('../config/connection');
 require('dotenv').config()
 const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
-const sendOtp = require("../utils/nodemailer");
+const emailOtp = require("../utils/nodemailer");
 const stripe = require('stripe')(process.env.SECRET_KEY);
 
 const UserModel = require("../models/userModel");
@@ -19,7 +19,6 @@ const ObjectId = mongoose.Types.ObjectId;
 
 let userErr = "";
 let passErr = "";
-let otp = "";
 let count = { cart: 0, wish: 0 }
 
 const signupPage = async (req, res, next) => {
@@ -32,7 +31,8 @@ const signupPage = async (req, res, next) => {
 
 const verifyPage = async (req, res, next) => {
     try {
-        res.render('user/verifyotp', { title: "Verification", login: req.session })
+        let email = req.session.email
+        res.render('user/verifyotp', { title: "Verification", login: req.session, email })
     } catch (error) {
         next(error)
     }
@@ -232,40 +232,66 @@ const couponsPage = async (req, res, next) => {
     }
 }
 
-const getOtp = async (req, res, next) => {
-    let email = req.session.email;
-    otp = Math.floor(100000 + Math.random() * 900000);
-    await sendOtp.sendVerifyEmail(email, otp)
-        .then(() => {
-            res.redirect('/verify');
-        }).catch((error) => {
-            next(error)
-        })
-
+let salt
+const salting = async()=>{
+    salt = await bcrypt.genSalt(10);
 }
-
+salting()
 const doSignup = async (req, res, next) => {
     try {
-        req.session.email = req.body.email;
-        const newUser = UserModel({
-            fullname: req.body.fullname,
-            email: req.body.email,
-            mobile: req.body.mobile,
-            password: await bcrypt.hash(req.body.password, 10),
-            password2: req.body.password2
-        })
-
-        await newUser.save()
-            .then(() => {
-                next();
-            })
-            .catch((error) => {
-                console.log(error);
-                res.redirect("/register");
-            })
+        console.log("form otp",req.body.otp);
+        let otpString = req.body.otp.toString().trim()
+        let salt = await bcrypt.genSalt(10);
+        let otp = await bcrypt.hash(otpString, salt);
+        console.log("form hash otp",otp);
+        if (req.session.otp == otp) {
+             await new UserModel({
+                fullname: req.body.fullname,
+                mobile: req.body.mobile,
+                email: req.body.email,
+                password: await bcrypt.hash(req.body.password, 10),
+                password2: req.body.password2,
+                verified: true
+            }).save()
+                .then((user) => {
+                    console.log("new user\n", user);
+                    res.json({ email: user.email })
+                    //next();
+                })
+                .catch((error) => {
+                    console.log(error);
+                    res.json({ err: "this email already registered!" })
+                    //res.redirect("/register");
+                })
+        } else {
+            res.json({ err: "incorrect otp" })
+        }
     } catch (error) {
         next(error);
     }
+}
+
+const sendOtp = async (req, res, next) => {
+    try {
+        let email = req.body.email.trim();
+        otp = Math.floor(100000 + Math.random() * 900000);
+        let otpString = otp.toString().trim()
+        console.log("send otp",otpString);
+        let salt = await bcrypt.genSalt(10);
+        req.session.otp = await bcrypt.hash(otpString, salt)
+        console.log("send hash otp",req.session.otp);
+        await emailOtp.sendVerifyEmail(email, otp)
+            .then(() => {
+                res.json({ msg: "otp sent successfully" });
+                //res.redirect('/verify');
+            }).catch(() => {
+                res.json({ err: "otp sending failed" })
+            })
+
+    } catch (error) {
+        next(error)
+    }
+
 }
 
 const verifyUser = async (req, res, next) => {
@@ -793,7 +819,7 @@ const checkoutSession = async (req, res, next) => {
             line_items: [{
                 price_data: {
                     currency: 'inr',
-                    product_data: { name:"Grand Total" },
+                    product_data: { name: "Grand Total" },
                     unit_amount: parseInt(orderData.grandtotal * 82.5 * 100)
                 },
                 quantity: 1
@@ -856,7 +882,7 @@ module.exports = {
     paymentPage,
     paymentSuccess,
     paymentCancel,
-    getOtp,
+    sendOtp,
     verifyUser,
     doSignup,
     doLogin,

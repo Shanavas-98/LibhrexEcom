@@ -26,7 +26,7 @@ router.get("/payment",isLogin.userLogin,controller.paymentPage);
 router.get("/payment-success/:orderId",isLogin.userLogin,controller.paymentSuccess);
 router.get("/payment-cancel/:orderId",isLogin.userLogin,controller.paymentCancel);
 
-router.get('/resendotp',controller.getOtp);
+//router.get('/resendotp',controller.getOtp);
 router.get('/logout',controller.doLogout);
 router.get('/cart/add/:id',isLogin.userLogin,controller.addToCart);
 router.get('/cart/delete/:id',isLogin.userLogin,controller.delFromCart);
@@ -37,8 +37,10 @@ router.get('/order-cancel/:id',isLogin.userLogin,controller.cancelOrder);
 
 
 //POST Methods
-router.post('/register',controller.doSignup,controller.getOtp)
+router.post('/register',controller.doSignup)
+router.post('/send-otp',controller.sendOtp)
 router.post('/signin',controller.doLogin)
+
 router.post('/verify-user',controller.verifyUser)
 router.post('/cart/quantity',isLogin.userLogin,controller.changeItemQty);
 router.post('/address/add',isLogin.userLogin,controller.addAddress);

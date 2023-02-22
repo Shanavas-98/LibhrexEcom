@@ -8,31 +8,42 @@
                         <h1 class="h4 text-gray-900 my-3">Create an Account!</h1>
                     </div>
                     <form action="/register" class="user" method="POST" id="signup_form">
-                        <div class="form-group input-control">
+                        <div class="form-group row">
+                            <div class="col-md-6 input-control">
                             <input type="text" class="form-control form-control-user" id="username" name="fullname"
                                 placeholder="Full Name" required />
                             <p class="valid_error"></p>
-                        </div>
-                        <div class="form-group row">
-                            <div class="col-sm-6 input-control">
-                                <input type="email" class="form-control form-control-user" id="emailAddress"
-                                    name="email" placeholder="Email Address" required />
-                                <p class="valid_error"></p>
                             </div>
-                            <div class="col-sm-6 input-control">
+                            <div class="col-md-6 input-control">
                                 <input type="tel" class="form-control form-control-user" id="" name="mobile"
                                     placeholder="Mobile" pattern="[5-9]{1}[0-9]{9}" required />
                                 <p class="valid_error"></p>
                             </div>
+                            
                         </div>
                         <div class="form-group row">
-                            <div class="col-sm-6 mb-3 mb-sm-0 input-control text-center">
+                            <div class="col-md-6 input-control">
+                                <input type="text" class="form-control form-control-user" id="emailAddress"
+                                    name="email" placeholder="Email Address" pattern="[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\.[a-zA-Z]{2,4}" required />
+                                <p class="valid_error" id="email_error"></p>
+                            </div>
+                            <div class="col-md-6 d-flex input-control">
+                                <div class="d-inline-flex">
+                                <input type="tel" class="form-control form-control-user" id="otp" name="otp"
+                                    placeholder="OTP" pattern="[0-9]{6}" required />
+                                <button type="button" class="btn btn-primary px-3 py-0" onclick="sendOtp()">Send OTP</button>
+                                </div>
+                                <p class="valid_error"></p>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-md-6 mb-3 mb-sm-0 input-control text-center">
                                 <input type="password" class="form-control form-control-user" id="pswd" name="password"
                                     placeholder="New Password" required />
                                 <i class="bi bi-eye-slash" id="togglePassword"></i>
                                 <p class="valid_error"></p>
                             </div>
-                            <div class="col-sm-6 input-control">
+                            <div class="col-md-6 input-control">
                                 <input type="password" class="form-control form-control-user" id="pswd2"
                                     name="password2" placeholder="Confirm Password" required />
                                 <p class="valid_error"></p>

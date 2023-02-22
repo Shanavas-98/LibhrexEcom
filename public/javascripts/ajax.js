@@ -1,10 +1,52 @@
 
+$('#signup_form').submit((e) => {
+	e.preventDefault()
+	$.ajax({
+		url: '/register',
+		data: $('#signup_form').serialize(),
+		method: 'post',
+		success: (res) => {
+			if (res.err) {
+				alert(res.err);
+			}
+		}
+	})
+})
+
+function sendOtp() {
+		$.ajax({
+			url: '/send-otp',
+			data: {
+				email: $('#emailAddress').val()
+			},
+			method: 'post',
+			success: (res) => {
+				alert(res.msg);
+			}
+		})
+	
+}
+
+function verifyOtp() {
+	$.ajax({
+		url: '/verify-otp',
+		data: {
+			otp: $('#otp').val()
+		},
+		method: 'post',
+		success: (res) => {
+			console.log(res);
+		}
+	})
+}
+
+
 function addToCart(productId) {
 	$.ajax({
 		url: '/cart/add/' + productId,
 		method: 'get',
-		success: (response) => {
-			if (response.status) {
+		success: (res) => {
+			if (res.status) {
 				let count = $('#cartCount').html()
 				count = parseInt(count) + 1
 				$('#cartCount').html(count)
@@ -17,8 +59,8 @@ function delCartItem(itemId) {
 	$.ajax({
 		url: '/cart/delete/' + itemId,
 		method: 'get',
-		success: (response) => {
-			if (response.remove) {
+		success: (res) => {
+			if (res.remove) {
 				let count = $('#cartCount').html()
 				count = parseInt(count) - 1
 				$('#cartCount').html(count)
@@ -32,8 +74,8 @@ function addToWish(productId) {
 	$.ajax({
 		url: '/wishlist/add/' + productId,
 		method: 'get',
-		success: (response) => {
-			if (response.status) {
+		success: (res) => {
+			if (res.status) {
 				let count = $('#wishCount').html()
 				count = parseInt(count) + 1
 				$('#wishCount').html(count)
@@ -48,8 +90,8 @@ function delWishItem(itemId) {
 	$.ajax({
 		url: '/wishlist/delete/' + itemId,
 		method: 'get',
-		success: (response) => {
-			if (response.remove) {
+		success: (res) => {
+			if (res.remove) {
 				let count = $('#wishCount').html()
 				count = parseInt(count) - 1
 				$('#wishCount').html(count)
@@ -69,19 +111,19 @@ function changeItemQty(itemId, prodId, count) {
 			qty: $('#itemCount' + itemId).html()
 		},
 		method: 'post',
-		success: (response) => {
-			if (response.status) {
+		success: (res) => {
+			if (res.status) {
 				let itemCount = $('#itemCount' + itemId).html()
 				itemCount = parseInt(itemCount) + parseInt(count)
 				$('#itemCount' + itemId).html(itemCount)
 
 				let itemPrice = $('#itemPrice' + itemId).html()
-				itemPrice = parseInt(itemPrice) + parseInt(response.price)
+				itemPrice = parseInt(itemPrice) + parseInt(res.price)
 				$('#itemPrice' + itemId).html(itemPrice)
 
 				$('#total').html(response.total)
 			}
-			if (response.remove) {
+			if (res.remove) {
 				location.reload()
 			}
 		}
@@ -98,17 +140,17 @@ function moveToWish(itemId, productId) {
 	addToWish(productId)
 }
 
-function applyCoupon(){
+function applyCoupon() {
 	$.ajax({
-		url:'/apply-coupon',
+		url: '/apply-coupon',
 		data: {
 			coupon: $('#coupon').val()
 		},
 		method: 'post',
-		success:(res)=>{
-			if(res.err){
+		success: (res) => {
+			if (res.err) {
 				$('#err_message').html(res.err);
-			}else{
+			} else {
 				$('#err_message').html('');
 				$('#success_msg').html(res.message);
 				$('#discount').html(res.discount);
@@ -126,13 +168,13 @@ $('#checkout-form').submit((e) => {
 		data: $('#checkout-form').serialize(),
 		method: 'post',
 		success: (res) => {
-			if(res.err){
+			if (res.err) {
 				alert(res.err);
 			}
 			if (res.cod) {
 				location.href = '/order-success';
 			}
-			if(res.online){
+			if (res.online) {
 				const orderData = {
 					id: res.orderId,
 					total: res.total,
@@ -146,12 +188,12 @@ $('#checkout-form').submit((e) => {
 })
 
 //online payment
-function onlinePayment(order){
+function onlinePayment(order) {
 	$.ajax({
-		url:'/checkout-session',
-		data:order,
-		method:'POST',
-		success:(res)=>{
+		url: '/checkout-session',
+		data: order,
+		method: 'POST',
+		success: (res) => {
 			console.log(res);
 			location.href = res.url
 		}
