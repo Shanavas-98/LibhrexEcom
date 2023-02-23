@@ -13,16 +13,11 @@ const Category = CategoryModel.category;
 const Subcategory = CategoryModel.subcategory;
 const ObjectId = mongoose.Types.ObjectId;
 
-let adminErr = false;
-let passErr = false;
-
 //const Brand = CategoryModel.brand;
 const loginPage = async (req, res, next) => {
     try {
         if (!req.session.adminLogin) {
-            res.render('admin/account-login', { title: "Admin Login", login: req.session, adminErr, passErr });
-            adminErr = false
-            passErr = false
+            res.render('admin/account-login', { title: "Admin Login", login: req.session});
         } else {
             res.redirect('/admin');
         }
@@ -61,7 +56,7 @@ const usersPage = async (req, res, next) => {
 const categoriesPage = async (req, res, next) => {
     try {
         let index = 1;
-        const Categories = await Category.find();
+        const Categories = await Category.find().sort({category:1})
         const Subcategories = await Subcategory.find();
         res.render('admin/categories', { title: "Products :: Categories", index, Categories, Subcategories })
     } catch (error) {
@@ -73,7 +68,7 @@ const productsPage = async (req, res, next) => {
     try {
         const Categories = await Category.find();
         const Subcategories = await Subcategory.find();
-        const Products = await ProductModel.find();
+        const Products = await ProductModel.find().sort({productName:1});
         let index = 1;
         res.render('admin/products-list', { title: "Products", index, Categories, Subcategories, Products })
     } catch (error) {
@@ -149,7 +144,7 @@ const couponsPage = async (req, res, next) => {
 
 const addCouponPage = async (req, res, next) => {
     try {
-        res.render('admin/add-coupon', { title: "Add Coupon" })
+        res.render('admin/coupon-add', { title: "Add Coupon" })
     } catch {
         next(error)
     }
@@ -159,7 +154,7 @@ const editCouponPage = async (req, res, next) => {
     try {
         await CouponModel.findOne({ _id: req.params.cpnId })
             .then((coupon) => {
-                res.render('admin/edit-coupon', { title: "Edit Coupon", coupon })
+                res.render('admin/coupon-edit', { title: "Edit Coupon", coupon })
             })
     } catch (error) {
         next(error)
@@ -169,18 +164,20 @@ const editCouponPage = async (req, res, next) => {
 const doLogin = async (req, res, next) => {
     try {
         const { email, password } = req.body;
-        const admin = await AdminModel.findOne({ email: email });
+        const admin = await AdminModel.findOne({ email: email.trim() });
         if (!admin) {
-            adminErr = true;
             req.session.adminLogin = false;
+            req.session.adminErr="Admin don't exist";
             return res.redirect('/admin/login');
         }
+        req.session.adminErr="";
         const isPass = await bcrypt.compare(password, admin.password);
         if (!isPass) {
-            passErr = true;
             req.session.adminLogin = false;
+            req.session.passErr="Wrong password";
             return res.redirect('/admin/login');
         }
+        req.session.passErr="";
         req.session.adminname = admin.branch;
         req.session.adminId = admin._id;
         req.session.adminLogin = true;
@@ -226,44 +223,47 @@ const viewUser = async (req, res, next) => {
     }
 }
 
-const addCategory = async (req, res, next) => {
-    const cat = req.body.category;
-    const subcat = req.body.subcategory;
-    // const brandn = req.body.brand;
-
-    const isCat = await Category.findOne({ category: cat });
-    const isSubcat = await Subcategory.findOne({ subcategory: subcat });
-    // const isBrand = await Brand.findOne({ brand: brandn });
-
-    try {
-        if (!isCat) {
-            const newCat = Category({
+const addCategory = async(req,res,next)=>{
+    try{
+        const cat = req.body.category;
+        console.log("category",cat);
+            await new Category({
                 category: cat
+            }).save()
+            .then(()=>{
+                res.json({success:true})
+            }).catch(()=>{
+                res.json({err:"category already exist!"})
             })
-            await newCat.save();
-        }
-        if (!isSubcat) {
-            const Cat = await Category.findOne({ category: cat });
-            const newSubcat = Subcategory({
-                cat_id: Cat._id,
+    }catch(error){
+        next(error)
+    }
+}
+
+const addSubcategory = async (req, res, next) => {
+    try {
+        const cat = req.body.category;
+        const subcat = req.body.subcategory;
+        await new Subcategory({
+                catId: cat,
                 subcategory: subcat
+            }).save()
+            .then(()=>{
+                res.redirect('/admin/categories')
+            }).catch(()=>{
+                res.json({err:"subcategory already exist!"})
             })
-            await newSubcat.save();
-        }
-
-        return res.redirect('/admin/categories');
-
-    } catch (error) {
+        } catch (error) {
         next(error);
     }
 }
 
 const editCategory = async (req, res, next) => {
-    const subcat_id = req.params.id;
+    const subcatId = req.params.id;
     // const brandn = req.body.brand;
     try {
-        const subcategory = await Subcategory.findOne({ _id: subcat_id });
-        const category = await Category.findOne({ _id: subcategory.cat_id })
+        const subcategory = await Subcategory.findOne({ _id: subcatId });
+        const category = await Category.findOne({ _id: subcategory.catId })
         // const isBrand = await Brand.findOne({ brand: brandn });
 
         return res.redirect('/admin/categories');
@@ -274,26 +274,15 @@ const editCategory = async (req, res, next) => {
 }
 
 const flagCategory = async (req, res, next) => {
-    const subcat_id = req.params.id;
+    const subcatId = req.params.id;
     try {
-        const subcategory = await Subcategory.findOne({ _id: subcat_id });
+        const subcategory = await Subcategory.findOne({ _id: subcatId });
         if (subcategory.flag) {
-            await Subcategory.findByIdAndUpdate({ _id: subcat_id }, { $set: { flag: false } })
+            await Subcategory.findByIdAndUpdate({ _id: subcatId }, { $set: { flag: false } })
         } else {
-            await Subcategory.findByIdAndUpdate({ _id: subcat_id }, { $set: { flag: true } })
+            await Subcategory.findByIdAndUpdate({ _id: subcatId }, { $set: { flag: true } })
         }
         return res.redirect('/admin/categories');
-    } catch (error) {
-        next(error);
-    }
-}
-
-const deleteCategory = async (req, res, next) => {
-    const subcat_id = req.params.id;
-    try {
-        const subcategory = await Subcategory.deleteOne({ _id: subcat_id });
-        return res.redirect('/admin/categories');
-
     } catch (error) {
         next(error);
     }
@@ -326,9 +315,9 @@ const addProduct = async (req, res, next) => {
         const productimages = image != null ? image.map((img) => img.filename) : null
 
         const newProduct = ProductModel({
-            cat_id: ObjectId(categ),
-            subcat_id: ObjectId(subcateg),
-            productName: req.body.productName,
+            catId: ObjectId(categ),
+            subcatId: ObjectId(subcateg),
+            productName: req.body.product,
             description: req.body.description,
             mrp: req.body.mrp,
             srp: req.body.srp,
@@ -343,7 +332,7 @@ const addProduct = async (req, res, next) => {
                 res.redirect("/admin/products");
             }).catch((err) => {
                 console.log(err.message);
-                res.redirect("/admin/products-add");
+                res.redirect("/admin/product-add");
             });
 
     } catch (err) {
@@ -368,9 +357,9 @@ const editProduct = async (req, res, next) => {
             { _id: productId },
             {
                 $set: {
-                    cat_id: ObjectId(categ),
-                    subcat_id: ObjectId(subcateg),
-                    productName: req.body.productName,
+                    catId: ObjectId(categ),
+                    subcatId: ObjectId(subcateg),
+                    productName: req.body.product,
                     description: req.body.description,
                     mrp: req.body.mrp,
                     srp: req.body.srp,
@@ -403,8 +392,6 @@ const orderShip = async (req, res, next) => {
         next(error);
     }
 }
-
-
 
 const orderDelivery = async (req, res, next) => {
     const orderId = req.params.id;
@@ -526,9 +513,9 @@ module.exports = {
     blockUser,
     viewUser,
     addCategory,
+    addSubcategory,
     editCategory,
     flagCategory,
-    deleteCategory,
     addProduct,
     flagProduct,
     editProduct,

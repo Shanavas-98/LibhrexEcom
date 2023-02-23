@@ -63,7 +63,7 @@
                                                     <% } %>
                                         </td>
                                         <td>
-                                            <a href="/admin/users/block/<%= user._id %>">
+                                            <a href="/admin/user-block/<%= user._id %>">
                                                 <% if(user.blocked){ %>
                                                     <button
                                                         class="btn btn-sm btn-info rounded font-sm">Unblock</button>
@@ -100,3 +100,5 @@
             </div>
         </section> <!-- content-main end// -->
         <%- include('../admin/layouts/admin-footer.ejs') %>
+        <%- include('../admin/layouts/admin-script.ejs') %>
+        

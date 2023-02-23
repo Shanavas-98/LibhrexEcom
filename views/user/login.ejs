@@ -13,6 +13,9 @@
                                 <input type="email" class="form-control form-control-user" id="emailAddress"
                                     name="email" placeholder="Email Address"/>
                                 <p class="valid_error text-danger" id="user_err"></p>
+                                <% if(login.userErr){ %>
+                                    <p class="text-danger"><%= login.userErr %></p>
+                                <% } %>
                             </div>
                         </div>
                         <div class="form-group row justify-content-center">
@@ -20,6 +23,9 @@
                                 <input type="password" class="form-control form-control-user" id="pswd"
                                  name="password" placeholder="Password" />
                                 <p class="valid_error text-danger" id="pswd_err"></p>
+                                <% if(login.passErr){ %>
+                                    <p class="text-danger"><%= login.passErr %></p>
+                                <% } %>
                             </div>
                         </div>
                         <div class="form-group row justify-content-center">

@@ -7,31 +7,41 @@
                         <h2 class="content-title">Edit Coupon</h2>
                     </div>
                 </div>
-                <form action="/admin/edit-coupon-form/<%= coupon._id %>" method="post">
+                <form action="/admin/edit-coupon/<%= coupon._id %>" method="post" id="coupon_form">
                 <div class="col-lg-6">
                     <div class="card mb-4">
                         <div class="card-body">
                             <div class="mb-4">
                                 <label for="coupon_code" class="form-label">Coupon code</label>
-                                <input type="text" placeholder="code" class="form-control" name="coupon" style="text-transform: uppercase;" value="<%= coupon.code %>" required/>
+                                <input type="text" placeholder="code" class="form-control"
+                                 id="coupon" name="code" style="text-transform: uppercase;" value="<%= coupon.code %>"/>
+                                 <p class="valid_error text-danger" ></p>
                             </div>
                             <div class="row gx-3">
                                 <div class="col-md-4  mb-3">
                                     <label for="product_sku" class="form-label">Discount</label>
-                                    <input type="text" placeholder="percentage" class="form-control" name="discount" value="<%= coupon.discount %>" required/>
+                                    <input type="text" placeholder="percentage" class="form-control"
+                                     id="percent" name="discount" value="<%= coupon.discount %>"/>
+                                    <p class="valid_error text-danger" ></p>
                                 </div>
                                 <div class="col-md-4  mb-3">
                                     <label for="product_color" class="form-label">Min Order</label>
-                                    <input type="text" placeholder="amount" class="form-control" name="minBill" value="<%= coupon.minBill %>" required/>
+                                    <input type="text" placeholder="amount" class="form-control" 
+                                    id="bill" name="minBill" value="<%= coupon.minBill %>"/>
+                                    <p class="valid_error text-danger" ></p>
                                 </div>
                                 <div class="col-md-4  mb-3">
                                     <label for="product_size" class="form-label">Max Discount</label>
-                                    <input type="text" placeholder="amount" class="form-control" name="maxDiscount" value="<%= coupon.maxDiscount %>" required/>
+                                    <input type="text" placeholder="amount" class="form-control" 
+                                    id="discount" name="maxDiscount" value="<%= coupon.maxDiscount %>"/>
+                                    <p class="valid_error text-danger" ></p>
                                 </div>
                             </div>
                             <div class="mb-4">
                                 <label for="product_brand" class="form-label">Validity Upto</label>
-                                <input type="date" placeholder="date" class="form-control" name="validity" value="<%= coupon.validity %>" required/>
+                                <input type="date" placeholder="date" class="form-control"
+                                id="date" name="validity" value="<%= coupon.validity %>"/>
+                                <p class="valid_error text-danger" ></p>
                             </div>
                             <button type="submit" class="btn btn-primary rounded font-sm mr-5 text-white hover-up">Save</button>
                         </div>
@@ -41,3 +51,5 @@
             </div>
         </section>
         <%- include('../admin/layouts/admin-footer.ejs') %>
+    <script src="/javascripts/validations/coupon_val.js"></script>
+        <%- include('../admin/layouts/admin-script.ejs') %>

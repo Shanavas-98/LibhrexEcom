@@ -14,47 +14,6 @@ $('#signup_form').submit((e) => {
 	})
 })
 
-$('#login_form').submit((e) => {
-	e.preventDefault()
-	const email = $('#emailAddress').val();
-	const password = $('#pswd').val();
-	const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-z\-0-9]+\.)+[a-z]{2,10}))$/;
-	if(!email){
-		$('#user_err').html("Email is required");
-		return;
-	}
-	if (!emailRegex.test(email)) {
-		$('#user_err').html("Provide a valid email address");
-		return;
-	}
-	$('#user_err').html('');
-	if(!password){
-		$('#pswd_err').html("Password required");
-		return;
-	}
-	$('#pswd_err').html('');
-
-	$.ajax({
-		url: '/signin',
-		data: $('#login_form').serialize(),
-		method: 'post',
-		success: (res) => {
-			console.log(res);
-			if (res.userErr) {
-				$('#user_err').html(res.userErr);
-				return;
-			}
-			if(res.passErr){
-				$('#pswd_err').html(res.passErr);
-				return;
-			}
-			if(res.success){
-				location.href='/'
-			}
-		}
-	})
-})
-
 function sendOtp() {
 	const email = $('#emailAddress').val();
 	const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-z\-0-9]+\.)+[a-z]{2,10}))$/;
@@ -174,7 +133,7 @@ function changeItemQty(itemId, prodId, count) {
 				itemPrice = parseInt(itemPrice) + parseInt(res.price)
 				$('#itemPrice' + itemId).html(itemPrice)
 
-				$('#total').html(response.total)
+				$('#total').html(res.total)
 			}
 			if (res.remove) {
 				location.reload()

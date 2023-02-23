@@ -9,7 +9,7 @@
                 <div>
                     <!-- <a href="#" class="btn btn-light rounded font-md">Export</a>
                     <a href="#" class="btn btn-light rounded  font-md">Import</a> -->
-                    <a href="/admin/products-add" class="btn btn-primary btn-sm rounded">Add New</a>
+                    <a href="/admin/product-add" class="btn btn-primary btn-sm rounded">Add New</a>
                 </div>
             </div>
             <div class="card mb-4">
@@ -100,7 +100,7 @@
                                                         <% } %>
                                         </td>
                                         <td>
-                                            <a href="/admin/products/flag/<%= product._id %>">
+                                            <a href="/admin/product-flag/<%= product._id %>">
                                                 <% if(product.flag){ %>
                                                     <button type="submit" class="btn btn-warning" style="width: 50px;" title="enable">
                                                         <i class="bi bi-flag-fill"></i></button>
@@ -110,7 +110,7 @@
                                                             <i class="bi bi-flag-fill"></i></button>
                                                         <% } %>
                                             </a>
-                                            <a href="/admin/products/edit/<%= product._id %>">
+                                            <a href="/admin/product-edit/<%= product._id %>">
                                                 <button class="btn btn-info" style="width: 50px" title="edit"><i class="bi bi-pencil-square"></i></button>
                                             </a>
                                         </td>
@@ -137,3 +137,4 @@
         </section> <!-- content-main end// -->
 
         <%- include('../admin/layouts/admin-footer.ejs') %>
+        <%- include('../admin/layouts/admin-script.ejs') %>

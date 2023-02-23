@@ -7,7 +7,7 @@
                         <h2 class="content-title">Add New Product</h2>
                     </div>
                 </div>
-                <form class="row" action="/admin/add-product" method="POST" enctype="multipart/form-data">
+                <form class="row" action="/admin/add-product" method="POST" enctype="multipart/form-data" id="product_form">
                     <div class="card mb-4 col-md-6">
                         <div class="card-header">
                             <h4>Basic</h4>
@@ -15,33 +15,41 @@
                         <div class="card-body">
                             <div class="mb-4">
                                 <label for="product_name" class="form-label">Product title</label>
-                                <input type="text" placeholder="Type here" class="form-control" id="" name="productName"
-                                    required />
+                                <input type="text" placeholder="Type here" class="form-control"
+                                 id="product_name" name="product"/>
+                                 <p class="valid_error text-danger" ></p>
                             </div>
                             <div class="mb-4">
                                 <label class="form-label">Full description</label>
-                                <textarea placeholder="Type here" class="form-control" rows="4" id="" name="description"
-                                    required></textarea>
+                                <textarea placeholder="Type here" class="form-control" rows="4"
+                                 id="descript" name="description"></textarea>
+                                 <p class="valid_error text-danger" ></p>
                             </div>
                             <div class="row">
                                 <div class="col-lg-4">
                                     <div class="mb-4">
                                         <label class="form-label">Regular price</label>
                                         <div class="row gx-2">
-                                            <input placeholder="$" type="number" class="form-control" name="mrp" required />
+                                            <input placeholder="$" type="number" class="form-control"
+                                            id="price" name="mrp" />
+                                    <p class="valid_error text-danger" ></p>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-lg-4">
                                     <div class="mb-4">
                                         <label class="form-label">Selling price</label>
-                                        <input placeholder="$" type="number" class="form-control" name="srp" required />
+                                        <input placeholder="$" type="number" class="form-control"
+                                        id="sell_price" name="srp" />
+                                    <p class="valid_error text-danger" ></p>
                                     </div>
                                 </div>
                                 <div class="col-lg-4">
                                     <div class="mb-4">
                                         <label class="form-label">Quantity</label>
-                                        <input type="number" class="form-control" name="qty" required />
+                                        <input type="number" class="form-control"
+                                        id="quantity" name="qty" />
+                                    <p class="valid_error text-danger" ></p>
                                     </div>
                                 </div>
                             </div>
@@ -56,7 +64,7 @@
 
                         <div class=" mb-3">
                             <label class="form-label">Category</label>
-                            <select class="form-select" name="category">
+                            <select class="form-select" name="category" id="categ">
                                 <option value="" selected>Choose Category</option>
                                 <% Categories.forEach(function(categ){ %>
                                     <option value="<%= categ._id %>">
@@ -64,10 +72,11 @@
                                     </option>
                                     <% }) %>
                             </select>
+                            <p class="valid_error text-danger" ></p>
                         </div>
                         <div class=" mb-3">
                             <label class="form-label">Sub-category</label>
-                            <select class="form-select" name="subcategory">
+                            <select class="form-select" name="subcategory" id="subcateg">
                                 <option value="" selected>Choose Subcategory</option>
                                 <% Subcategories.forEach(function(subcateg){ %>
                                     <option value="<%= subcateg._id %>">
@@ -75,6 +84,7 @@
                                     </option>
                                     <% }) %>
                             </select>
+                            <p class="valid_error text-danger" ></p>
                         </div>
                         <div class="card-header">
                             <h4>Media</h4>
@@ -82,8 +92,8 @@
                         <div class="card-body">
                             <div class="input-upload">
                                 <img src="/admin/imgs/theme/upload.svg" alt="upload image" id="imgView">
-                                <input type="file" multiple class="form-control" id="input-5" name="image" 
-                                    placeholder="Choose an image" required onchange="viewImage(event)"/>
+                                <input type="file" class="form-control" id="image" name="image" 
+                                    placeholder="Choose an image" multiple required onchange="viewImage(event)"/>
                             </div>
                         </div>
                     </div> <!-- card end// -->
@@ -98,3 +108,12 @@
         
 
         <%- include('../admin/layouts/admin-footer.ejs') %>
+        <script>
+            function viewImage(event){
+                document.getElementById("imgView").src = URL.createObjectURL(event.target.files[0])
+            }
+          </script>
+    <script src="/javascripts/validations/product_val.js"></script>
+
+        <%- include('../admin/layouts/admin-script.ejs') %>
+        

@@ -74,7 +74,7 @@ const productPage = async (req, res, next) => {
         const product = await ProductModel.findById({ _id: productId });
         const related = await ProductModel.find({
             $and: [
-                { cat_id: product.cat_id },
+                { catId: product.catId },
                 { _id: { $ne: productId } }
             ]
         }).limit(4)
@@ -335,24 +335,27 @@ const doLogin = async (req, res, next) => {
         const user = await UserModel.findOne({ email: req.body.email.trim() });
         if (!user) {
             req.session.userLogin = false;
-            res.json({userErr:"user doesnot exist"});
-            return;
+            req.session.userErr="User dont exist";
+            return res.redirect('/login')
         }
         if (user.blocked) {
             req.session.userLogin = false;
-            res.json({userErr:"user is blocked"});
-            return;
+            req.session.userErr="User is blocked";
+            return res.redirect('/login')
         }
+        req.session.userErr="";
         const isPass = await bcrypt.compare(password, user.password);
         if (!isPass) {
             req.session.userLogin = false;
-            res.json({passErr:"wrong password"});
-            return;
+            req.session.passErr="Wrong password";
+            return res.redirect('/login')
         }
+        req.session.passErr="";
+
         req.session.username = user.fullname
         req.session.userId = user._id
         req.session.userLogin = true
-        res.json({success:true})
+        res.redirect('/')
     } catch (error) {
         next(error)
     }

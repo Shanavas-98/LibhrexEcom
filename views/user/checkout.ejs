@@ -95,9 +95,11 @@
 							<div class="cart-detail cart-total p-3 p-md-4">
 								<h3 class="billing-heading mb-4">Coupon</h3>
 								<p id="err_message" class="text-danger"></p>
-								<input type="text" id="coupon" class="form-control form-control-user" style="text-transform: uppercase;" name="coupon"/>
-								<button type="button" class="btn btn-primary my-2" id="apply-coupon" style="width:50%" onclick="applyCoupon()">Apply</button>
-								<button type="button" class="btn btn-primary my-2" id="apply-coupon" style="width:50%" onclick="removeCoupon()">Remove</button>
+								<input type="text" id="coupon" class="form-control form-control-user" style="text-transform: uppercase;"/>
+								<div class="d-flex justify-content-between">
+								<button type="button" class="btn btn-primary my-2" id="apply-coupon" style="width:40%" onclick="applyCoupon()">Apply</button>
+								<button type="button" class="btn btn-primary my-2" id="apply-coupon" style="width:40%" onclick="removeCoupon()">Remove</button>
+								</div>
 							<p id="success_msg" class="text-success"></p>
 							</div>
 						</div>

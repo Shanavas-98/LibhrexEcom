@@ -5,17 +5,19 @@ const ObjectId = mongoose.Schema.Types.ObjectId;
 const categorySchema = new mongoose.Schema({
     category: {
         type: String,
+        unique: true,
         required: true
     }
 })
 
 const subcategorySchema = new mongoose.Schema({
-    cat_id:{
+    catId:{
         type: ObjectId,
         required: true
     },
     subcategory: {
         type: String,
+        unique: true,
         required: true
     },
     flag:{
@@ -25,12 +27,13 @@ const subcategorySchema = new mongoose.Schema({
 })
 
 const brandSchema = new mongoose.Schema({
-    subcat_id:{
+    subcatId:{
         type: ObjectId,
         required: true
     },
     brand: {
         type: String,
+        unique:true,
         required: true
     }
 })

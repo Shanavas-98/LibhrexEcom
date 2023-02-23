@@ -25,7 +25,7 @@
                                         <!-- <span><i class="bi bi-person-fill-slash"></i></span> -->
                                         </a>
                                 <% } else { %> 
-                                <a href="/admin/users/block/<%= user._id %>">
+                                <a href="/admin/user-block/<%= user._id %>">
                                     <button class="btn btn-sm btn-danger rounded font-sm mt-15">Block</button>
                                     <!-- <span><i class="bi bi-person-fill-check"></i></span> -->
                                     </a>
@@ -115,3 +115,4 @@
         </section> <!-- content-main end// -->
         
         <%- include('../admin/layouts/admin-footer.ejs') %>
+        <%- include('../admin/layouts/admin-script.ejs') %>

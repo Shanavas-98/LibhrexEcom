@@ -4,8 +4,9 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const session = require('express-session');
-const multer = require('multer')
-const file = require('./utils/multer')
+const multer = require('multer');
+const file = require('./utils/multer');
+const flash = require('connect-flash')
 require('dotenv').config()
 
 
@@ -28,6 +29,7 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(flash());
 
 //public folder setup
 app.use(express.static(path.join(__dirname, 'public')));
@@ -56,9 +58,8 @@ app.use((req,res,next)=>{
 
 
 //Routes setup
-app.use('/', userRoute);
 app.use('/admin', adminRoute);
-
+app.use('/', userRoute);
 
 
 // catch 404 and forward to error handler

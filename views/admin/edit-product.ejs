@@ -7,7 +7,7 @@
                         <h2 class="content-title">Edit Product</h2>
                     </div>
                 </div>
-                <form class="row" action="/admin/products/edit-product/<%= Product._id %>" method="POST" enctype="multipart/form-data">
+                <form class="row" action="/admin/edit-product/<%= Product._id %>" method="POST" enctype="multipart/form-data" id="product_form">
                     <div class="card mb-4 col-md-6">
                         <div class="card-header">
                             <h4>Basic</h4>
@@ -15,34 +15,39 @@
                         <div class="card-body">
                             <div class="mb-4">
                                 <label for="product_name" class="form-label">Product title</label>
-                                <input type="text" placeholder="" class="form-control" id="" name="productName"
-                                   value="<%= Product.productName %>" required />
+                                <input type="text" placeholder="" class="form-control" id="product_name" name="product"
+                                   value="<%= Product.productName %>" />
+                                   <p class="valid_error text-danger" ></p>
                             </div>
                             <div class="mb-4">
                                 <label class="form-label">Full description</label>
-                                <textarea class="form-control" rows="4" id="" name="description"
-                                    required><%= Product.description %></textarea>
+                                <textarea class="form-control" rows="4" id="descript"
+                                 name="description"><%= Product.description %></textarea>
+                                 <p class="valid_error text-danger" ></p>
                             </div>
                             <div class="row">
                                 <div class="col-lg-4">
                                     <div class="mb-4">
                                         <label class="form-label">Regular price</label>
-                                        <input placeholder="$" type="number" class="form-control" name="mrp"
-                                               value="<%= Product.mrp %>" required />
+                                        <input placeholder="$" type="number" class="form-control" id="price"
+                                         name="mrp" value="<%= Product.mrp %>"/>
+                                    <p class="valid_error text-danger" ></p>
                                     </div>
                                 </div>
                                 <div class="col-lg-4">
                                     <div class="mb-4">
                                         <label class="form-label">Selling price</label>
-                                        <input placeholder="$" type="number" class="form-control" name="srp"
-                                        value="<%= Product.srp %>" required />
+                                        <input placeholder="$" type="number" class="form-control" id="sell_price"
+                                         name="srp" value="<%= Product.srp %>" />
+                                    <p class="valid_error text-danger" ></p>
                                     </div>
                                 </div>
                                 <div class="col-lg-4">
                                     <div class="mb-4">
                                         <label class="form-label">Quantity</label>
-                                        <input type="number" class="form-control" name="qty"
-                                        value="<%= Product.qty %>" required />
+                                        <input type="number" class="form-control" id="quantity"
+                                         name="qty" value="<%= Product.qty %>"/>
+                                    <p class="valid_error text-danger" ></p>
                                     </div>
                                 </div>
                             </div>
@@ -57,9 +62,9 @@
 
                         <div class=" mb-3">
                             <label class="form-label">Category</label>
-                            <select class="form-select" name="category">
+                            <select class="form-select" name="category" id="categ">
                                 <% Categories.forEach(function(categ){ %>
-                                    <% if(Product.cat_id.equals(categ._id)){ %> 
+                                    <% if(Product.catId.equals(categ._id)){ %> 
                                         <option value="<%= categ._id %>" selected><%= categ.category %></option>
                                     <% } %> 
                                     <option value="<%= categ._id %>">
@@ -67,12 +72,13 @@
                                     </option>
                                     <% }) %>
                             </select>
+                            <p class="valid_error text-danger" ></p>
                         </div>
                         <div class=" mb-3">
                             <label class="form-label">Sub-category</label>
-                            <select class="form-select" name="subcategory">
+                            <select class="form-select" name="subcategory" id="subcateg">
                                 <% Subcategories.forEach(function(subcateg){ %>
-                                    <% if(Product.subcat_id.equals(subcateg._id)){ %> 
+                                    <% if(Product.subcatId.equals(subcateg._id)){ %> 
                                         <option value="<%= subcateg._id %>" selected><%= subcateg.subcategory %></option>
                                     <% } %>
                                     <option value="<%= subcateg._id %>">
@@ -80,6 +86,7 @@
                                     </option>
                                     <% }) %>
                             </select>
+                            <p class="valid_error text-danger" ></p>
                         </div>
                         <div class="card-header">
                             <h4>Media</h4>
@@ -92,7 +99,7 @@
                                     <% } %> 
                                 <!-- <img src="/admin/imgs/theme/upload.svg" alt="upload image"> -->
                                 <input type="file" multiple class="form-control" id="input-5" name="image" 
-                                    placeholder="Choose an image" required onchange="viewImage(event)"/>
+                                    placeholder="Choose an image" onchange="viewImage(event)"/>
                             </div>
                         </div>
                     </div> <!-- card end// -->
@@ -105,3 +112,11 @@
         </section> <!-- content-main end// -->
 
         <%- include('../admin/layouts/admin-footer.ejs') %>
+        <script>
+            function viewImage(event){
+                document.getElementById("imgView").src = URL.createObjectURL(event.target.files[0])
+            }
+          </script>
+    <script src="/javascripts/validations/product_val.js"></script>
+
+        <%- include('../admin/layouts/admin-script.ejs') %>

@@ -3,16 +3,17 @@ const ObjectId = mongoose.Schema.Types.ObjectId;
 
 const productSchema = new mongoose.Schema({
 
-    cat_id:{
+    catId:{
         type: ObjectId,
         ref:"Categories"
     },
-    subcat_id:{
+    subcatId:{
         type: ObjectId,
         ref:"Subcategories"
     },
     productName: {
         type: String,
+        unique:true,
         required: true,
     },
     description: {

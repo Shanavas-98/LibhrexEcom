@@ -14,23 +14,40 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-3">
-                            <form action="/admin/categories/add" method="POST">
                                 <div class="mb-4">
                                     <label for="product_name" class="form-label">Category</label>
-                                    <input type="text" placeholder="Type here" class="form-control" id=""
-                                        name="category" required />
+                                    <input type="text" placeholder="Type here" class="form-control"
+                                        id="category" />
+                                    <p class="text-danger" id="err_message"></p>
+                                </div>
+                                <div class="d-grid">
+                                    <button type="button" class="btn btn-primary" onclick="addCategory()">Add category</button>
+                                </div>
+                            <form action="/admin/add-subcategory" method="POST" id="subcateg_form">
+                                <div class=" mb-3">
+                                    <label class="form-label">Category</label>
+                                    <select class="form-select" name="category" id="categ">
+                                        <option value="" selected>Choose Category</option>
+                                        <% Categories.forEach(function(categ){ %>
+                                            <option value="<%= categ._id %>">
+                                                <%= categ.category %>
+                                            </option>
+                                            <% }) %>
+                                    </select>
+                                    <p class="valid_error text-danger" ></p>
                                 </div>
                                 <div class="mb-4">
                                     <label for="product_slug" class="form-label">Sub-Category</label>
-                                    <input type="text" placeholder="Type here" class="form-control" id=""
-                                        name="subcategory" required />
+                                    <input type="text" placeholder="Type here" class="form-control"
+                                        name="subcategory" id="subcateg" />
+                                    <p class="valid_error text-danger"></p>
                                 </div>
                                 <!-- <div class="mb-4">
                                     <label for="product_slug" class="form-label">Brand</label>
                                     <input type="text" placeholder="Type here" class="form-control" id="" name="brand" required/>
                                 </div> -->
                                 <div class="d-grid">
-                                    <button type="submit" class="btn btn-primary">Create category</button>
+                                    <button type="submit" class="btn btn-primary">Add subcategory</button>
                                 </div>
                             </form>
                         </div>
@@ -44,13 +61,12 @@
                                             <th>Subcategory</th>
                                             <th>Edit</th>
                                             <th>Flag</th>
-                                            <th>Delete</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <% Categories.forEach(function(categ){ %>
                                             <% Subcategories.forEach(function(subcateg){ %>
-                                                <% if(categ._id.equals(subcateg.cat_id)){ %>
+                                                <% if(categ._id.equals(subcateg.catId)){ %>
                                                     <tr>
                                                         <td>
                                                             <%= index++ %>
@@ -63,14 +79,14 @@
                                                             <%= subcateg.subcategory %>
                                                         </td>
                                                         <td>
-                                                            <a href="/admin/categories/edit/<%= subcateg._id %>">
+                                                            <a href="/admin/category-edit/<%= subcateg._id %>">
                                                                 <i class="bi bi-pencil-square"
                                                                     style="color: #0d6efd; font-size: large;"
                                                                     title="edit"></i>
                                                             </a>
                                                         </td>
                                                         <td>
-                                                            <a href="/admin/categories/flag/<%= subcateg._id %>">
+                                                            <a href="/admin/category-flag/<%= subcateg._id %>">
                                                                 <% if(subcateg.flag){ %>
                                                                     <i class="bi bi-flag-fill"
                                                                         style="color: #ffc107; font-size: large;"
@@ -81,14 +97,6 @@
                                                                             title="flag"></i>
                                                                         <% } %>
                                                             </a>
-                                                        </td>
-                                                        <td>
-                                                            <a href="/admin/categories/delete/<%= subcateg._id %>">
-                                                                <i class="bi bi-trash-fill" style="color: #cf0000; font-size: large;"
-                                                                    title="delete"></i>
-                                                            </a>
-                                                            <!-- Modal -->
-                                
                                                         </td>
                                                     
 
@@ -105,3 +113,6 @@
             </div> <!-- card .// -->
         </section> <!-- content-main end// -->
         <%- include('../admin/layouts/admin-footer.ejs') %>
+    <script src="/javascripts/validations/category_val.js"></script>
+
+        <%- include('../admin/layouts/admin-script.ejs') %>
