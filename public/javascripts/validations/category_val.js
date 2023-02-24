@@ -25,18 +25,23 @@ const setSuccess = element => {
     inputControl.classList.remove('valid_error');
 }
 
+const isBlank = (str)=>{
+    const regexBlank = /^\s*$/;
+    return regexBlank.test(str);
+}
+
 const validateInputs = () => {
     const categValue = categ.value.trim();
     const subcategValue = subcateg.value.trim();
 
-    if(categValue === '') {
+    if(categValue === ''||isBlank(categValue)) {
         setError(categ, 'Select a category');
         return;
     }else {
         setSuccess(categ);
     }
 
-    if(subcategValue === '') {
+    if(subcategValue === ''||isBlank(subcategValue)) {
         setError(subcateg, 'Subcategory is required');
         return;
     }else {

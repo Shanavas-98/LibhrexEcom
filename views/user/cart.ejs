@@ -138,11 +138,11 @@ body {
 												<td class="total">$<span id="itemPrice<%= item._id %>"><%= item.price %></span></td>
 												<td>
 													<div class="mb-3">
-														<button class="btn btn-secondary" style="color: white;"
+														<button class="btn btn-secondary" id="move_to_wish" style="color: white;"
 														onclick="moveToWish('<%= item._id %>','<%= item.product._id %>')">Move to Wishlist</button>
 													</div>
 													<div>
-														<a href="javascript:delCartItem('<%= item._id %>')">
+														<a href="javascript:delCartItem('<%= item._id %>')" id="remove_from_cart">
 															<i class="bi bi-trash-fill"
 																style="color: #cf0000; font-size: large;"
 																title="delete"></i></a>
@@ -232,5 +232,4 @@ body {
 
 
 	<%-include('../user/layouts/user-footer.ejs') %>
-
 		<%-include('../user/layouts/user-script.ejs')%>

@@ -450,20 +450,7 @@ const addToCart = async (req, res, next) => {
                         }]
                 })
             if (isProduct) {
-                await CartModel.findOneAndUpdate(
-                    {
-                        $and:
-                            [{ userId: userId },
-                            { "cartItems.product": productId }]
-                    },
-                    {
-                        $inc: { "cartItems.$.quantity": 1, "cartItems.$.price": product.srp }
-                    }
-                ).then(() => {
-                    res.json({ status: false });
-                }).catch((error) => {
-                    next(error)
-                })
+                res.json({ status: false })
             } else {
                 await CartModel.updateOne(
                     { userId },
@@ -524,15 +511,16 @@ const changeItemQty = async (req, res, next) => {
         const qty = req.body.qty
         const product = await ProductModel.findById({ _id: productId })
         if (change == -1 && qty == 1) {
-            await CartModel.updateOne(
-                { userId: userId },
-                {
-                    $pull: { cartItems: { _id: itemId } }
-                }).then(() => {
-                    res.json({ remove: true })
-                }).catch((error) => {
-                    next(error)
-                })
+            res.json({remove:true,id:itemId})
+            // await CartModel.updateOne(
+            //     { userId: userId },
+            //     {
+            //         $pull: { cartItems: { _id: itemId } }
+            //     }).then(() => {
+            //         res.json({ remove: true })
+            //     }).catch((error) => {
+            //         next(error)
+            //     })
         } else {
             await CartModel.findOneAndUpdate(
                 {

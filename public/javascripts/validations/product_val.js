@@ -31,6 +31,11 @@ const setSuccess = element => {
     inputControl.classList.remove('valid_error');
 }
 
+const isBlank = (str)=>{
+    const regexBlank = /^\s*$/;
+    return regexBlank.test(str);
+}
+
 const validateInputs = () => {
     const productValue = product.value.trim();
     const descriptValue = description.value.trim();
@@ -40,49 +45,49 @@ const validateInputs = () => {
     const categValue = category.value.trim();
     const subcategValue = subcategory.value.trim();
 
-    if(productValue === '') {
+    if(productValue === ''||isBlank(productValue)) {
         setError(product, 'product title required');
         return;
     }else {
         setSuccess(product);
     }
 
-    if(descriptValue === '') {
+    if(descriptValue === ''||isBlank(descriptValue)) {
         setError(description, 'description required');
         return;
     }else {
         setSuccess(description);
     }
 
-    if(priceValue === '') {
+    if(priceValue === ''||isBlank(priceValue)) {
         setError(price, 'price required');
         return;
     }else {
         setSuccess(price);
     }
 
-    if(sellValue === '') {
+    if(sellValue === ''||isBlank(sellValue)) {
         setError(price, 'sell price required');
         return;
     }else {
         setSuccess(price);
     }
 
-    if(qtyValue === '') {
+    if(qtyValue === ''||isBlank(qtyValue)) {
         setError(quantity, 'quantity required');
         return;
     }else {
         setSuccess(quantity);
     }
 
-    if(categValue === '') {
+    if(categValue === ''||isBlank(categValue)) {
         setError(category, 'select a category');
         return;
     }else {
         setSuccess(category);
     }
 
-    if(subcategValue === '') {
+    if(subcategValue === ''||isBlank(subcategValue)) {
         setError(subcategory, 'select a subcategory');
         return;
     }else {

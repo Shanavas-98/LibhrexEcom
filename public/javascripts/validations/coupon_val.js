@@ -28,6 +28,11 @@ const setSuccess = element => {
     inputControl.classList.remove('valid_error');
 }
 
+const isBlank = (str)=>{
+    const regexBlank = /^\s*$/;
+    return regexBlank.test(str);
+}
+
 const validateInputs = () => {
     const couponValue = coupon.value.trim();
     const percentValue = percent.value.trim();
@@ -35,35 +40,35 @@ const validateInputs = () => {
     const discountValue = discount.value.trim();
     const dateValue = date.value.trim();
 
-    if(couponValue === '') {
+    if(couponValue === ''||isBlank(couponValue)) {
         setError(coupon, 'coupon code required');
         return;
     }else {
         setSuccess(coupon);
     }
 
-    if(percentValue === '') {
+    if(percentValue === ''||isBlank(percentValue)) {
         setError(percent, 'discount requied');
         return;
     }else {
         setSuccess(percent);
     }
 
-    if(billValue === '') {
+    if(billValue === ''||isBlank(billValue)) {
         setError(bill, 'min bill required');
         return;
     }else {
         setSuccess(bill);
     }
 
-    if(discountValue === '') {
+    if(discountValue === ''||isBlank(discountValue)) {
         setError(discount, 'max discount required');
         return;
     }else {
         setSuccess(discount);
     }
 
-    if(dateValue === '') {
+    if(dateValue === ''||isBlank(dateValue)) {
         setError(date, 'validity date required');
         return;
     }else {

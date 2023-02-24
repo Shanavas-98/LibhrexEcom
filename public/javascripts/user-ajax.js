@@ -1,3 +1,18 @@
+let toastMixin = Swal.mixin({
+	toast: true,
+	icon: 'success',
+	title: 'General Title',
+	animation: false,
+	position: 'center',
+	showConfirmButton: false,
+	timer: 3000,
+	timerProgressBar: true,
+	didOpen: (toast) => {
+		toast.addEventListener('mouseenter', Swal.stopTimer)
+		toast.addEventListener('mouseleave', Swal.resumeTimer)
+	}
+})
+
 
 $('#signup_form').submit((e) => {
 	e.preventDefault()
@@ -6,9 +21,13 @@ $('#signup_form').submit((e) => {
 		data: $('#signup_form').serialize(),
 		method: 'post',
 		success: (res) => {
-			console.log(res);
 			if (res.err) {
-				alert(res.err);
+				Swal.fire({
+					title: "Signup Failed",
+					text: res.err,
+					icon: 'error',
+					showConfirmButton: true
+				})
 			}
 		}
 	})
@@ -17,7 +36,7 @@ $('#signup_form').submit((e) => {
 function sendOtp() {
 	const email = $('#emailAddress').val();
 	const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-z\-0-9]+\.)+[a-z]{2,10}))$/;
-	if(!email){
+	if (!email) {
 		$('#email_error').html("Email is required")
 		return;
 	}
@@ -33,25 +52,24 @@ function sendOtp() {
 		},
 		method: 'post',
 		success: (res) => {
-			alert(res.msg);
+			if (res.msg) {
+				toastMixin.fire({
+					animation: true,
+					title: res.msg,
+					icon: 'success'
+				})
+			}
+			if (res.err) {
+				toastMixin.fire({
+					animation: true,
+					title: res.err,
+					icon: 'error'
+				})
+			}
 		}
 	})
 
 }
-
-function verifyOtp() {
-	$.ajax({
-		url: '/verify-otp',
-		data: {
-			otp: $('#otp').val()
-		},
-		method: 'post',
-		success: (res) => {
-			console.log(res);
-		}
-	})
-}
-
 
 function addToCart(productId) {
 	$.ajax({
@@ -59,27 +77,55 @@ function addToCart(productId) {
 		method: 'get',
 		success: (res) => {
 			if (res.status) {
-				let count = $('#cartCount').html()
-				count = parseInt(count) + 1
-				$('#cartCount').html(count)
+				let count = $('#cartCount').html();
+				count = parseInt(count) + 1;
+				$('#cartCount').html(count);
+
+				toastMixin.fire({
+					animation: true,
+					title: 'Added to cart',
+					icon: 'success'
+				});
+			} else {
+				toastMixin.fire({
+					animation: true,
+					title: 'Already in cart',
+					icon: 'error'
+				});
 			}
 		}
 	})
 }
 
 function delCartItem(itemId) {
-	$.ajax({
-		url: '/cart-delete/' + itemId,
-		method: 'get',
-		success: (res) => {
-			if (res.remove) {
-				let count = $('#cartCount').html()
-				count = parseInt(count) - 1
-				$('#cartCount').html(count)
-				location.reload()
-			}
+	Swal.fire({
+		title: "Remove item from Cart",
+		type: "warning",
+		icon: "warning",
+		showCancelButton: true,
+		confirmButtonText: "Remove",
+		confirmButtonColor: "#ff0055",
+		cancelButtonColor: "#999999",
+		reverseButtons: true,
+		focusConfirm: false,
+		focusCancel: true
+	}).then((result) => {
+		if (result.isConfirmed) {
+			$.ajax({
+				url: '/cart-delete/' + itemId,
+				method: 'get',
+				success: (res) => {
+					if (res.remove) {
+						let count = $('#cartCount').html();
+						count = parseInt(count) - 1;
+						$('#cartCount').html(count);
+						location.reload();
+					}
+				}
+			})
 		}
 	})
+
 }
 
 function addToWish(productId) {
@@ -91,24 +137,49 @@ function addToWish(productId) {
 				let count = $('#wishCount').html()
 				count = parseInt(count) + 1
 				$('#wishCount').html(count)
+
+				toastMixin.fire({
+					animation: true,
+					title: 'Added to wishlist',
+					icon: 'success'
+				});
 			} else {
-				alert("already exists")
+				toastMixin.fire({
+					animation: true,
+					title: 'Already in wishlist',
+					icon: 'error'
+				});
 			}
 		}
 	})
 }
 
 function delWishItem(itemId) {
-	$.ajax({
-		url: '/wishlist-delete/' + itemId,
-		method: 'get',
-		success: (res) => {
-			if (res.remove) {
-				let count = $('#wishCount').html()
-				count = parseInt(count) - 1
-				$('#wishCount').html(count)
-				location.reload()
-			}
+	Swal.fire({
+		title: "Remove item from Wishlist",
+		type: "warning",
+		icon: "warning",
+		showCancelButton: true,
+		confirmButtonText: "Remove",
+		confirmButtonColor: "#ff0055",
+		cancelButtonColor: "#999999",
+		reverseButtons: true,
+		focusConfirm: false,
+		focusCancel: true
+	}).then((result) => {
+		if (result.isConfirmed) {
+			$.ajax({
+				url: '/wishlist-delete/' + itemId,
+				method: 'get',
+				success: (res) => {
+					if (res.remove) {
+						let count = $('#wishCount').html()
+						count = parseInt(count) - 1
+						$('#wishCount').html(count)
+						location.reload()
+					}
+				}
+			})
 		}
 	})
 }
@@ -136,25 +207,55 @@ function changeItemQty(itemId, prodId, count) {
 				$('#total').html(res.total)
 			}
 			if (res.remove) {
-				location.reload()
+				delCartItem(res.id)
 			}
 		}
 	})
 }
 
 function moveToCart(itemId, productId) {
+	Swal.fire({
+		title: "Move item to Cart",
+		type: "info",
+		icon:"info",
+		showCancelButton: true,
+		confirmButtonText: "Remove",
+		confirmButtonColor: "#ff0055",
+		cancelButtonColor: "#999999",
+		reverseButtons: true,
+		focusConfirm: false,
+		focusCancel: true
+	}).then((result)=>{
+		if(result.isConfirmed){
 	delWishItem(itemId)
 	addToCart(productId)
+		}
+	})
 }
 
 function moveToWish(itemId, productId) {
+	Swal.fire({
+		title: "Move item to Wishlist",
+		type: "info",
+		icon:"info",
+		showCancelButton: true,
+		confirmButtonText: "Remove",
+		confirmButtonColor: "#ff0055",
+		cancelButtonColor: "#999999",
+		reverseButtons: true,
+		focusConfirm: false,
+		focusCancel: true
+	}).then((result)=>{
+		if(result.isConfirmed){
 	delCartItem(itemId)
 	addToWish(productId)
+		}
+	})
 }
 
 function applyCoupon() {
 	const couponCode = $('#coupon').val();
-	if(!couponCode){
+	if (!couponCode) {
 		$('#err_message').html("enter a couponcode");
 		return;
 	}
@@ -179,7 +280,13 @@ function applyCoupon() {
 
 function removeCoupon() {
 	$('#coupon').val('')
-	location.reload()
+	toastMixin.fire({
+		animation: true,
+		title: 'Removed coupon',
+		icon: 'warning'
+	}).then(()=>{
+		location.reload()
+	})
 }
 
 //place order
@@ -216,7 +323,6 @@ function onlinePayment(order) {
 		data: order,
 		method: 'POST',
 		success: (res) => {
-			console.log(res);
 			location.href = res.url
 		}
 	})

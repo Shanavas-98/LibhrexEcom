@@ -18,8 +18,13 @@ const sendVerifyEmail = async (userEmail, otp) => {
         from: "Libhrex Ecom",
         to: userEmail,
         subject: "Email Verification OTP",
-        text: `Your OTP code is ${otp}. Please enter this code to verify your email address.`,
-        html: `<p>Your OTP code is <strong>${otp}</strong>. Please enter this code to verify your email address.</p>`
+        text: `Welcome to Libhrex.Your OTP code is ${otp}. 
+        Please enter this code to verify your email address.
+        Note:OTP valid only for 10 minutes`,
+        html: `<p>Welcome to <strong> Libhrex </strong>.<br>
+        Your OTP code is <strong>${otp}</strong>.
+         Please enter this code to verify your email address.<br>
+         <b>Note:</b>OTP valid only for <b>10</b> minutes</p>`
     }
 
     const info = await mailTransporter.sendMail(message, (err) => {

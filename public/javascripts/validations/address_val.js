@@ -48,6 +48,11 @@ const isValidZip = (zip) =>{
     return regexZip.test(zip);
 }
 
+const isBlank = (str)=>{
+    const regexBlank = /^\s*$/;
+    return regexBlank.test(str);
+}
+
 const validateInputs = () => {
     const usernameValue = username.value.trim();
     const companyValue = company.value.trim();
@@ -60,21 +65,21 @@ const validateInputs = () => {
     const addressValue = address.value.trim();
 
 
-    if(usernameValue === '') {
+    if(usernameValue === ''||isBlank(usernameValue)) {
         setError(username, 'Full name is required');
         return;
     } else {
         setSuccess(username);
     }
 
-    if(companyValue === '') {
+    if(companyValue === ''||isBlank(companyValue)) {
         setError(company, 'company/shop is required');
         return;
     } else {
         setSuccess(company);
     }
 
-    if(emailValue === '') {
+    if(emailValue === ''||isBlank(emailValue)) {
         setError(email, 'Email is required');
         return;
     } else if (!isValidEmail(emailValue)) {
@@ -84,7 +89,7 @@ const validateInputs = () => {
         setSuccess(email);
     }
 
-    if(mobileValue === '') {
+    if(mobileValue === ''||isBlank(mobileValue)) {
         setError(mobile, 'Mobile is required');
         return;
     } else if (!isValidMobile(mobileValue)) {
@@ -94,28 +99,28 @@ const validateInputs = () => {
       setSuccess(mobile);
     }
 
-    if(countryValue === '') {
+    if(countryValue === ''||isBlank(countryValue)) {
         setError(country, 'country is required');
         return;
     } else {
         setSuccess(country);
     }
 
-    if(stateValue === '') {
+    if(stateValue === ''||isBlank(stateValue)) {
         setError(state, 'state is required');
         return;
     } else {
         setSuccess(state);
     }
 
-    if(townValue === '') {
+    if(townValue === ''||isBlank(townValue)) {
         setError(town, 'town is required');
         return;
     } else {
         setSuccess(town);
     }
 
-    if(zipValue === '') {
+    if(zipValue === ''||isBlank(zipValue)) {
         setError(zip, 'zip code is required');
         return;
     }else if(!isValidZip(zipValue)){
@@ -125,7 +130,7 @@ const validateInputs = () => {
         setSuccess(zip);
     }
 
-    if(addressValue === '') {
+    if(addressValue === ''||isBlank(addressValue)) {
         setError(address, 'address is required');
         return;
     } else {

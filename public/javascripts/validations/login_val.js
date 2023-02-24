@@ -30,11 +30,16 @@ const isValidEmail = email => {
     return regexMail.test(String(email).toLowerCase());
 }
 
+const isBlank = (str)=>{
+    const regexBlank = /^\s*$/;
+    return regexBlank.test(str);
+}
+
 const validateInputs = () => {
     const emailValue = email.value.trim();
     const passwordValue = password.value.trim();
 
-    if(emailValue === '') {
+    if(emailValue === ''||isBlank(emailValue)) {
         setError(email, 'Email is required');
         return;
     } else if (!isValidEmail(emailValue)) {
@@ -44,7 +49,7 @@ const validateInputs = () => {
         setSuccess(email);
     }
 
-    if(passwordValue === '') {
+    if(passwordValue === ''||isBlank(passwordValue)) {
         setError(password, 'Password is required');
         return;
     }else {

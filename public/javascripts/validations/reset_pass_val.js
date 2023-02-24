@@ -42,13 +42,18 @@ const isValidOtp = (otp) =>{
   return regexPass.test(otp);
 }
 
+const isBlank = (str)=>{
+    const regexBlank = /^\s*$/;
+    return regexBlank.test(str);
+}
+
 const validateInputs = () => {
     const emailValue = email.value.trim();
     const otpValue = otp.value.trim();
     const passwordValue = password.value.trim();
     const password2Value = password2.value.trim();
 
-    if(emailValue === '') {
+    if(emailValue === ''||isBlank(emailValue)) {
         setError(email, 'Email is required');
         return;
     } else if (!isValidEmail(emailValue)) {
@@ -58,7 +63,7 @@ const validateInputs = () => {
         setSuccess(email);
     }
 
-    if(otpValue === '') {
+    if(otpValue === ''||isBlank(otpValue)) {
       setError(otp, 'OTP is required');
       return;
   } else if (!isValidOtp(otpValue)) {
@@ -68,7 +73,7 @@ const validateInputs = () => {
     setSuccess(otp);
 }
 
-    if(passwordValue === '') {
+    if(passwordValue === ''||isBlank(passwordValue)) {
         setError(password, 'Password is required');
         return;
     } else if (passwordValue.length < 8 ) {
@@ -85,7 +90,7 @@ const validateInputs = () => {
         setSuccess(password);
     }
 
-    if(password2Value === '') {
+    if(password2Value === ''||isBlank(password2Value)) {
         setError(password2, 'Please confirm your password');
         return;
     } else if (password2Value !== passwordValue) {

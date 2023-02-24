@@ -22,9 +22,9 @@ router.get('/address-add',isLogin.userLogin,controller.countItem,controller.addr
 router.get('/address-edit/:id',isLogin.userLogin,controller.countItem,controller.editaddressPage);
 router.get('/order-success',isLogin.userLogin,controller.countItem,controller.orderSuccess);
 router.get('/order-details/:id',isLogin.userLogin,controller.countItem,controller.orderDetails);
-router.get("/payment",isLogin.userLogin,controller.paymentPage);
-router.get("/payment-success/:orderId",isLogin.userLogin,controller.paymentSuccess);
-router.get("/payment-cancel/:orderId",isLogin.userLogin,controller.paymentCancel);
+router.get('/payment',isLogin.userLogin,controller.paymentPage);
+router.get('/payment-success/:orderId',isLogin.userLogin,controller.paymentSuccess);
+router.get('/payment-cancel/:orderId',isLogin.userLogin,controller.paymentCancel);
 
 //router.get('/resendotp',controller.getOtp);
 router.get('/logout',controller.doLogout);
