@@ -73,17 +73,4 @@
     </section>
 
     <%-include('../user/layouts/user-footer.ejs')%>
-
-        <script>
-            function Copy(containerid) {
-                if (window.getSelection) {
-                    var range = document.createRange();
-                    range.selectNode(document.getElementById(containerid));
-                    window.getSelection().addRange(range);
-                    document.execCommand("copy");
-                    alert("Coupon code copied")
-                }
-            }
-        </script>
-
-        <%-include('../user/layouts/user-script.ejs')%>
+    <%-include('../user/layouts/user-script.ejs')%>

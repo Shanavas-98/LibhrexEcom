@@ -1,17 +1,3 @@
-let toastMixin = Swal.mixin({
-	toast: true,
-	icon: 'success',
-	title: 'General Title',
-	animation: false,
-	position: 'center',
-	showConfirmButton: false,
-	timer: 3000,
-	timerProgressBar: true,
-	didOpen: (toast) => {
-		toast.addEventListener('mouseenter', Swal.stopTimer)
-		toast.addEventListener('mouseleave', Swal.resumeTimer)
-	}
-})
 
 
 $('#signup_form').submit((e) => {
@@ -31,6 +17,103 @@ $('#signup_form').submit((e) => {
 			}
 		}
 	})
+})
+
+const searchCard = document.querySelector('[search-card]')
+const searchTemplate = document.querySelector('[search-template]')
+
+$('#search_bar').on('input', (e) => {
+	const value = e.target.value;
+	$.ajax({
+		url: '/search?q=' + value,
+		method: 'get',
+		success: (products) => {
+			searchCard.textContent = ""
+			products.forEach((product) => {
+				const temp = searchTemplate.content.cloneNode(true).children[0];
+				const name = temp.querySelector('[data-name]');
+				const image = temp.querySelector('[data-image]');
+				const link = temp.querySelector('[data-link]');
+				const mrp = temp.querySelector('[data-mrp]');
+				const srp = temp.querySelector('[data-srp]');
+
+				name.href = `/product/${product._id}`;
+				name.textContent = product.productName;
+				image.src = `/images/products/${product.image[0]}`;
+				link.href = `/product/${product._id}`;
+				mrp.textContent = product.mrp;
+				srp.textContent = product.srp;
+				searchCard.append(temp);
+			})
+		}
+	})
+})
+
+//choosing a category changes subcategory to null
+$('#categ_bar').on('change', function() {
+    var categoryId = $('#categ_bar').val();
+    $('#subcateg_bar').val('');
+    if (categoryId) {
+        $.ajax({
+            url: '/subcategory/' + categoryId,
+            type: 'GET',
+            success: function(data) {
+                $('#subcateg_bar').html('<option value="" selected>Choose Subcategory</option>');
+                data.forEach(function(subcateg) {
+                    $('#subcateg_bar').append('<option value="' + subcateg._id + '">' + subcateg.subcategory + '</option>');
+                });
+            }
+        });
+    } else {
+		//location.reload();
+        $('#subcateg_bar').html('<option value="" selected>Choose Subcategory</option>');
+    }
+});
+
+
+$('#categ_bar, #subcateg_bar').on('change',(e)=>{
+	const categ = $('#categ_bar').val();
+	const subcateg = $('#subcateg_bar').val();
+
+	$.ajax({
+		url:'/filter',
+		data:{categ,subcateg},
+		method:'post',
+		success:(products)=>{
+			searchCard.textContent = ""
+			products.forEach((product) => {
+				const temp = searchTemplate.content.cloneNode(true).children[0];
+				const name = temp.querySelector('[data-name]');
+				const image = temp.querySelector('[data-image]');
+				const link = temp.querySelector('[data-link]');
+				const mrp = temp.querySelector('[data-mrp]');
+				const srp = temp.querySelector('[data-srp]');
+
+				name.href = `/product/${product._id}`;
+				name.textContent = product.productName;
+				image.src = `/images/products/${product.image[0]}`;
+				link.href = `/product/${product._id}`;
+				mrp.textContent = product.mrp;
+				srp.textContent = product.srp;
+				searchCard.append(temp);
+			})
+		}
+	})
+})
+
+let toastMixin = Swal.mixin({
+	toast: true,
+	icon: 'success',
+	title: 'General Title',
+	animation: false,
+	position: 'center',
+	showConfirmButton: false,
+	timer: 3000,
+	timerProgressBar: true,
+	didOpen: (toast) => {
+		toast.addEventListener('mouseenter', Swal.stopTimer)
+		toast.addEventListener('mouseleave', Swal.resumeTimer)
+	}
 })
 
 function sendOtp() {
@@ -217,18 +300,18 @@ function moveToCart(itemId, productId) {
 	Swal.fire({
 		title: "Move item to Cart",
 		type: "info",
-		icon:"info",
+		icon: "info",
 		showCancelButton: true,
-		confirmButtonText: "Remove",
+		confirmButtonText: "Move",
 		confirmButtonColor: "#ff0055",
 		cancelButtonColor: "#999999",
 		reverseButtons: true,
 		focusConfirm: false,
 		focusCancel: true
-	}).then((result)=>{
-		if(result.isConfirmed){
-	delWishItem(itemId)
-	addToCart(productId)
+	}).then((result) => {
+		if (result.isConfirmed) {
+			delWishItem(itemId)
+			addToCart(productId)
 		}
 	})
 }
@@ -237,7 +320,7 @@ function moveToWish(itemId, productId) {
 	Swal.fire({
 		title: "Move item to Wishlist",
 		type: "info",
-		icon:"info",
+		icon: "info",
 		showCancelButton: true,
 		confirmButtonText: "Remove",
 		confirmButtonColor: "#ff0055",
@@ -245,12 +328,26 @@ function moveToWish(itemId, productId) {
 		reverseButtons: true,
 		focusConfirm: false,
 		focusCancel: true
-	}).then((result)=>{
-		if(result.isConfirmed){
-	delCartItem(itemId)
-	addToWish(productId)
+	}).then((result) => {
+		if (result.isConfirmed) {
+			delCartItem(itemId)
+			addToWish(productId)
 		}
 	})
+}
+
+function Copy(containerid) {
+	if (window.getSelection) {
+		var range = document.createRange();
+		range.selectNode(document.getElementById(containerid));
+		window.getSelection().addRange(range);
+		document.execCommand("copy");
+		toastMixin.fire({
+			animation: true,
+			title: 'Coupon code copied',
+			icon: 'success'
+		});
+	}
 }
 
 function applyCoupon() {
@@ -284,7 +381,7 @@ function removeCoupon() {
 		animation: true,
 		title: 'Removed coupon',
 		icon: 'warning'
-	}).then(()=>{
+	}).then(() => {
 		location.reload()
 	})
 }
@@ -298,7 +395,7 @@ $('#checkout_form').submit((e) => {
 		method: 'post',
 		success: (res) => {
 			if (res.err) {
-				alert(res.err);
+				Swal.fire("Order failed!", res.err);
 			}
 			if (res.cod) {
 				location.href = '/order-success';

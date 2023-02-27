@@ -144,7 +144,7 @@ const couponsPage = async (req, res, next) => {
 
 const addCouponPage = async (req, res, next) => {
     try {
-        res.render('admin/coupon-add', { title: "Add Coupon" })
+        res.render('admin/add-coupon', { title: "Add Coupon" })
     } catch {
         next(error)
     }
@@ -154,7 +154,7 @@ const editCouponPage = async (req, res, next) => {
     try {
         await CouponModel.findOne({ _id: req.params.cpnId })
             .then((coupon) => {
-                res.render('admin/coupon-edit', { title: "Edit Coupon", coupon })
+                res.render('admin/edit-coupon', { title: "Edit Coupon", coupon })
             })
     } catch (error) {
         next(error)
@@ -494,7 +494,6 @@ const deleteCoupon = async (req, res, next) => {
 }
 
 module.exports = {
-
     loginPage,
     homePage,
     profilePage,
@@ -526,5 +525,4 @@ module.exports = {
     addCoupon,
     editCoupon,
     deleteCoupon
-
 }

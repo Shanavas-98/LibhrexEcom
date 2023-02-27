@@ -39,7 +39,7 @@ const forgotPage = async (req, res, next) => {
 const loginPage = async (req, res, next) => {
     try {
         if (!req.session.userLogin) {
-            res.render('user/login', { title: "Login", login: req.session});
+            res.render('user/login', { title: "Login", login: req.session });
         } else {
             res.redirect('/');
         }
@@ -60,9 +60,8 @@ const homePage = async (req, res, next) => {
 const shopPage = async (req, res, next) => {
     try {
         const Categories = await Category.find()
-        const Subcategories = await Subcategory.find({ flag: { $ne: true } })
         const Products = await ProductModel.find({ flag: { $ne: true } })
-        res.render('user/shop', { title: "Shop", login: req.session, Categories, Subcategories, Products, count })
+        res.render('user/shop', { title: "Shop", login: req.session, Categories, Products, count })
     } catch (error) {
         next(error)
     }
@@ -233,7 +232,7 @@ const doSignup = async (req, res, next) => {
         let otpString = req.body.otp.trim()
         //const isOtp = await bcrypt.compare(otpString, req.session.otp);
         const otpData = await OtpModel.findOne({ email: req.body.email.trim() });
-        
+
         const isOtp = await bcrypt.compare(otpString, otpData.otp);
         if (!isOtp) {
             return res.json({ err: "incorrect otp" })
@@ -249,7 +248,7 @@ const doSignup = async (req, res, next) => {
             password: await bcrypt.hash(req.body.password, 10),
             verified: true
         }).save()
-            .then(async(user) => {
+            .then(async (user) => {
                 //delete otp after signup
                 await OtpModel.deleteOne({ email: user.email })
                 res.redirect('/login')
@@ -299,13 +298,13 @@ const sendOtp = async (req, res, next) => {
 const resetPassword = async (req, res, next) => {
     try {
         const email = req.body.email.trim()
-        const user = await UserModel.findOne({email: email})
-        if(!user){
-            return res.json({err: "user not found check emailid"})
+        const user = await UserModel.findOne({ email: email })
+        if (!user) {
+            return res.json({ err: "user not found check emailid" })
         }
         let otpString = req.body.otp.trim()
-        const otpData = await OtpModel.findOne({ email: email})
-        
+        const otpData = await OtpModel.findOne({ email: email })
+
         const isOtp = await bcrypt.compare(otpString, otpData.otp);
         if (!isOtp) {
             return res.json({ err: "incorrect otp" })
@@ -315,14 +314,16 @@ const resetPassword = async (req, res, next) => {
         }
 
         await UserModel.updateOne(
-            {email: email},
-            {$set:{
-                password:await bcrypt.hash(req.body.password, 10)
-            }}
-            ).then(async(user)=>{
-                await OtpModel.deleteOne({ email: user.email })
-                res.redirect('/login')
-            })
+            { email: email },
+            {
+                $set: {
+                    password: await bcrypt.hash(req.body.password, 10)
+                }
+            }
+        ).then(async (user) => {
+            await OtpModel.deleteOne({ email: user.email })
+            res.redirect('/login')
+        })
 
     } catch (error) {
         next(error)
@@ -335,22 +336,22 @@ const doLogin = async (req, res, next) => {
         const user = await UserModel.findOne({ email: req.body.email.trim() });
         if (!user) {
             req.session.userLogin = false;
-            req.session.userErr="User dont exist";
+            req.session.userErr = "User dont exist";
             return res.redirect('/login')
         }
         if (user.blocked) {
             req.session.userLogin = false;
-            req.session.userErr="User is blocked";
+            req.session.userErr = "User is blocked";
             return res.redirect('/login')
         }
-        req.session.userErr="";
+        req.session.userErr = "";
         const isPass = await bcrypt.compare(password, user.password);
         if (!isPass) {
             req.session.userLogin = false;
-            req.session.passErr="Wrong password";
+            req.session.passErr = "Wrong password";
             return res.redirect('/login')
         }
-        req.session.passErr="";
+        req.session.passErr = "";
 
         req.session.username = user.fullname
         req.session.userId = user._id
@@ -368,6 +369,110 @@ const doLogout = async (req, res, next) => {
         res.redirect('/')
     } catch (error) {
         next(error)
+    }
+}
+
+const searchProduct = async (req, res, next) => {
+    try {
+        const query = req.query.q || ''
+        // const searchRegex = new RegExp(query, 'i')
+        //similar to {$regex:query,$options:'i'}
+        const Products = await ProductModel.find({
+            flag: { $ne: true },
+            $or: [
+                { productName: { $regex: query, $options: 'i' } },
+                { description: { $regex: query, $options: 'i' } }
+            ]
+        })
+        res.json(Products)
+    } catch (error) {
+        next(error)
+    }
+}
+
+const getSubcategory = async (req, res, next) => {
+    try {
+        const categ = req.params.catId.trim();
+        await Subcategory.find({
+            $and: [
+                { flag: { $ne: true } },
+                { catId: categ }
+            ]
+        })
+            .then((data) => {
+                console.log("subcategories", data);
+                res.json(data);
+            })
+    } catch (error) {
+        next(error)
+    }
+}
+
+const filterProduct = async (req, res, next) => {
+    try {
+        const categ = req.body.categ.trim() || '';
+        const subcateg = req.body.subcateg.trim() || '';
+        if (categ && subcateg) {
+            await ProductModel.find(
+                {
+                    $and: [
+                        { flag: { $ne: true } },
+                        { catId: categ },
+                        { subcatId: subcateg }
+                    ]
+                }).then((products) => {
+                    res.json(products)
+                    return;
+                })
+        } else if (categ) {
+            await ProductModel.find({
+                $and: [
+                    { flag: { $ne: true } },
+                    { catId: categ }
+                ]
+            }).then((products) => {
+                res.json(products)
+                return;
+            })
+        } else {
+            await ProductModel.find()
+                .then((products) => {
+                    res.json(products);
+                    return;
+                })
+        }
+
+    } catch (error) {
+        next(error)
+    }
+}
+
+const paginatedResults=(model)=>{
+    return(req,res,next)=>{
+        const page = parseInt(req.query.page);
+        const limit = parseInt(req.query.limit);
+
+        const startIndex = (page-1)*limit;
+        const endIndex = page*limit;
+
+        const results={};
+
+        if(endIndex<model.countDocuments().exec()){
+            results.next={
+                page:page+1,
+                limit:limit
+            }
+        }
+        if(startIndex>0){
+            results.previous={
+                page:page-1,
+                limit:limit
+            }
+        }
+
+        results.current = model.slice(startIndex, endIndex)
+        res.pagination = results
+        next()
     }
 }
 
@@ -511,7 +616,7 @@ const changeItemQty = async (req, res, next) => {
         const qty = req.body.qty
         const product = await ProductModel.findById({ _id: productId })
         if (change == -1 && qty == 1) {
-            res.json({remove:true,id:itemId})
+            res.json({ remove: true, id: itemId })
             // await CartModel.updateOne(
             //     { userId: userId },
             //     {
@@ -693,18 +798,24 @@ const placeOrder = async (req, res, next) => {
         }
         if (i == items.length) {
             console.log("creating order");
-            const user = await UserModel.findOne({ _id: req.session.userId })
-
+            const user = await UserModel.findOne(
+                { _id: req.session.userId }
+                ).catch((err)=>{
+                    console.log("user error",err);
+                })
             //getting address using address id
             const shipAddr = user.addresses.id(req.body.shipAddrId)
             const billAddr = user.addresses.id(req.body.billAddrId)
-
             //find coupon object
             let cpn_code = req.body.coupon.toUpperCase().trim();
-            const couponObj = await CouponModel.findOne({ code: cpn_code });
-
+            const couponObj = await CouponModel.findOne(
+                { code: cpn_code }
+                ).catch((err)=>{
+                    console.log("coupon error",err);
+                })
             //calculating subtotal,discount,grandtotal
             const subtotal = Cart.cartItems.map(item => item.price).reduce((acc, val) => acc + val, 0);
+            console.log("total",subtotal);
             let discountAmt = 0;
             let grandTotal = subtotal;
             if (couponObj) {
@@ -722,6 +833,8 @@ const placeOrder = async (req, res, next) => {
                     discountAmt = Number(discountAmt.toFixed(2))
                 }
             }
+            console.log("discount",discountAmt);
+            console.log("grandtotal",grandTotal);
 
             //creating the order with the given datas
             await new OrderModel({
@@ -755,6 +868,8 @@ const placeOrder = async (req, res, next) => {
                                 orderId: order._id
                             })
                     }
+                }).catch((err)=>{
+                    console.log("order error",err);
                 })
         }
     } catch (error) {
@@ -892,6 +1007,9 @@ module.exports = {
     doSignup,
     doLogin,
     doLogout,
+    searchProduct,
+    getSubcategory,
+    filterProduct,
     addToWish,
     delFromWish,
     addToCart,

@@ -11,6 +11,8 @@ router.get('/login',controller.loginPage);
 router.get('/',controller.countItem,controller.homePage);
 router.get('/shop',controller.countItem,controller.shopPage);
 router.get('/product/:id',controller.countItem,controller.productPage);
+router.get('/search',controller.countItem,controller.searchProduct);
+router.get('/subcategory/:catId',controller.countItem,controller.getSubcategory);
 
 router.get('/orders',isLogin.userLogin,controller.countItem,controller.ordersPage);
 router.get('/wishlist',isLogin.userLogin,controller.countItem,controller.wishlistPage);
@@ -37,11 +39,12 @@ router.get('/order-cancel/:id',isLogin.userLogin,controller.cancelOrder);
 
 
 //POST Methods
-router.post('/register',controller.doSignup)
-router.post('/send-otp',controller.sendOtp)
-router.post('/signin',controller.doLogin)
+router.post('/register',controller.doSignup);
+router.post('/send-otp',controller.sendOtp);
+router.post('/signin',controller.doLogin);
+router.post('/reset-password',controller.resetPassword);
+router.post('/filter',controller.filterProduct);
 
-router.post('/reset-password',controller.resetPassword)
 router.post('/cart-qty',isLogin.userLogin,controller.changeItemQty);
 router.post('/address-add',isLogin.userLogin,controller.addAddress);
 router.post('/address-update/:id',isLogin.userLogin,controller.updateAddress);
