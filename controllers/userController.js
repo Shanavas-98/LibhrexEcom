@@ -50,8 +50,8 @@ const loginPage = async (req, res, next) => {
 
 const homePage = async (req, res, next) => {
     try {
-        const Products = await ProductModel.find().limit(12)
-        return res.render('user/index', { title: "Home", login: req.session, Products, count });
+        const Products = await ProductModel.find()
+        return res.render('user/index', { title: "Home", login: req.session, Products, count});
     } catch (error) {
         next(error)
     }
@@ -60,8 +60,16 @@ const homePage = async (req, res, next) => {
 const shopPage = async (req, res, next) => {
     try {
         const Categories = await Category.find()
+        const before = res.pagination.previous;
+        const current = res.pagination.current;
+        const after = res.pagination.next;
         const Products = await ProductModel.find({ flag: { $ne: true } })
-        res.render('user/shop', { title: "Shop", login: req.session, Categories, Products, count })
+            .skip(current.start)
+            .limit(current.limit)
+            .exec()
+        
+        //const Products = res.pagination.current;
+        res.render('user/shop', { title: "Shop", login: req.session, Categories, Products, count, before, current, after })
     } catch (error) {
         next(error)
     }
@@ -183,11 +191,17 @@ const orderSuccess = async (req, res, next) => {
 
 const ordersPage = async (req, res, next) => {
     try {
+        const before = res.pagination.previous;
+        const current = res.pagination.current;
+        const after = res.pagination.next;
         const orders = await OrderModel.find({ user: req.session.userId })
-            .populate('orderItems.product')
             .sort({ orderDate: -1 })
-            .lean()
-        res.render('user/orders', { title: "Orders", login: req.session, count, orders })
+            .skip(current.start)
+            .limit(current.limit)
+            .populate('orderItems.product')
+            .exec()
+            
+        res.render('user/orders', { title: "Orders", login: req.session, count, orders,before,current,after })
     } catch (error) {
         next(error)
     }
@@ -218,9 +232,14 @@ const paymentPage = async (req, res, next) => {
 
 const couponsPage = async (req, res, next) => {
     try {
+        const before = res.pagination.previous;
+        const current = res.pagination.current;
+        const after = res.pagination.next;
         await CouponModel.find()
+            .skip(current.start)
+            .limit(current.limit)
             .then((coupons) => {
-                res.render('user/coupons', { title: "Coupons", login: req.session, count, coupons })
+                res.render('user/coupons', { title: "Coupons", login: req.session, count, coupons,before,current,after })
             })
     } catch (error) {
         next(error)
@@ -374,7 +393,7 @@ const doLogout = async (req, res, next) => {
 
 const searchProduct = async (req, res, next) => {
     try {
-        const query = req.query.q || ''
+        const query = req.query.q || '';
         // const searchRegex = new RegExp(query, 'i')
         //similar to {$regex:query,$options:'i'}
         const Products = await ProductModel.find({
@@ -444,35 +463,6 @@ const filterProduct = async (req, res, next) => {
 
     } catch (error) {
         next(error)
-    }
-}
-
-const paginatedResults=(model)=>{
-    return(req,res,next)=>{
-        const page = parseInt(req.query.page);
-        const limit = parseInt(req.query.limit);
-
-        const startIndex = (page-1)*limit;
-        const endIndex = page*limit;
-
-        const results={};
-
-        if(endIndex<model.countDocuments().exec()){
-            results.next={
-                page:page+1,
-                limit:limit
-            }
-        }
-        if(startIndex>0){
-            results.previous={
-                page:page-1,
-                limit:limit
-            }
-        }
-
-        results.current = model.slice(startIndex, endIndex)
-        res.pagination = results
-        next()
     }
 }
 
@@ -739,6 +729,10 @@ const applyCoupon = async (req, res, next) => {
             return res.json({ err: "coupon not found" })
         }
 
+        if(coupon.block){
+            return res.json({err: "coupon is blocked"})
+        }
+
         let date = coupon.validity;
         let now = new Date();
 
@@ -800,9 +794,9 @@ const placeOrder = async (req, res, next) => {
             console.log("creating order");
             const user = await UserModel.findOne(
                 { _id: req.session.userId }
-                ).catch((err)=>{
-                    console.log("user error",err);
-                })
+            ).catch((err) => {
+                console.log("user error", err);
+            })
             //getting address using address id
             const shipAddr = user.addresses.id(req.body.shipAddrId)
             const billAddr = user.addresses.id(req.body.billAddrId)
@@ -810,12 +804,12 @@ const placeOrder = async (req, res, next) => {
             let cpn_code = req.body.coupon.toUpperCase().trim();
             const couponObj = await CouponModel.findOne(
                 { code: cpn_code }
-                ).catch((err)=>{
-                    console.log("coupon error",err);
-                })
+            ).catch((err) => {
+                console.log("coupon error", err);
+            })
             //calculating subtotal,discount,grandtotal
             const subtotal = Cart.cartItems.map(item => item.price).reduce((acc, val) => acc + val, 0);
-            console.log("total",subtotal);
+            console.log("total", subtotal);
             let discountAmt = 0;
             let grandTotal = subtotal;
             if (couponObj) {
@@ -833,8 +827,8 @@ const placeOrder = async (req, res, next) => {
                     discountAmt = Number(discountAmt.toFixed(2))
                 }
             }
-            console.log("discount",discountAmt);
-            console.log("grandtotal",grandTotal);
+            console.log("discount", discountAmt);
+            console.log("grandtotal", grandTotal);
 
             //creating the order with the given datas
             await new OrderModel({
@@ -868,8 +862,8 @@ const placeOrder = async (req, res, next) => {
                                 orderId: order._id
                             })
                     }
-                }).catch((err)=>{
-                    console.log("order error",err);
+                }).catch((err) => {
+                    console.log("order error", err);
                 })
         }
     } catch (error) {

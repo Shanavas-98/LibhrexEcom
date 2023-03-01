@@ -27,13 +27,11 @@ const CouponSchema = new mongoose.Schema({
     type: Date,
     required: true
   },
-  usedUsers: {
-    type: [ObjectId],
-    ref: 'User'
-  },
-  availableUsers: {
-    type: [ObjectId],
-    ref: 'User'
+  usedUsers:[ObjectId],
+  availableUsers:[ObjectId],
+  block:{
+    type: Boolean,
+    def:false
   }
 });
 

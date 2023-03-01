@@ -66,6 +66,26 @@
 								</table>
 							</div>
 						</div>
+						
+					</div>
+					<div class="row mt-5">
+						<div class="col text-center">
+							<div class="block-27">
+								<ul>
+									<% if(before){ %>
+									<li><a href="/orders?page=<%= before.page %>&limit=<%= before.limit %>">&lt;</a></li>
+									<li><a href="/orders?page=<%= before.page %>&limit=<%= before.limit %>"><%= before.page %></a></li>
+									<% } %>
+									<% if(current){ %>
+									<li class="active"><span><%= current.page %></span></li>
+									<% } %>
+									<% if(after){ %>
+									<li><a href="/orders?page=<%= after.page %>&limit=<%= after.limit %>"><%= after.page %></a></li>
+									<li><a href="/orders?page=<%= after.page %>&limit=<%= after.limit %>">&gt;</a></li>
+									<% } %>
+								</ul>
+							</div>
+						</div>
 					</div>
 				</div>
 			</section>

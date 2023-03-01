@@ -45,9 +45,15 @@ const profilePage = async (req, res, next) => {
 
 const usersPage = async (req, res, next) => {
     try {
-        const Users = await UserModel.find();
+        const before = res.pagination.previous;
+        const current = res.pagination.current;
+        const after = res.pagination.next;
+        const Users = await UserModel.find()
+        .skip(current.start)
+        .limit(current.limit)
+        .exec()
         let index = 1;
-        res.render('admin/users-list', { title: "Users", index, Users })
+        res.render('admin/users-list', { title: "Users", index, Users, before,current,after })
     } catch (error) {
         next(error)
     }
@@ -56,9 +62,16 @@ const usersPage = async (req, res, next) => {
 const categoriesPage = async (req, res, next) => {
     try {
         let index = 1;
-        const Categories = await Category.find().sort({category:1})
-        const Subcategories = await Subcategory.find();
-        res.render('admin/categories', { title: "Products :: Categories", index, Categories, Subcategories })
+        const before = res.pagination.previous;
+        const current = res.pagination.current;
+        const after = res.pagination.next;
+        const Categories = await Category.find()
+        .sort({category:1})
+        .skip(current.start)
+        .limit(current.limit)
+        console.log(Categories);
+        const Subcategories = await Subcategory.find()
+        res.render('admin/categories', { title: "Products :: Categories", index, Categories, Subcategories,before,current,after })
     } catch (error) {
         next(error)
     }
@@ -68,9 +81,17 @@ const productsPage = async (req, res, next) => {
     try {
         const Categories = await Category.find();
         const Subcategories = await Subcategory.find();
-        const Products = await ProductModel.find().sort({productName:1});
+        const before = res.pagination.previous;
+        const current = res.pagination.current;
+        const after = res.pagination.next;
+        const Products = await ProductModel.find()
+        .sort({productName:1})
+        .skip(current.start)
+        .limit(current.limit)
+        .exec()
+        //const Products = res.pagination.current;
         let index = 1;
-        res.render('admin/products-list', { title: "Products", index, Categories, Subcategories, Products })
+        res.render('admin/products-list', { title: "Products", index, Categories, Subcategories, Products,before,current,after })
     } catch (error) {
         next(error)
     }
@@ -109,12 +130,17 @@ const addBannerPage = async (req, res, next) => {
 
 const ordersPage = async (req, res, next) => {
     try {
-        const Orders = await OrderModel.find()
-            .populate('user')
-            .sort({ orderDate: -1 })
-            .lean()
         let index = 1000
-        res.render('admin/orders-list', { title: "Orders", Orders, index })
+        const before = res.pagination.previous;
+        const current = res.pagination.current;
+        const after = res.pagination.next;
+        const Orders = await OrderModel.find()
+            .sort({ orderDate: -1 })
+            .skip(current.start)
+            .limit(current.limit)
+            .populate('user')
+            .exec()
+        res.render('admin/orders-list', { title: "Orders", Orders, index, before,current,after })
     } catch (error) {
         next(error)
     }
@@ -133,9 +159,17 @@ const orderDetails = async (req, res, next) => {
 
 const couponsPage = async (req, res, next) => {
     try {
+        let index = 1;
+        const before = res.pagination.previous;
+        const current = res.pagination.current;
+        const after = res.pagination.next;
         await CouponModel.find()
+        .sort({validity:-1})
+        .skip(current.start)
+        .limit(current.limit)
+        .exec()
             .then((coupons) => {
-                res.render('admin/coupon-list', { title: "Coupons", coupons })
+                res.render('admin/coupons-list', { title: "Coupons",index, coupons,before,current, after })
             })
     } catch (error) {
         next(error)
@@ -482,12 +516,16 @@ const editCoupon = async (req, res, next) => {
     }
 }
 
-const deleteCoupon = async (req, res, next) => {
+const blockCoupon = async (req, res, next) => {
     try {
-        await CouponModel.deleteOne({ _id: req.params.cpnId })
-            .then(() => {
-                res.redirect("/admin/coupons")
-            })
+        const couponId=req.params.cpnId
+        const coupon = await CouponModel.findOne({ _id: couponId });
+        if (coupon.block) {
+            await CouponModel.findByIdAndUpdate({ _id: couponId }, { $set: { block: false } })
+        } else {
+            await CouponModel.findByIdAndUpdate({ _id: couponId }, { $set: { block: true} })
+        }
+        return res.redirect("/admin/coupons")
     } catch {
         next(error)
     }
@@ -496,6 +534,7 @@ const deleteCoupon = async (req, res, next) => {
 module.exports = {
     loginPage,
     homePage,
+    addBannerPage,
     profilePage,
     usersPage,
     productsPage,
@@ -524,5 +563,5 @@ module.exports = {
     orderCancel,
     addCoupon,
     editCoupon,
-    deleteCoupon
+    blockCoupon
 }

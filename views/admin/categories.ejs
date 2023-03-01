@@ -98,17 +98,32 @@
                                                                         <% } %>
                                                             </a>
                                                         </td>
-                                                    
-
                                                     </tr>
-                                                    <% } %>
-                                                        <% }) %>
-                                                            <% }) %>
+                                                <% } %>
+                                            <% }) %>
+                                        <% }) %>
                                     </tbody>
                                 </table>
                             </div>
-                        </div> <!-- .col// -->
+                        </div><!-- .col// -->
                     </div> <!-- .row // -->
+                    <div class="pagination-area mt-15 mb-50">
+                        <nav aria-label="Page navigation example">
+                            <ul class="pagination justify-content-center">
+                                <% if(before){ %>
+                                    <li class="page-item"><a class="page-link" href="/admin/categories?page=<%= before.page %>&limit=<%= before.limit %>">&lt;</a></li>
+                                    <li class="page-item"><a class="page-link" href="/admin/categories?page=<%= before.page %>&limit=<%= before.limit %>"><%= before.page %></a></li>
+                                <% } %>
+                                <% if(current){ %>
+                                    <li class="page-item active"><span class="page-link"><%= current.page %></span></li>
+                                <% } %>
+                                <% if(after){ %>
+                                    <li class="page-item"><a class="page-link" href="/admin/categories?page=<%= after.page %>&limit=<%= after.limit %>"><%= after.page %></a></li>
+                                    <li class="page-item"><a class="page-link" href="/admin/categories?page=<%= after.page %>&limit=<%= after.limit %>">&gt;</a></li>
+                                <% } %>
+                            </ul>
+                        </nav>
+                    </div>
                 </div> <!-- card body .// -->
             </div> <!-- card .// -->
         </section> <!-- content-main end// -->

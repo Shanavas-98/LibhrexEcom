@@ -3,21 +3,23 @@ const router = express.Router()
 
 const controller = require('../controllers/userController');
 const isLogin = require('../middleware/isLogin');
+const pagination = require('../middleware/pagination');
+const couponModel = require('../models/couponModel');
+const orderModel = require('../models/orderModel');
+const productModel = require('../models/productModel');
 
 //GET Methods
 router.get('/signup',controller.signupPage);
 router.get('/forgot',controller.forgotPage);
 router.get('/login',controller.loginPage);
-router.get('/',controller.countItem,controller.homePage);
-router.get('/shop',controller.countItem,controller.shopPage);
+router.get('/',controller.countItem,pagination.paginatedResults(productModel),controller.homePage);
+router.get('/shop',controller.countItem,pagination.paginatedResults(productModel),controller.shopPage);
 router.get('/product/:id',controller.countItem,controller.productPage);
-router.get('/search',controller.countItem,controller.searchProduct);
-router.get('/subcategory/:catId',controller.countItem,controller.getSubcategory);
 
-router.get('/orders',isLogin.userLogin,controller.countItem,controller.ordersPage);
+router.get('/orders',isLogin.userLogin,controller.countItem,pagination.paginatedResults(orderModel),controller.ordersPage);
 router.get('/wishlist',isLogin.userLogin,controller.countItem,controller.wishlistPage);
 router.get('/profile',isLogin.userLogin,controller.countItem,controller.profilePage);
-router.get('/coupons',isLogin.userLogin,controller.countItem,controller.couponsPage);
+router.get('/coupons',isLogin.userLogin,controller.countItem,pagination.paginatedResults(couponModel),controller.couponsPage);
 router.get('/cart',isLogin.userLogin,controller.countItem,controller.cartPage);
 router.get('/checkout',isLogin.userLogin,controller.countItem,controller.checkoutPage);
 router.get('/address-add',isLogin.userLogin,controller.countItem,controller.addressPage);
@@ -28,8 +30,9 @@ router.get('/payment',isLogin.userLogin,controller.paymentPage);
 router.get('/payment-success/:orderId',isLogin.userLogin,controller.paymentSuccess);
 router.get('/payment-cancel/:orderId',isLogin.userLogin,controller.paymentCancel);
 
-//router.get('/resendotp',controller.getOtp);
 router.get('/logout',controller.doLogout);
+router.get('/search',controller.countItem,controller.searchProduct);
+router.get('/subcategory/:catId',controller.countItem,controller.getSubcategory);
 router.get('/cart-add/:id',isLogin.userLogin,controller.addToCart);
 router.get('/cart-delete/:id',isLogin.userLogin,controller.delFromCart);
 router.get('/wishlist-add/:id',isLogin.userLogin,controller.addToWish);

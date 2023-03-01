@@ -5,7 +5,7 @@
                 <h2 class="content-title card-title">Coupons</h2>
             </div>
         </div>
-        <div class="row justify-content-around"> <!-- col.// -->
+        <div class="row justify-content-between"> <!-- col.// -->
             <% coupons.forEach(coupon=> { %>
                 <% let date=coupon.validity; %>
                     <% let strDate=date.toString().slice(0, 15); %>
@@ -13,8 +13,8 @@
                             <% let diffms=date.getTime() - now.getTime(); %>
                                 <% let diffDays=diffms/(1000*60*60*24); %>
                                     <% let days=Math.round(diffDays); %>
-                                        <div class="col-md-6">
-                                            <div class="card text-center" style="width: 25rem; border-radius: 20px;">
+                                        <div class="col-md-4">
+                                            <div class="card text-center" style="width: 24rem; border-radius: 20px;">
                                                 <div class="d-flex justify-content-between"
                                                     style="background-color: #f9f2ed; border-radius: 20px;">
                                                     <div class="text-center p-3 ml-4">
@@ -35,7 +35,7 @@
                                                         <h1>
                                                             <%= coupon.discount %>%
                                                         </h1>
-                                                        <% if(days>=0){ %>
+                                                        <% if(days>=0 && !coupon.block){ %>
                                                             <div class="m-2">
                                                                 <button type="button" class="btn btn-primary"
                                                                     onclick="Copy('cpnCode<%= coupon._id %>')">Copy</button>
@@ -45,9 +45,11 @@
                                                     </div>
                                                 </div>
                                                 <div class="card-footer">
-                                                    <% if(days<0){ %>
+                                                    <% if(coupon.block){ %>
+                                                        <p class="text-danger">Blocked</p>
+                                                    <% }else if(days<0){ %>
                                                         <p class="text-danger">Expired</p>
-                                                        <% }else if(day=0){ %>
+                                                        <% }else if(days==0){ %>
                                                             <p class="text-warning">Expires Today</p>
                                                             <% }else{ %>
                                                                 <p>Expire in <%= days %> days</p>
@@ -57,7 +59,26 @@
                                         </div>
                                         <% }) %>
         </div> <!-- row.// -->
-        <div class="pagination-area mt-15 mb-50">
+        <div class="row mt-5">
+            <div class="col text-center">
+                <div class="block-27">
+                    <ul>
+                        <% if(before){ %>
+                        <li><a href="/coupons?page=<%= before.page %>&limit=<%= before.limit %>">&lt;</a></li>
+                        <li><a href="/coupons?page=<%= before.page %>&limit=<%= before.limit %>"><%= before.page %></a></li>
+                        <% } %>
+                        <% if(current){ %>
+                        <li class="active"><span><%= current.page %></span></li>
+                        <% } %>
+                        <% if(after){ %>
+                        <li><a href="/coupons?page=<%= after.page %>&limit=<%= after.limit %>"><%= after.page %></a></li>
+                        <li><a href="/coupons?page=<%= after.page %>&limit=<%= after.limit %>">&gt;</a></li>
+                        <% } %>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- <div class="pagination-area mt-15 mb-50">
             <nav aria-label="Page navigation example">
                 <ul class="pagination justify-content-start">
                     <li class="page-item active"><a class="page-link" href="#">01</a></li>
@@ -69,7 +90,7 @@
                                 class="material-icons md-chevron_right"></i></a></li>
                 </ul>
             </nav>
-        </div>
+        </div> -->
     </section>
 
     <%-include('../user/layouts/user-footer.ejs')%>

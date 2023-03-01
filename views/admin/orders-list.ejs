@@ -39,11 +39,11 @@
                             <thead>
                                 <tr>
                                     <th>#ID</th>
-                                    <th scope="col">Name</th>
+                                    <th scope="col">Date</th>
                                     <th scope="col">Email</th>
                                     <th scope="col">Total</th>
-                                    <th scope="col">Status</th>
-                                    <th scope="col">Date</th>
+                                    <th scope="col">Shipment</th>
+                                    <th scope="col">Payment</th>
                                     <th scope="col" class="text-end"> Action </th>
                                 </tr>
                             </thead>
@@ -51,7 +51,9 @@
                                 <% Orders.forEach(order => { %>
                                 <tr>
                                     <td><%= index++ %></td>
-                                    <td><b><%= order.user.fullname %></b></td>
+                                    <td><% let isoDate = new Date(order.orderDate); %>
+										<% let date = `${isoDate.getDate()}-${isoDate.getMonth()+1}-${isoDate.getFullYear()}`; %>
+										<%= date %></td>
                                     <td><%= order.user.email %></td>
                                     <td><%= order.grandtotal %></td>
                                     <td>
@@ -68,9 +70,14 @@
                                         <% } %>
                                     </td>
                                     <td>
-                                        <% let isoDate = new Date(order.orderDate); %>
-										<% let date = `${isoDate.getDate()}-${isoDate.getMonth()+1}-${isoDate.getFullYear()}`; %>
-										<%= date %>
+                                        <% if(order.payment.status ==='success'){ %>
+                                            <span class="badge rounded-pill alert-success">success</span>
+                                        <% }else if(order.payment.status ==='failed'){ %>
+                                            <span class="badge rounded-pill alert-danger">failed</span>
+                                        <% }else if(order.payment.status ==='pending'){ %>
+                                            <span class="badge rounded-pill alert-warning">pending</span>
+                                        <% } %>
+                                        <%= order.payment.method %>
                                     </td>
                                     <td class="text-end">
                                         <a href="/admin/order-details/<%= order._id %>" class="btn btn-md rounded font-sm">Details</a>
@@ -93,13 +100,18 @@
             </div> <!-- card end// -->
             <div class="pagination-area mt-15 mb-50">
                 <nav aria-label="Page navigation example">
-                    <ul class="pagination justify-content-start">
-                        <li class="page-item active"><a class="page-link" href="#">01</a></li>
-                        <li class="page-item"><a class="page-link" href="#">02</a></li>
-                        <li class="page-item"><a class="page-link" href="#">03</a></li>
-                        <li class="page-item"><a class="page-link dot" href="#">...</a></li>
-                        <li class="page-item"><a class="page-link" href="#">16</a></li>
-                        <li class="page-item"><a class="page-link" href="#"><i class="material-icons md-chevron_right"></i></a></li>
+                    <ul class="pagination justify-content-center">
+                        <% if(before){ %>
+							<li class="page-item"><a class="page-link" href="/admin/orders?page=<%= before.page %>&limit=<%= before.limit %>">&lt;</a></li>
+							<li class="page-item"><a class="page-link" href="/admin/orders?page=<%= before.page %>&limit=<%= before.limit %>"><%= before.page %></a></li>
+						<% } %>
+						<% if(current){ %>
+							<li class="page-item active"><span class="page-link"><%= current.page %></span></li>
+						<% } %>
+						<% if(after){ %>
+							<li class="page-item"><a class="page-link" href="/admin/orders?page=<%= after.page %>&limit=<%= after.limit %>"><%= after.page %></a></li>
+							<li class="page-item"><a class="page-link" href="/admin/orders?page=<%= after.page %>&limit=<%= after.limit %>">&gt;</a></li>
+						<% } %>
                     </ul>
                 </nav>
             </div>

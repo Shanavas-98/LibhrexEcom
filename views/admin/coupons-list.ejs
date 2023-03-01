@@ -3,41 +3,24 @@
         <section class="content-main">
             <div class="content-header">
                 <div>
-                    <h2 class="content-title card-title">Products List</h2>
-                    <p>List of all products.</p>
+                    <h2 class="content-title card-title">Coupons List</h2>
+                    <p>List of all coupons.</p>
                 </div>
                 <div>
-                    <!-- <a href="#" class="btn btn-light rounded font-md">Export</a>
-                    <a href="#" class="btn btn-light rounded  font-md">Import</a> -->
-                    <a href="/admin/product-add" class="btn btn-primary btn-sm rounded">Add New</a>
+                    <a href="/admin/coupon-add" class="btn btn-primary btn-sm rounded">Add New</a>
                 </div>
             </div>
             <div class="card mb-4">
                 <header class="card-header">
                     <div class="row align-items-center">
-                        <!-- <div class="col col-check flex-grow-0">
-                            <div class="form-check ms-2">
-                                <input class="form-check-input" type="checkbox" value="">
-                            </div>
-                        </div> -->
                         <div class="col-md-3 col-12 me-auto mb-md-0 mb-3">
                             <select class="form-select" name="category">
                                 <option selected>Choose Category</option>
-                                <% Categories.forEach(function(categ){ %>
-                                    <option value="<%= categ._id %> ">
-                                        <%= categ.category %>
-                                    </option>
-                                    <% }) %>
                             </select>
                         </div>
                         <div class="col-md-3 col-12 me-auto mb-md-0 mb-3">
                             <select class="form-select" name="subcategory">
                                 <option value="" selected>Choose Subcategory</option>
-                                <% Subcategories.forEach(function(subcateg){ %>
-                                    <option value="<%= subcateg._id %> ">
-                                        <%= subcateg.subcategory %>
-                                    </option>
-                                    <% }) %>
                             </select>
                         </div>
                         <div class="col-md-2 col-6">
@@ -61,47 +44,40 @@
                             <thead>
                                 <tr>
                                     <th>S.No</th>
-                                    <th>Image</th>
-                                    <th>Product</th>
-                                    <th>MRP</th>
-                                    <th>SRP</th>
-                                    <th>Qty</th>
+                                    <th>Validity</th>
+                                    <th>Coupon code</th>
+                                    <th>Discount</th>
+                                    <th>Min Bill</th>
+                                    <th>Max Discount</th>
+                                    <th>Usage</th>
                                     <th>Status</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <% Products.forEach(function(product){ %>
+                                <% coupons.forEach(function(coupon){ %>
+                    <% let date = coupon.validity.toString().slice(4, 15) %>
+                                    <% let usage = coupon.usedUsers.length %>
                                     <tr>
+                                        <td><%= index++ %></td>
+                                        <td><%= date %></td>
+                                        <td><%= coupon.code %></td>
+                                        <td><%= coupon.discount %>%</td>
+                                        <td>$<%= coupon.minBill %></td>
+                                        <td>$<%= coupon.maxDiscount %></td>
+                                        <td><%= usage %></td>
                                         <td>
-                                            <%= index++ %>
-                                        </td>
-                                        <td>
-                                            <img src="/images/products/<%= product.image[0] %> "
-                                                class="img-sm img-thumbnail" alt="Item">
-                                        </td>
-                                        <td>
-                                            <%= product.productName %>
-                                        </td>
-                                        <td>
-                                            <%= product.mrp %>
-                                        </td>
-                                        <td>
-                                            <%= product.srp %>
-                                        </td>
-                                        <td> <%= product.qty %>  </td>
-                                        <td>
-                                            <% if(product.flag){ %>
-                                                <span class="badge rounded-pill alert-danger">Disabled</span>
-                                                <% } else if(product.qty == 0) { %>
-                                                    <span class="badge rounded-pill alert-warning">Out of Stock</span>
+                                            <% if(coupon.block){ %>
+                                                <span class="badge rounded-pill alert-warning">Blocked</span>
+                                                <% } else if(coupon.validity < new Date()) { %>
+                                                    <span class="badge rounded-pill alert-danger">Expired</span>
                                                     <% } else { %>
                                                         <span class="badge rounded-pill alert-success">Active</span>
                                                         <% } %>
                                         </td>
                                         <td>
-                                            <a href="/admin/product-flag/<%= product._id %>">
-                                                <% if(product.flag){ %>
+                                            <a href="/admin/coupon-block/<%= coupon._id %>">
+                                                <% if(coupon.block){ %>
                                                     <button type="submit" class="btn btn-warning" style="width: 50px;" title="enable">
                                                         <i class="bi bi-flag-fill"></i></button>
                                                     <% } else { %>
@@ -110,7 +86,7 @@
                                                             <i class="bi bi-flag-fill"></i></button>
                                                         <% } %>
                                             </a>
-                                            <a href="/admin/product-edit/<%= product._id %>">
+                                            <a href="/admin/coupon-edit/<%= coupon._id %>">
                                                 <button class="btn btn-info" style="width: 50px" title="edit"><i class="bi bi-pencil-square"></i></button>
                                             </a>
                                         </td>
@@ -125,16 +101,16 @@
                 <nav aria-label="Page navigation example">
                     <ul class="pagination justify-content-center">
                         <% if(before){ %>
-							<li class="page-item"><a class="page-link" href="/admin/products?page=<%= before.page %>&limit=<%= before.limit %>">&lt;</a></li>
-							<li class="page-item"><a class="page-link" href="/admin/products?page=<%= before.page %>&limit=<%= before.limit %>"><%= before.page %></a></li>
-						<% } %>
-						<% if(current){ %>
-							<li class="page-item active"><span class="page-link"><%= current.page %></span></li>
-						<% } %>
-						<% if(after){ %>
-							<li class="page-item"><a class="page-link" href="/admin/products?page=<%= after.page %>&limit=<%= after.limit %>"><%= after.page %></a></li>
-							<li class="page-item"><a class="page-link" href="/admin/products?page=<%= after.page %>&limit=<%= after.limit %>">&gt;</a></li>
-						<% } %>
+                            <li class="page-item"><a class="page-link" href="/admin/coupons?page=<%= before.page %>&limit=<%= before.limit %>">&lt;</a></li>
+                            <li class="page-item"><a class="page-link" href="/admin/coupons?page=<%= before.page %>&limit=<%= before.limit %>"><%= before.page %></a></li>
+                        <% } %>
+                        <% if(current){ %>
+                            <li class="page-item active"><span class="page-link"><%= current.page %></span></li>
+                        <% } %>
+                        <% if(after){ %>
+                            <li class="page-item"><a class="page-link" href="/admin/coupons?page=<%= after.page %>&limit=<%= after.limit %>"><%= after.page %></a></li>
+                            <li class="page-item"><a class="page-link" href="/admin/coupons?page=<%= after.page %>&limit=<%= after.limit %>">&gt;</a></li>
+                        <% } %>
                     </ul>
                 </nav>
             </div>

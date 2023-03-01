@@ -1,7 +1,7 @@
 
 
 $('#signup_form').submit((e) => {
-	e.preventDefault()
+	e.preventDefault();
 	$.ajax({
 		url: '/register',
 		data: $('#signup_form').serialize(),
@@ -22,10 +22,13 @@ $('#signup_form').submit((e) => {
 const searchCard = document.querySelector('[search-card]')
 const searchTemplate = document.querySelector('[search-template]')
 
+//search among all products
 $('#search_bar').on('input', (e) => {
 	const value = e.target.value;
+	$('#categ_bar').val('');
+	$('#subcateg_bar').val('');
 	$.ajax({
-		url: '/search?q=' + value,
+		url:`/search?q=${value}`,
 		method: 'get',
 		success: (products) => {
 			searchCard.textContent = ""
@@ -49,7 +52,7 @@ $('#search_bar').on('input', (e) => {
 	})
 })
 
-//choosing a category changes subcategory to null
+//choose subcatogory under a specific category
 $('#categ_bar').on('change', function() {
     var categoryId = $('#categ_bar').val();
     $('#subcateg_bar').val('');
@@ -70,7 +73,7 @@ $('#categ_bar').on('change', function() {
     }
 });
 
-
+//filter products according to category & subcategory
 $('#categ_bar, #subcateg_bar').on('change',(e)=>{
 	const categ = $('#categ_bar').val();
 	const subcateg = $('#subcateg_bar').val();
@@ -341,12 +344,22 @@ function Copy(containerid) {
 		var range = document.createRange();
 		range.selectNode(document.getElementById(containerid));
 		window.getSelection().addRange(range);
-		document.execCommand("copy");
-		toastMixin.fire({
-			animation: true,
-			title: 'Coupon code copied',
-			icon: 'success'
-		});
+		try {
+			const textToCopy = window.getSelection().toString();
+			navigator.clipboard.writeText(textToCopy)
+				.then(() => {
+					toastMixin.fire({
+						animation: true,
+						title: 'Coupon code copied',
+						icon: 'success'
+					});
+				})
+				.catch((error) => {
+					console.error('Failed to copy coupon code to clipboard: ', error);
+				});
+		} catch (error) {
+			console.error('Failed to copy coupon code to clipboard: ', error);
+		}
 	}
 }
 

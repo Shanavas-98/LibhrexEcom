@@ -68,21 +68,6 @@
 				</div>
 				<% }) %> 
 			</div>
-			<!-- <template search-template>
-				<div class="col-sm-6 col-md-4 col-lg-3">
-					<div class="img d-flex justify-content-center align-items-center">
-						<a href="" data-link>
-						<img style="width: 25px;" class="" src="" alt="" data-image>
-						</a>
-					</div>
-					<div class="d-flex flex-column align-items-start ms-3">
-						<a class="m-0 text-dark text-decoration-none" href="" data-name></a>
-						<p class="price">
-							<span class="mr-2 price-dc" data-mrp></span>
-							<span class="price-sale" data-srp></span></p>
-					</div>
-				</div>
-			</template> -->
 			<template search-template>
 				<div class="col-sm-6 col-md-4 col-lg-3">
 					<div class="product" style="height: 350px;">
@@ -115,13 +100,17 @@
 				<div class="col text-center">
 					<div class="block-27">
 						<ul>
-							<li><a href="#">&lt;</a></li>
-							<li class="active"><span>1</span></li>
-							<li><a href="#">2</a></li>
-							<li><a href="#">3</a></li>
-							<li><a href="#">4</a></li>
-							<li><a href="#">5</a></li>
-							<li><a href="#">&gt;</a></li>
+							<% if(before){ %>
+							<li><a href="/shop?page=<%= before.page %>&limit=<%= before.limit %>">&lt;</a></li>
+							<li><a href="/shop?page=<%= before.page %>&limit=<%= before.limit %>"><%= before.page %></a></li>
+							<% } %>
+							<% if(current){ %>
+							<li class="active"><span><%= current.page %></span></li>
+							<% } %>
+							<% if(after){ %>
+							<li><a href="/shop?page=<%= after.page %>&limit=<%= after.limit %>"><%= after.page %></a></li>
+							<li><a href="/shop?page=<%= after.page %>&limit=<%= after.limit %>">&gt;</a></li>
+							<% } %>
 						</ul>
 					</div>
 				</div>
