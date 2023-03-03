@@ -95,22 +95,21 @@
         <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
         <script>
             //----- pie chart  ------
-        function pieChart(<%=pieData%>){
+            const count=<%- JSON.stringify(pieData) %>;
+            console.log(count);
             const data = [
-                { label: 'Placed', value: pieData.placedCount },
-                { label: 'Shipped', value: pieData.shippedCount },
-                { label: 'Delivered', value: pieData.deliveredCount },
-                { label: 'Cancelled', value: pieData.cancelledCount }
+                { label: 'Placed', value: count.placedCount },
+                { label: 'Shipped', value: count.shippedCount },
+                { label: 'Delivered', value: count.deliveredCount },
+                { label: 'Cancelled', value: count.cancelledCount }
             ];
             let xarray = data.map(d => d.label)
             let yarray = data.map(d => d.value)
             const pieData = [{ labels: xarray, values: yarray, hole: .5, type: "pie" }];
             Plotly.newPlot('pie_chart', pieData);
-        }
             //-------bar chart-------
-        function barChart(<%=labels%>,<%=graphData%>){
-            const xArray = [labels];
-            const yArray = [graphData];
+            const xArray = <%- JSON.stringify(labels) %>;
+            const yArray = <%- JSON.stringify(graphData) %>;
             console.log(xArray);
             console.log(yArray);
             // Define Data
@@ -121,7 +120,7 @@
             }];
             const layout = { title: "Monthly Report" };
             Plotly.newPlot("sales_chart", datas, layout);
-        }
+        
         </script>
         <%- include('../admin/layouts/admin-script.ejs') %>
 
