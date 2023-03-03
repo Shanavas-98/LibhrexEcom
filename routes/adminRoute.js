@@ -14,7 +14,7 @@ const category = categoryModel.category;
 
 
 /* GET Methods. */
-router.get('/',isLogin.adminLogin,controller.homePage);
+router.get('/',isLogin.adminLogin,controller.dashBoard);
 router.get('/login',controller.loginPage);
 router.get('/profile',isLogin.adminLogin,controller.profilePage);
 router.get('/products',isLogin.adminLogin,pagination.paginatedResults(productModel),controller.productsPage);
@@ -40,6 +40,7 @@ router.get('/order-delivery/:id',isLogin.adminLogin,controller.orderDelivery);
 router.get('/order-delivered/:id',isLogin.adminLogin,controller.orderDelivered);
 router.get('/order-cancel/:id',isLogin.adminLogin,controller.orderCancel);
 router.get('/coupon-block/:cpnId',isLogin.adminLogin,controller.blockCoupon);
+router.get('/sales-report',isLogin.adminLogin,controller.salesReport);
 
 
 // POST Methods

@@ -8,6 +8,7 @@ const UserModel = require('../models/userModel');
 const BannerModel = require('../models/bannerModel');
 const OrderModel = require('../models/orderModel');
 const CouponModel = require('../models/couponModel');
+const pdfTable = require('../utils/pdfTable')
 
 const Category = CategoryModel.category;
 const Subcategory = CategoryModel.subcategory;
@@ -17,7 +18,7 @@ const ObjectId = mongoose.Types.ObjectId;
 const loginPage = async (req, res, next) => {
     try {
         if (!req.session.adminLogin) {
-            res.render('admin/account-login', { title: "Admin Login", login: req.session});
+            res.render('admin/account-login', { title: "Admin Login", login: req.session });
         } else {
             res.redirect('/admin');
         }
@@ -26,9 +27,189 @@ const loginPage = async (req, res, next) => {
     }
 }
 
+
+
+
+const dashBoard = async (req, res) => {
+    try {
+        const usersCount = await UserModel.countDocuments({ blocked: false });
+        const ordersCount = await OrderModel.countDocuments({});
+        const placedCount = await OrderModel.countDocuments({ "deliveryStatus.placed.state": true });
+        const shippedCount = await OrderModel.countDocuments({ "deliveryStatus.shipped.state": true });
+        const deliveredCount = await OrderModel.countDocuments({ "deliveryStatus.delivered.state": true });
+        const cancelledCount = await OrderModel.countDocuments({ "deliveryStatus.cancelled.state": true });
+        const productsCount = await ProductModel.countDocuments({ flag: false });
+
+        const revenueArr = await OrderModel.aggregate([
+            {
+                $match:
+                {
+                    $and: [
+                        { "payment.status": "success" },
+                        { "deliveryStatus.delivered.state": true }
+                    ]
+                }
+            },
+            {
+                $group: {
+                    _id: 0,
+                    total: { $sum: "$subtotal" }
+                }
+            }
+        ])
+
+        const revenue = revenueArr[0].total;
+
+        const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+        const salesReport = await OrderModel.aggregate([
+            {
+                $group: {
+                    _id: {
+                        month: { $month: "$orderDate" },
+                        year: { $year: "$orderDate" }
+                    },
+                    sales: { $sum: "$grandtotal" }
+                }
+            },
+            {
+                $project: {
+                    month: "$_id.month",
+                    year: "$_id.year",
+                    sales: 1,
+                    _id: 0
+                }
+            }, {
+                $sort: { month: 1, year: 1 }
+            }
+        ])
+
+        const labels = salesReport.map(d => monthNames[d.month - 1] + "-" + d.year);
+        const graphData = salesReport.map(d => d.sales);
+        const counts = {
+            usersCount,
+            ordersCount,
+            revenue,
+            productsCount
+        }
+        const pieData = {
+            placedCount,
+            shippedCount,
+            deliveredCount,
+            cancelledCount
+        }
+
+        const sales = salesReport.map(item => {
+            return {
+                date: monthNames[item.month - 1] + "-" + item.year,
+                sales: item.sales
+            }
+        })
+        // const pieData = JSON.stringify(pieChart);
+        // const salesData = JSON.stringify(sales);
+        // const lineGraph = JSON.stringify(data);
+        // const lineLabel = JSON.stringify(labels);
+        res.render("admin/home", { title: "Dash Board", counts, pieData, sales, graphData, labels })
+    } catch (error) {
+        throw new Error(error)
+    }
+
+}
+
+
+const sales = async (fromDate, toDate) => {
+    try {
+        const sales_report = await OrderModel.aggregate([
+            {
+                $match: {
+                    "deliveryStatus.delivered.state": true,
+                    "orderDate": { $gte: fromDate, $lt: toDate }
+                }
+            },
+            {
+                $unwind: "$orderItems"
+            },
+            {
+                $group: {
+                    _id: {
+                        month: { $month: "$orderDate" },
+                        year: { $year: "$orderDate" }
+                    },
+                    sales: { $sum: "$orderItems.total" },
+                    products: { $sum: "$orderItems.qty" },
+                    orders: { $addToSet: "$_id" }
+                }
+            },
+            {
+                $project: { month: "$_id.month", year: "$_id.year", sales: 1, products: 1, orders: 1, _id: 0 }
+            }, {
+                $sort: { month: 1, year: 1 }
+            }
+        ])
+
+
+        const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        const salesReport = sales_report.map(item => {
+            return {
+                month: monthNames[item.month - 1],
+                totalAmount: item.sales,
+                totalOrders: item.orders.length,
+                productsSold: item.products
+            }
+        })
+
+        return salesReport;
+    } catch (error) {
+        throw new Error(error)
+    }
+}
+
+const salesReport = async (req, res, next) => {
+    try {
+        const currentYear = new Date().getFullYear();
+        const fromDate = new Date(currentYear, 0, 1)
+        const toDate = new Date(currentYear + 1, 0, 1)
+        const salesReport = await sales(fromDate, toDate)
+        if (salesReport) {
+            const pdf = pdfTable.generateReport(salesReport)
+            pdf.pipe(res);
+            pdf.end();
+        }
+    } catch (error) {
+        next(error)
+    }
+}
+
+
 const homePage = async (req, res, next) => {
     try {
-        res.render('admin/home', { title: "Dashboard" })
+        const productsCnt = await ProductModel.countDocuments().exec()
+        console.log("products", productsCnt);
+        const ordersCnt = await OrderModel.countDocuments().exec()
+        console.log("orders", ordersCnt);
+        await OrderModel.aggregate([
+            {
+                $match:
+                {
+                    $and: [
+                        { "payment.status": "success" },
+                        { "deliveryStatus.delivered.state": true }
+                    ]
+                }
+            },
+            {
+                $group: {
+                    _id: new Date(),
+                    total: { $sum: "$grandtotal" }
+                }
+            }
+        ]).then((revenue) => {
+            let total = 0;
+            if (revenue.length > 0) {
+                total = revenue[0].total
+            }
+            return res.render('admin/home', { title: "Dashboard", productsCnt, ordersCnt, total })
+        })
     } catch (error) {
         next(error)
     }
@@ -49,11 +230,11 @@ const usersPage = async (req, res, next) => {
         const current = res.pagination.current;
         const after = res.pagination.next;
         const Users = await UserModel.find()
-        .skip(current.start)
-        .limit(current.limit)
-        .exec()
+            .skip(current.start)
+            .limit(current.limit)
+            .exec()
         let index = 1;
-        res.render('admin/users-list', { title: "Users", index, Users, before,current,after })
+        res.render('admin/users-list', { title: "Users", index, Users, before, current, after })
     } catch (error) {
         next(error)
     }
@@ -66,12 +247,12 @@ const categoriesPage = async (req, res, next) => {
         const current = res.pagination.current;
         const after = res.pagination.next;
         const Categories = await Category.find()
-        .sort({category:1})
-        .skip(current.start)
-        .limit(current.limit)
+            .sort({ category: 1 })
+            .skip(current.start)
+            .limit(current.limit)
         console.log(Categories);
         const Subcategories = await Subcategory.find()
-        res.render('admin/categories', { title: "Products :: Categories", index, Categories, Subcategories,before,current,after })
+        res.render('admin/categories', { title: "Products :: Categories", index, Categories, Subcategories, before, current, after })
     } catch (error) {
         next(error)
     }
@@ -85,13 +266,13 @@ const productsPage = async (req, res, next) => {
         const current = res.pagination.current;
         const after = res.pagination.next;
         const Products = await ProductModel.find()
-        .sort({productName:1})
-        .skip(current.start)
-        .limit(current.limit)
-        .exec()
+            .sort({ productName: 1 })
+            .skip(current.start)
+            .limit(current.limit)
+            .exec()
         //const Products = res.pagination.current;
         let index = 1;
-        res.render('admin/products-list', { title: "Products", index, Categories, Subcategories, Products,before,current,after })
+        res.render('admin/products-list', { title: "Products", index, Categories, Subcategories, Products, before, current, after })
     } catch (error) {
         next(error)
     }
@@ -140,7 +321,7 @@ const ordersPage = async (req, res, next) => {
             .limit(current.limit)
             .populate('user')
             .exec()
-        res.render('admin/orders-list', { title: "Orders", Orders, index, before,current,after })
+        res.render('admin/orders-list', { title: "Orders", Orders, index, before, current, after })
     } catch (error) {
         next(error)
     }
@@ -164,12 +345,12 @@ const couponsPage = async (req, res, next) => {
         const current = res.pagination.current;
         const after = res.pagination.next;
         await CouponModel.find()
-        .sort({validity:-1})
-        .skip(current.start)
-        .limit(current.limit)
-        .exec()
+            .sort({ validity: -1 })
+            .skip(current.start)
+            .limit(current.limit)
+            .exec()
             .then((coupons) => {
-                res.render('admin/coupons-list', { title: "Coupons",index, coupons,before,current, after })
+                res.render('admin/coupons-list', { title: "Coupons", index, coupons, before, current, after })
             })
     } catch (error) {
         next(error)
@@ -201,17 +382,17 @@ const doLogin = async (req, res, next) => {
         const admin = await AdminModel.findOne({ email: email.trim() });
         if (!admin) {
             req.session.adminLogin = false;
-            req.session.adminErr="Admin don't exist";
+            req.session.adminErr = "Admin don't exist";
             return res.redirect('/admin/login');
         }
-        req.session.adminErr="";
+        req.session.adminErr = "";
         const isPass = await bcrypt.compare(password, admin.password);
         if (!isPass) {
             req.session.adminLogin = false;
-            req.session.passErr="Wrong password";
+            req.session.passErr = "Wrong password";
             return res.redirect('/admin/login');
         }
-        req.session.passErr="";
+        req.session.passErr = "";
         req.session.adminname = admin.branch;
         req.session.adminId = admin._id;
         req.session.adminLogin = true;
@@ -257,19 +438,19 @@ const viewUser = async (req, res, next) => {
     }
 }
 
-const addCategory = async(req,res,next)=>{
-    try{
+const addCategory = async (req, res, next) => {
+    try {
         const cat = req.body.category;
-        console.log("category",cat);
-            await new Category({
-                category: cat
-            }).save()
-            .then(()=>{
-                res.json({success:true})
-            }).catch(()=>{
-                res.json({err:"category already exist!"})
+        console.log("category", cat);
+        await new Category({
+            category: cat
+        }).save()
+            .then(() => {
+                res.json({ success: true })
+            }).catch(() => {
+                res.json({ err: "category already exist!" })
             })
-    }catch(error){
+    } catch (error) {
         next(error)
     }
 }
@@ -279,15 +460,15 @@ const addSubcategory = async (req, res, next) => {
         const cat = req.body.category;
         const subcat = req.body.subcategory;
         await new Subcategory({
-                catId: cat,
-                subcategory: subcat
-            }).save()
-            .then(()=>{
+            catId: cat,
+            subcategory: subcat
+        }).save()
+            .then(() => {
                 res.redirect('/admin/categories')
-            }).catch(()=>{
-                res.json({err:"subcategory already exist!"})
+            }).catch(() => {
+                res.json({ err: "subcategory already exist!" })
             })
-        } catch (error) {
+    } catch (error) {
         next(error);
     }
 }
@@ -446,7 +627,7 @@ const orderDelivered = async (req, res, next) => {
     try {
         await OrderModel.findOneAndUpdate(
             { _id: orderId },
-            { $set: { 'deliveryStatus.delivered.state': true, 'deliveryStatus.delivered.date': new Date } }
+            { $set: { 'payment.status':'success','deliveryStatus.delivered.state': true, 'deliveryStatus.delivered.date': new Date } }
         ).then(() => {
             res.redirect('/admin/orders');
         })
@@ -518,12 +699,12 @@ const editCoupon = async (req, res, next) => {
 
 const blockCoupon = async (req, res, next) => {
     try {
-        const couponId=req.params.cpnId
+        const couponId = req.params.cpnId
         const coupon = await CouponModel.findOne({ _id: couponId });
         if (coupon.block) {
             await CouponModel.findByIdAndUpdate({ _id: couponId }, { $set: { block: false } })
         } else {
-            await CouponModel.findByIdAndUpdate({ _id: couponId }, { $set: { block: true} })
+            await CouponModel.findByIdAndUpdate({ _id: couponId }, { $set: { block: true } })
         }
         return res.redirect("/admin/coupons")
     } catch {
@@ -531,8 +712,13 @@ const blockCoupon = async (req, res, next) => {
     }
 }
 
+
+
+
+
 module.exports = {
     loginPage,
+    dashBoard,
     homePage,
     addBannerPage,
     profilePage,
@@ -563,5 +749,6 @@ module.exports = {
     orderCancel,
     addCoupon,
     editCoupon,
-    blockCoupon
+    blockCoupon,
+    salesReport
 }
