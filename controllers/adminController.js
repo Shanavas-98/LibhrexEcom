@@ -99,17 +99,13 @@ const dashBoard = async (req, res) => {
             cancelledCount
         }
 
-        const sales = salesReport.map(item => {
-            return {
-                date: monthNames[item.month - 1] + "-" + item.year,
-                sales: item.sales
-            }
-        })
-        // const pieData = JSON.stringify(pieChart);
-        // const salesData = JSON.stringify(sales);
-        // const lineGraph = JSON.stringify(data);
-        // const lineLabel = JSON.stringify(labels);
-        res.render("admin/home", { title: "Dash Board", counts, pieData, sales, graphData, labels })
+        // const sales = salesReport.map(item => {
+        //     return {
+        //         date: monthNames[item.month - 1] + "-" + item.year,
+        //         sales: item.sales
+        //     }
+        // })
+        res.render("admin/home", { title: "Dash Board", counts, pieData, graphData, labels })
     } catch (error) {
         throw new Error(error)
     }

@@ -299,9 +299,49 @@ function changeItemQty(itemId, prodId, count) {
 	})
 }
 
-function moveToCart(itemId, productId) {
+function moveToCart(itemId, productId){
+	$.ajax({
+		url: '/cart-add/' + productId,
+		method: 'get',
+		success: (res) => {
+			if (res.status) {
+				let count = $('#cartCount').html();
+				count = parseInt(count) + 1;
+				$('#cartCount').html(count);
+
+				$.ajax({
+					url: '/wishlist-delete/' + itemId,
+					method: 'get',
+					success: (res) => {
+						if (res.remove) {
+							let count = $('#wishCount').html()
+							count = parseInt(count) - 1
+							$('#wishCount').html(count)
+						}
+					}
+				})
+				toastMixin.fire({
+					animation: true,
+					title: 'Moved to cart',
+					icon: 'success'
+				}).then(()=>{
+					location.reload()
+				})
+				
+			} else {
+				toastMixin.fire({
+					animation: true,
+					title: 'Already in cart',
+					icon: 'error'
+				});
+			}
+		}
+	})
+}
+
+function moveToWish(itemId, productId){
 	Swal.fire({
-		title: "Move item to Cart",
+		title: "Move item to Wishlist",
 		type: "info",
 		icon: "info",
 		showCancelButton: true,
@@ -313,28 +353,42 @@ function moveToCart(itemId, productId) {
 		focusCancel: true
 	}).then((result) => {
 		if (result.isConfirmed) {
-			delWishItem(itemId)
-			addToCart(productId)
-		}
-	})
-}
+			$.ajax({
+				url: '/wishlist-add/' + productId,
+				method: 'get',
+				success: (res) => {
+					if (res.status) {
+						let count = $('#wishCount').html()
+						count = parseInt(count) + 1
+						$('#wishCount').html(count)
 
-function moveToWish(itemId, productId) {
-	Swal.fire({
-		title: "Move item to Wishlist",
-		type: "info",
-		icon: "info",
-		showCancelButton: true,
-		confirmButtonText: "Remove",
-		confirmButtonColor: "#ff0055",
-		cancelButtonColor: "#999999",
-		reverseButtons: true,
-		focusConfirm: false,
-		focusCancel: true
-	}).then((result) => {
-		if (result.isConfirmed) {
-			delCartItem(itemId)
-			addToWish(productId)
+						$.ajax({
+							url: '/cart-delete/' + itemId,
+							method: 'get',
+							success: (res) => {
+								if (res.remove) {
+									let count = $('#cartCount').html();
+									count = parseInt(count) - 1;
+									$('#cartCount').html(count);
+								}
+							}
+						})
+						toastMixin.fire({
+							animation: true,
+							title: 'Moved to wishlist',
+							icon: 'success'
+						}).then(()=>{
+							location.reload()
+						})
+					} else {
+						toastMixin.fire({
+							animation: true,
+							title: 'Already in wishlist',
+							icon: 'error'
+						});
+					}
+				}
+			})
 		}
 	})
 }

@@ -939,10 +939,10 @@ const checkoutSession = async (req, res, next) => {
                 quantity: 1
             }],
             customer_email: user.email,
-            client_reference_id: orderData.id,
             success_url: 'http://localhost:3000/payment-success/' + orderData.id,
             cancel_url: 'http://localhost:3000/payment-cancel/' + orderData.id
         })
+        // client_reference_id: orderData.id,
         console.log("<<Payment session>>\n", session);
         res.json({ url: session.url });
     } catch (error) {
