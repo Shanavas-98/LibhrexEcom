@@ -270,7 +270,7 @@ const doSignup = async (req, res, next) => {
             .then(async (user) => {
                 //delete otp after signup
                 await OtpModel.deleteOne({ email: user.email })
-                res.redirect('/login')
+                res.json({success:true})
             })
             .catch(() => {
                 res.json({ err: "this email already registered!" })

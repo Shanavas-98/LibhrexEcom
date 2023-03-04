@@ -7,6 +7,9 @@ $('#signup_form').submit((e) => {
 		data: $('#signup_form').serialize(),
 		method: 'post',
 		success: (res) => {
+			if(res.success){
+				location.href='/login'
+			}
 			if (res.err) {
 				Swal.fire({
 					title: "Signup Failed",
