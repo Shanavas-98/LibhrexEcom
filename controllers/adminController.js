@@ -58,7 +58,8 @@ const dashBoard = async (req, res) => {
             }
         ])
 
-        const revenue = revenueArr[0].total;
+        const revenue = revenueArr[0] ? revenueArr[0].total: 0  ;
+        console.log(revenueArr);
 
         const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
