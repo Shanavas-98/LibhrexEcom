@@ -165,6 +165,9 @@ function addToCart(productId) {
 		url: '/cart-add/' + productId,
 		method: 'get',
 		success: (res) => {
+			if(res.err){
+				return location.href='/login'
+			}
 			if (res.status) {
 				let count = $('#cartCount').html();
 				count = parseInt(count) + 1;
@@ -175,7 +178,8 @@ function addToCart(productId) {
 					title: 'Added to cart',
 					icon: 'success'
 				});
-			} else {
+			} 
+			if(!res.status) {
 				toastMixin.fire({
 					animation: true,
 					title: 'Already in cart',
@@ -222,6 +226,9 @@ function addToWish(productId) {
 		url: '/wishlist-add/' + productId,
 		method: 'get',
 		success: (res) => {
+			if(res.err){
+				location.href='/login'
+			}
 			if (res.status) {
 				let count = $('#wishCount').html()
 				count = parseInt(count) + 1
@@ -232,7 +239,8 @@ function addToWish(productId) {
 					title: 'Added to wishlist',
 					icon: 'success'
 				});
-			} else {
+			} 
+			if(!res.status) {
 				toastMixin.fire({
 					animation: true,
 					title: 'Already in wishlist',

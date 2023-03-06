@@ -34,9 +34,9 @@ router.get('/payment-cancel/:orderId',isLogin.userLogin,controller.paymentCancel
 router.get('/logout',controller.doLogout);
 router.get('/search',controller.countItem,controller.searchProduct);
 router.get('/subcategory/:catId',controller.countItem,controller.getSubcategory);
-router.get('/cart-add/:id',isLogin.userLogin,controller.addToCart);
+router.get('/cart-add/:id',controller.addToCart);
 router.get('/cart-delete/:id',isLogin.userLogin,controller.delFromCart);
-router.get('/wishlist-add/:id',isLogin.userLogin,controller.addToWish);
+router.get('/wishlist-add/:id',controller.addToWish);
 router.get('/wishlist-delete/:id',isLogin.userLogin,controller.delFromWish);
 router.get('/address-delete/:id',isLogin.userLogin,controller.deleteAddress);
 router.get('/order-cancel/:id',isLogin.userLogin,controller.cancelOrder);

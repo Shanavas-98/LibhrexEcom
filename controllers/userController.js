@@ -509,6 +509,9 @@ const filterProduct = async (req, res, next) => {
 
 const addToWish = async (req, res, next) => {
     try {
+        if(!req.session.userLogin){
+            return res.json({err:true})
+        }
         const userId = req.session.userId;
         const productId = req.params.id
         const Wishlist = await WishlistModel.findOne({ userId: userId });
@@ -571,6 +574,9 @@ const delFromWish = async (req, res, next) => {
 
 const addToCart = async (req, res, next) => {
     try {
+        if(!req.session.userLogin){
+            return res.json({err:true})
+        }
         const userId = req.session.userId;
         const productId = req.params.id
         const product = await ProductModel.findById({ _id: productId })
