@@ -18,6 +18,8 @@ const Category = CategoryModel.category;
 const Subcategory = CategoryModel.subcategory;
 const ObjectId = mongoose.Types.ObjectId;
 
+const DOMAIN=process.env.DOMAIN;
+
 let count = { cart: 0, wish: 0 }
 
 const signupPage = async (req, res, next) => {
@@ -96,6 +98,15 @@ const profilePage = async (req, res, next) => {
         const user = await UserModel.findOne({ _id: req.session.userId });
         res.render('user/profile', { title: "Profile", login: req.session, user, count })
     } catch (error) {
+        next(error)
+    }
+}
+
+const resetPage = async(req,res,next)=>{
+    try{
+        const user = await UserModel.findOne({ _id: req.session.userId });
+        res.render('user/reset-password',{title:"Change Password",login:req.session, user, count})
+    }catch(error){
         next(error)
     }
 }
@@ -342,6 +353,36 @@ const resetPassword = async (req, res, next) => {
         ).then(async (user) => {
             await OtpModel.deleteOne({ email: user.email })
             res.redirect('/login')
+        })
+
+    } catch (error) {
+        next(error)
+    }
+}
+
+const changePassword = async (req, res, next) => {
+    try {
+        const email = req.body.email.trim()
+        const user = await UserModel.findOne({ email: email })
+        if (!user) {
+            return res.json({ err: "user not found check emailid!" })
+        }
+
+        const current = req.body.current_pass;
+        const isPass = await bcrypt.compare(current, user.password);
+        if (!isPass) {
+            return res.json({ err: "incorrect password" })
+        }
+
+        await UserModel.updateOne(
+            { email: email },
+            {
+                $set: {
+                    password: await bcrypt.hash(req.body.new_pass, 10)
+                }
+            }
+        ).then(() => {
+            res.redirect('/login');
         })
 
     } catch (error) {
@@ -906,8 +947,6 @@ const cancelOrder = async (req, res, next) => {
 const checkoutSession = async (req, res, next) => {
     try {
         const orderData = req.body;
-        console.log(orderData.grandtotal);
-        //get user details
         const user = await UserModel.findById({ _id: req.session.userId })
 
         //convert array of items to required format
@@ -939,8 +978,10 @@ const checkoutSession = async (req, res, next) => {
                 quantity: 1
             }],
             customer_email: user.email,
-            success_url: 'http://localhost:3000/payment-success/' + orderData.id,
-            cancel_url: 'http://localhost:3000/payment-cancel/' + orderData.id
+            success_url:`${DOMAIN}/payment-success/${orderData.id}`,
+            cancel_url:`${DOMAIN}/payment-cancel/${orderData.id}`
+            //success_url: 'http://localhost:3000/payment-success/' + orderData.id,
+            //cancel_url: 'http://localhost:3000/payment-cancel/' + orderData.id
         })
         // client_reference_id: orderData.id,
         console.log("<<Payment session>>\n", session);
@@ -983,6 +1024,7 @@ module.exports = {
     homePage,
     shopPage,
     productPage,
+    resetPage,
     ordersPage,
     wishlistPage,
     profilePage,
@@ -997,6 +1039,7 @@ module.exports = {
     paymentSuccess,
     paymentCancel,
     sendOtp,
+    changePassword,
     resetPassword,
     doSignup,
     doLogin,

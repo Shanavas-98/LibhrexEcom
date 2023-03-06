@@ -10,12 +10,13 @@ const productModel = require('../models/productModel');
 
 //GET Methods
 router.get('/signup',controller.signupPage);
-router.get('/forgot',controller.forgotPage);
+router.get('/forgot-password',controller.forgotPage);
 router.get('/login',controller.loginPage);
 router.get('/',controller.countItem,pagination.paginatedResults(productModel),controller.homePage);
 router.get('/shop',controller.countItem,pagination.paginatedResults(productModel),controller.shopPage);
 router.get('/product/:id',controller.countItem,controller.productPage);
 
+router.get('/reset-password',isLogin.userLogin,controller.countItem,controller.resetPage)
 router.get('/orders',isLogin.userLogin,controller.countItem,pagination.paginatedResults(orderModel),controller.ordersPage);
 router.get('/wishlist',isLogin.userLogin,controller.countItem,controller.wishlistPage);
 router.get('/profile',isLogin.userLogin,controller.countItem,controller.profilePage);
@@ -48,6 +49,7 @@ router.post('/signin',controller.doLogin);
 router.post('/reset-password',controller.resetPassword);
 router.post('/filter',controller.filterProduct);
 
+router.post('/change-password',isLogin.userLogin,controller.changePassword);
 router.post('/cart-qty',isLogin.userLogin,controller.changeItemQty);
 router.post('/address-add',isLogin.userLogin,controller.addAddress);
 router.post('/address-update/:id',isLogin.userLogin,controller.updateAddress);

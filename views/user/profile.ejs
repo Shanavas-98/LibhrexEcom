@@ -18,10 +18,7 @@
                             <h3> <%= user.fullname  %>  </h3>
                         </div> <!--  col.// -->
                         <div class="col-xl-4 text-md-end">
-                                <a href="/admin/users/unblock/<%= user._id %> ">
-                                    <button class="btn btn-sm btn-info rounded font-sm mt-15">Edit</button>
-                                        <!-- <span><i class="bi bi-person-fill-slash"></i></span> -->
-                                        </a>
+                            <a href="/reset-password" class="btn btn-sm btn-info rounded font-sm mt-15">Change Password</a>
                         </div> <!--  col.// -->
                     </div> <!-- card-body.// -->
                     <hr class="my-4">
@@ -60,7 +57,7 @@
 											</a>
 										</div>
 									</div>
-									<% }) %>
+								<% }) %>
 							</div>
                             
 						<p class="ml-5"><a href="/address-add" class="btn btn-primary py-3 px-4 ">Add new Address</a></p>

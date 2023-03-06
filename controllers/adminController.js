@@ -243,13 +243,13 @@ const categoriesPage = async (req, res, next) => {
         const before = res.pagination.previous;
         const current = res.pagination.current;
         const after = res.pagination.next;
-        const Categories = await Category.find()
+        const Categories=await Category.find()
+        const pageCategories = await Category.find()
             .sort({ category: 1 })
             .skip(current.start)
             .limit(current.limit)
-        console.log(Categories);
         const Subcategories = await Subcategory.find()
-        res.render('admin/categories', { title: "Products :: Categories", index, Categories, Subcategories, before, current, after })
+        res.render('admin/categories', { title: "Products :: Categories", index,pageCategories, Categories, Subcategories, before, current, after })
     } catch (error) {
         next(error)
     }
