@@ -64,7 +64,7 @@
 
                         <div class=" mb-3">
                             <label class="form-label">Category</label>
-                            <select class="form-select" name="category" id="categ">
+                            <select class="form-select" name="category" id="categ_bar">
                                 <option value="" selected>Choose Category</option>
                                 <% Categories.forEach(function(categ){ %>
                                     <option value="<%= categ._id %>">
@@ -76,13 +76,8 @@
                         </div>
                         <div class=" mb-3">
                             <label class="form-label">Sub-category</label>
-                            <select class="form-select" name="subcategory" id="subcateg">
+                            <select class="form-select" name="subcategory" id="subcateg_bar">
                                 <option value="" selected>Choose Subcategory</option>
-                                <% Subcategories.forEach(function(subcateg){ %>
-                                    <option value="<%= subcateg._id %>">
-                                        <%= subcateg.subcategory %>
-                                    </option>
-                                    <% }) %>
                             </select>
                             <p class="valid_error text-danger" ></p>
                         </div>

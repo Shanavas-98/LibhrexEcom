@@ -9,7 +9,7 @@ const productModel = require('../models/productModel');
 const userModel = require('../models/userModel');
 const categoryModel = require('../models/categoryModel');
 const couponModel = require('../models/couponModel');
-const category = categoryModel.category;
+const subcategory = categoryModel.subcategory;
 
 
 
@@ -21,7 +21,7 @@ router.get('/products',isLogin.adminLogin,pagination.paginatedResults(productMod
 router.get('/product-add',isLogin.adminLogin,controller.addProductPage);
 router.get('/product-edit/:id',isLogin.adminLogin,controller.editProductPage);
 
-router.get('/categories',isLogin.adminLogin,pagination.paginatedResults(category),controller.categoriesPage);
+router.get('/categories',isLogin.adminLogin,pagination.paginatedResults(subcategory),controller.categoriesPage);
 router.get('/orders',isLogin.adminLogin,pagination.paginatedResults(orderModel),controller.ordersPage);
 router.get('/order-details/:id',isLogin.adminLogin,controller.orderDetails);
 router.get('/coupons',isLogin.adminLogin,pagination.paginatedResults(couponModel),controller.couponsPage);
@@ -35,6 +35,7 @@ router.get('/user-block/:id',isLogin.adminLogin,controller.blockUser);
 router.get('/user-details/:id',isLogin.adminLogin,controller.viewUser);
 router.get('/category-edit/:id',isLogin.adminLogin,controller.editCategory);
 router.get('/category-flag/:id',isLogin.adminLogin,controller.flagCategory);
+router.get('/subcategory/:catId',isLogin.adminLogin,controller.getSubcategory);
 router.get('/order-ship/:id',isLogin.adminLogin,controller.orderShip);
 router.get('/order-delivery/:id',isLogin.adminLogin,controller.orderDelivery);
 router.get('/order-delivered/:id',isLogin.adminLogin,controller.orderDelivered);

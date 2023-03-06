@@ -27,9 +27,6 @@ const loginPage = async (req, res, next) => {
     }
 }
 
-
-
-
 const dashBoard = async (req, res) => {
     try {
         const usersCount = await UserModel.countDocuments({ blocked: false });
@@ -99,20 +96,12 @@ const dashBoard = async (req, res) => {
             deliveredCount,
             cancelledCount
         }
-
-        // const sales = salesReport.map(item => {
-        //     return {
-        //         date: monthNames[item.month - 1] + "-" + item.year,
-        //         sales: item.sales
-        //     }
-        // })
         res.render("admin/home", { title: "Dash Board", counts, pieData, graphData, labels })
     } catch (error) {
         throw new Error(error)
     }
 
 }
-
 
 const sales = async (fromDate, toDate) => {
     try {
@@ -172,41 +161,6 @@ const salesReport = async (req, res, next) => {
             pdf.pipe(res);
             pdf.end();
         }
-    } catch (error) {
-        next(error)
-    }
-}
-
-
-const homePage = async (req, res, next) => {
-    try {
-        const productsCnt = await ProductModel.countDocuments().exec()
-        console.log("products", productsCnt);
-        const ordersCnt = await OrderModel.countDocuments().exec()
-        console.log("orders", ordersCnt);
-        await OrderModel.aggregate([
-            {
-                $match:
-                {
-                    $and: [
-                        { "payment.status": "success" },
-                        { "deliveryStatus.delivered.state": true }
-                    ]
-                }
-            },
-            {
-                $group: {
-                    _id: new Date(),
-                    total: { $sum: "$grandtotal" }
-                }
-            }
-        ]).then((revenue) => {
-            let total = 0;
-            if (revenue.length > 0) {
-                total = revenue[0].total
-            }
-            return res.render('admin/home', { title: "Dashboard", productsCnt, ordersCnt, total })
-        })
     } catch (error) {
         next(error)
     }
@@ -277,9 +231,8 @@ const productsPage = async (req, res, next) => {
 
 const addProductPage = async (req, res, next) => {
     try {
-        const Categories = await Category.find();
-        const Subcategories = await Subcategory.find();
-        res.render('admin/add-product', { title: "Products :: Add Product", Categories, Subcategories })
+        const Categories = await Category.find().sort({category:1});
+        res.render('admin/add-product', { title: "Products :: Add Product", Categories })
     } catch (error) {
         next(error)
     }
@@ -500,6 +453,23 @@ const flagCategory = async (req, res, next) => {
     }
 }
 
+const getSubcategory = async (req, res, next) => {
+    try {
+        const categ = req.params.catId.trim();
+        await Subcategory.find({
+            $and: [
+                { flag: { $ne: true } },
+                { catId: categ }
+            ]
+        }).sort({subcategory:1})
+        .then((data) => {
+            res.json(data);
+        })
+    } catch (error) {
+        next(error)
+    }
+}
+
 const flagProduct = async (req, res, next) => {
     const productId = req.params.id;
     try {
@@ -716,7 +686,6 @@ const blockCoupon = async (req, res, next) => {
 module.exports = {
     loginPage,
     dashBoard,
-    homePage,
     addBannerPage,
     profilePage,
     usersPage,
@@ -737,6 +706,7 @@ module.exports = {
     addSubcategory,
     editCategory,
     flagCategory,
+    getSubcategory,
     addProduct,
     flagProduct,
     editProduct,

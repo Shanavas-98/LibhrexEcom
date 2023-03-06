@@ -25,3 +25,24 @@ function addCategory(){
         console.error('Error:',error);
     })
 }
+
+//choose subcatogory under a specific category
+$('#categ_bar').on('change', function() {
+    var categoryId = $('#categ_bar').val();
+    $('#subcateg_bar').val('');
+    if (categoryId) {
+        $.ajax({
+            url: '/admin/subcategory/' + categoryId,
+            type: 'GET',
+            success: function(data) {
+                $('#subcateg_bar').html('<option value="" selected>Choose Subcategory</option>');
+                data.forEach(function(subcateg) {
+                    $('#subcateg_bar').append('<option value="' + subcateg._id + '">' + subcateg.subcategory + '</option>');
+                });
+            }
+        });
+    } else {
+		//location.reload();
+        $('#subcateg_bar').html('<option value="" selected>Choose Subcategory</option>');
+    }
+});
