@@ -4,8 +4,8 @@ const description = document.getElementById('descript');
 const price = document.getElementById('price');
 const sell = document.getElementById('sell_price');
 const quantity = document.getElementById('quantity');
-const category = document.getElementById('categ');
-const subcategory = document.getElementById('subcateg');
+const category = document.getElementById('categ_bar');
+const subcategory = document.getElementById('subcateg_bar');
 
 
 form.addEventListener('submit', event => {
