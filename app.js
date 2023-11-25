@@ -4,25 +4,18 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const session = require('express-session');
-const multer = require('multer');
-const file = require('./utils/multer');
-const flash = require('connect-flash')
+const flash = require('connect-flash');
+const userRouter = require('./routes/userRoute');
+const adminRouter = require('./routes/adminRoute');
+const connectDatabase = require('./config/database')
 require('dotenv').config()
-
-
-//routes setup
-let adminRoute = require('./routes/adminRoute');
-let userRoute = require('./routes/userRoute');
-
 const app = express();
-
-
+//database connection
+connectDatabase()
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
-
-
 
 //middlewares
 app.use(logger('dev'));
@@ -33,10 +26,6 @@ app.use(flash());
 
 //public folder setup
 app.use(express.static(path.join(__dirname, 'public')));
-//multer file upload
-app.use(multer({ storage: file.storage }).array("image", 10));
-
-
 
 //session setup
 const oneHour = 1000*60*60;
@@ -58,8 +47,8 @@ app.use((req,res,next)=>{
 
 
 //Routes setup
-app.use('/admin', adminRoute);
-app.use('/', userRoute);
+app.use('/', userRouter);
+app.use('/admin', adminRouter);
 
 
 // catch 404 and forward to error handler
@@ -78,5 +67,11 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
-// module.exports = app;
-app.listen(3000)
+// creating local server
+app.listen(process.env.PORT,(error)=>{
+  if(error){
+    console.log("Server Error:",error.message);
+  }else{
+    console.log("Server running on",process.env.DOMAIN);
+  }
+})

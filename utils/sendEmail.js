@@ -27,11 +27,11 @@ const sendVerifyEmail = async (userEmail, otp) => {
          <b>Note:</b>OTP valid only for <b>10</b> minutes</p>`
     }
 
-    const info = await mailTransporter.sendMail(message, (err) => {
+    await mailTransporter.sendMail(message, (err) => {
         if (err) {
             console.log("Sending email failed", err);
         } else {
-            console.log("Email sent successfully", info.messageId);
+            console.log("Email sent successfully");
         }
     })
 

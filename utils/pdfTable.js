@@ -9,7 +9,7 @@ function generateReport(Details) {
         const table = {
             title: "Sales report",
             subtitle: "Sales report based on each month",
-            headers: ["No", "Month", "Amount", "Orders", "Proudcts Sold"],
+            headers: ["S.No", "Month", "Amount", "Orders", "Proudcts Sold"],
             rows: data,
         };
 

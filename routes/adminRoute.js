@@ -1,5 +1,5 @@
 const express = require('express');
-const router = express.Router();
+const adminRouter = express.Router();
 
 const controller = require('../controllers/adminController');
 const isLogin = require('../middleware/isLogin');
@@ -9,48 +9,50 @@ const productModel = require('../models/productModel');
 const userModel = require('../models/userModel');
 const categoryModel = require('../models/categoryModel');
 const couponModel = require('../models/couponModel');
+const createMulterInstance = require('../utils/fileUpload');
 const subcategory = categoryModel.subcategory;
 
+const uploadProduct = createMulterInstance('products');
 
 
 /* GET Methods. */
-router.get('/',isLogin.adminLogin,controller.dashBoard);
-router.get('/login',controller.loginPage);
-router.get('/profile',isLogin.adminLogin,controller.profilePage);
-router.get('/products',isLogin.adminLogin,pagination.paginatedResults(productModel),controller.productsPage);
-router.get('/product-add',isLogin.adminLogin,controller.addProductPage);
-router.get('/product-edit/:id',isLogin.adminLogin,controller.editProductPage);
+adminRouter.get('/',isLogin.adminLogin,controller.dashBoard);
+adminRouter.get('/login',controller.loginPage);
+adminRouter.get('/profile',isLogin.adminLogin,controller.profilePage);
+adminRouter.get('/products',isLogin.adminLogin,pagination.paginatedResults(productModel),controller.productsPage);
+adminRouter.get('/product-add',isLogin.adminLogin,controller.addProductPage);
+adminRouter.get('/product-edit/:id',isLogin.adminLogin,controller.editProductPage);
 
-router.get('/categories',isLogin.adminLogin,pagination.paginatedResults(subcategory),controller.categoriesPage);
-router.get('/orders',isLogin.adminLogin,pagination.paginatedResults(orderModel),controller.ordersPage);
-router.get('/order-details/:id',isLogin.adminLogin,controller.orderDetails);
-router.get('/coupons',isLogin.adminLogin,pagination.paginatedResults(couponModel),controller.couponsPage);
-router.get('/coupon-add',isLogin.adminLogin,controller.addCouponPage);
-router.get('/coupon-edit/:cpnId',isLogin.adminLogin,controller.editCouponPage);
-router.get('/users',isLogin.adminLogin,pagination.paginatedResults(userModel),controller.usersPage);
+adminRouter.get('/categories',isLogin.adminLogin,pagination.paginatedResults(subcategory),controller.categoriesPage);
+adminRouter.get('/orders',isLogin.adminLogin,pagination.paginatedResults(orderModel),controller.ordersPage);
+adminRouter.get('/order-details/:id',isLogin.adminLogin,controller.orderDetails);
+adminRouter.get('/coupons',isLogin.adminLogin,pagination.paginatedResults(couponModel),controller.couponsPage);
+adminRouter.get('/coupon-add',isLogin.adminLogin,controller.addCouponPage);
+adminRouter.get('/coupon-edit/:cpnId',isLogin.adminLogin,controller.editCouponPage);
+adminRouter.get('/users',isLogin.adminLogin,pagination.paginatedResults(userModel),controller.usersPage);
 
-router.get('/logout',controller.doLogout);
-router.get('/product-flag/:id',isLogin.adminLogin,controller.flagProduct);
-router.get('/user-block/:id',isLogin.adminLogin,controller.blockUser);
-router.get('/user-details/:id',isLogin.adminLogin,controller.viewUser);
-router.get('/category-edit/:id',isLogin.adminLogin,controller.editCategory);
-router.get('/category-flag/:id',isLogin.adminLogin,controller.flagCategory);
-router.get('/subcategory/:catId',isLogin.adminLogin,controller.getSubcategory);
-router.get('/order-ship/:id',isLogin.adminLogin,controller.orderShip);
-router.get('/order-delivery/:id',isLogin.adminLogin,controller.orderDelivery);
-router.get('/order-delivered/:id',isLogin.adminLogin,controller.orderDelivered);
-router.get('/order-cancel/:id',isLogin.adminLogin,controller.orderCancel);
-router.get('/coupon-block/:cpnId',isLogin.adminLogin,controller.blockCoupon);
-router.get('/sales-report',isLogin.adminLogin,controller.salesReport);
+adminRouter.get('/logout',controller.doLogout);
+adminRouter.get('/product-flag/:id',isLogin.adminLogin,controller.flagProduct);
+adminRouter.get('/user-block/:id',isLogin.adminLogin,controller.blockUser);
+adminRouter.get('/user-details/:id',isLogin.adminLogin,controller.viewUser);
+adminRouter.get('/category-edit/:id',isLogin.adminLogin,controller.editCategory);
+adminRouter.get('/category-flag/:id',isLogin.adminLogin,controller.flagCategory);
+adminRouter.get('/subcategory/:catId',isLogin.adminLogin,controller.getSubcategory);
+adminRouter.get('/order-ship/:id',isLogin.adminLogin,controller.orderShip);
+adminRouter.get('/order-delivery/:id',isLogin.adminLogin,controller.orderDelivery);
+adminRouter.get('/order-delivered/:id',isLogin.adminLogin,controller.orderDelivered);
+adminRouter.get('/order-cancel/:id',isLogin.adminLogin,controller.orderCancel);
+adminRouter.get('/coupon-block/:cpnId',isLogin.adminLogin,controller.blockCoupon);
+adminRouter.get('/sales-report',isLogin.adminLogin,controller.salesReport);
 
 
 // POST Methods
-router.post('/signin',controller.doLogin)
-router.post('/add-category',controller.addCategory)
-router.post('/add-subcategory',controller.addSubcategory)
-router.post('/add-product',controller.addProduct);
-router.post('/edit-product/:id',controller.editProduct);
-router.post('/add-coupon',controller.addCoupon);
-router.post('/edit-coupon/:cpnId',controller.editCoupon);
+adminRouter.post('/signin',controller.doLogin)
+adminRouter.post('/add-category',controller.addCategory)
+adminRouter.post('/add-subcategory',controller.addSubcategory)
+adminRouter.post('/add-product',uploadProduct.array("images",5),controller.addProduct);
+adminRouter.post('/edit-product/:id',controller.editProduct);
+adminRouter.post('/add-coupon',controller.addCoupon);
+adminRouter.post('/edit-coupon/:cpnId',controller.editCoupon);
 
-module.exports = router;
+module.exports = adminRouter;

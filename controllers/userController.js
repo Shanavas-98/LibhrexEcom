@@ -1,8 +1,7 @@
-require('../config/connection');
 require('dotenv').config()
 const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
-const emailOtp = require("../utils/nodemailer");
+const emailOtp = require("../utils/sendEmail");
 const stripe = require('stripe')(process.env.SECRET_KEY);
 
 const UserModel = require("../models/userModel");
@@ -158,7 +157,6 @@ const checkoutPage = async (req, res, next) => {
         if (addresses && subtotal) {
             res.render('user/checkout', { title: "Checkout", login: req.session, count, addresses, subtotal })
         }
-
     } catch (error) {
         next(error)
     }

@@ -1,5 +1,5 @@
 const express = require('express')
-const router = express.Router()
+const userRouter = express.Router()
 
 const controller = require('../controllers/userController');
 const isLogin = require('../middleware/isLogin');
@@ -9,52 +9,52 @@ const orderModel = require('../models/orderModel');
 const productModel = require('../models/productModel');
 
 //GET Methods
-router.get('/signup',controller.signupPage);
-router.get('/forgot-password',controller.forgotPage);
-router.get('/login',controller.loginPage);
-router.get('/',controller.countItem,pagination.paginatedResults(productModel),controller.homePage);
-router.get('/shop',controller.countItem,pagination.paginatedResults(productModel),controller.shopPage);
-router.get('/product/:id',controller.countItem,controller.productPage);
+userRouter.get('/signup',controller.signupPage);
+userRouter.get('/forgot-password',controller.forgotPage);
+userRouter.get('/login',controller.loginPage);
+userRouter.get('/',controller.countItem,pagination.paginatedResults(productModel),controller.homePage);
+userRouter.get('/shop',controller.countItem,pagination.paginatedResults(productModel),controller.shopPage);
+userRouter.get('/product/:id',controller.countItem,controller.productPage);
 
-router.get('/reset-password',isLogin.userLogin,controller.countItem,controller.resetPage)
-router.get('/orders',isLogin.userLogin,controller.countItem,pagination.paginatedResults(orderModel),controller.ordersPage);
-router.get('/wishlist',isLogin.userLogin,controller.countItem,controller.wishlistPage);
-router.get('/profile',isLogin.userLogin,controller.countItem,controller.profilePage);
-router.get('/coupons',isLogin.userLogin,controller.countItem,pagination.paginatedResults(couponModel),controller.couponsPage);
-router.get('/cart',isLogin.userLogin,controller.countItem,controller.cartPage);
-router.get('/checkout',isLogin.userLogin,controller.countItem,controller.checkoutPage);
-router.get('/address-add',isLogin.userLogin,controller.countItem,controller.addressPage);
-router.get('/address-edit/:id',isLogin.userLogin,controller.countItem,controller.editaddressPage);
-router.get('/order-success',isLogin.userLogin,controller.countItem,controller.orderSuccess);
-router.get('/order-details/:id',isLogin.userLogin,controller.countItem,controller.orderDetails);
-router.get('/payment',isLogin.userLogin,controller.paymentPage);
-router.get('/payment-success/:orderId',isLogin.userLogin,controller.paymentSuccess);
-router.get('/payment-cancel/:orderId',isLogin.userLogin,controller.paymentCancel);
+userRouter.get('/reset-password',isLogin.userLogin,controller.countItem,controller.resetPage)
+userRouter.get('/orders',isLogin.userLogin,controller.countItem,pagination.paginatedResults(orderModel),controller.ordersPage);
+userRouter.get('/wishlist',isLogin.userLogin,controller.countItem,controller.wishlistPage);
+userRouter.get('/profile',isLogin.userLogin,controller.countItem,controller.profilePage);
+userRouter.get('/coupons',isLogin.userLogin,controller.countItem,pagination.paginatedResults(couponModel),controller.couponsPage);
+userRouter.get('/cart',isLogin.userLogin,controller.countItem,controller.cartPage);
+userRouter.get('/checkout',isLogin.userLogin,controller.countItem,controller.checkoutPage);
+userRouter.get('/address-add',isLogin.userLogin,controller.countItem,controller.addressPage);
+userRouter.get('/address-edit/:id',isLogin.userLogin,controller.countItem,controller.editaddressPage);
+userRouter.get('/order-success',isLogin.userLogin,controller.countItem,controller.orderSuccess);
+userRouter.get('/order-details/:id',isLogin.userLogin,controller.countItem,controller.orderDetails);
+userRouter.get('/payment',isLogin.userLogin,controller.paymentPage);
+userRouter.get('/payment-success/:orderId',isLogin.userLogin,controller.paymentSuccess);
+userRouter.get('/payment-cancel/:orderId',isLogin.userLogin,controller.paymentCancel);
 
-router.get('/logout',controller.doLogout);
-router.get('/search',controller.countItem,controller.searchProduct);
-router.get('/subcategory/:catId',controller.countItem,controller.getSubcategory);
-router.get('/cart-add/:id',controller.addToCart);
-router.get('/cart-delete/:id',isLogin.userLogin,controller.delFromCart);
-router.get('/wishlist-add/:id',controller.addToWish);
-router.get('/wishlist-delete/:id',isLogin.userLogin,controller.delFromWish);
-router.get('/address-delete/:id',isLogin.userLogin,controller.deleteAddress);
-router.get('/order-cancel/:id',isLogin.userLogin,controller.cancelOrder);
+userRouter.get('/logout',controller.doLogout);
+userRouter.get('/search',controller.countItem,controller.searchProduct);
+userRouter.get('/subcategory/:catId',controller.countItem,controller.getSubcategory);
+userRouter.get('/cart-add/:id',controller.addToCart);
+userRouter.get('/cart-delete/:id',isLogin.userLogin,controller.delFromCart);
+userRouter.get('/wishlist-add/:id',controller.addToWish);
+userRouter.get('/wishlist-delete/:id',isLogin.userLogin,controller.delFromWish);
+userRouter.get('/address-delete/:id',isLogin.userLogin,controller.deleteAddress);
+userRouter.get('/order-cancel/:id',isLogin.userLogin,controller.cancelOrder);
 
 
 //POST Methods
-router.post('/register',controller.doSignup);
-router.post('/send-otp',controller.sendOtp);
-router.post('/signin',controller.doLogin);
-router.post('/reset-password',controller.resetPassword);
-router.post('/filter',controller.filterProduct);
+userRouter.post('/register',controller.doSignup);
+userRouter.post('/send-otp',controller.sendOtp);
+userRouter.post('/signin',controller.doLogin);
+userRouter.post('/reset-password',controller.resetPassword);
+userRouter.post('/filter',controller.filterProduct);
 
-router.post('/change-password',isLogin.userLogin,controller.changePassword);
-router.post('/cart-qty',isLogin.userLogin,controller.changeItemQty);
-router.post('/address-add',isLogin.userLogin,controller.addAddress);
-router.post('/address-update/:id',isLogin.userLogin,controller.updateAddress);
-router.post('/apply-coupon',isLogin.userLogin,controller.applyCoupon);
-router.post('/place-order',isLogin.userLogin,controller.placeOrder);
-router.post('/checkout-session',isLogin.userLogin,controller.checkoutSession)
+userRouter.post('/change-password',isLogin.userLogin,controller.changePassword);
+userRouter.post('/cart-qty',isLogin.userLogin,controller.changeItemQty);
+userRouter.post('/address-add',isLogin.userLogin,controller.addAddress);
+userRouter.post('/address-update/:id',isLogin.userLogin,controller.updateAddress);
+userRouter.post('/apply-coupon',isLogin.userLogin,controller.applyCoupon);
+userRouter.post('/place-order',isLogin.userLogin,controller.placeOrder);
+userRouter.post('/checkout-session',isLogin.userLogin,controller.checkoutSession)
   
-module.exports = router;
+module.exports = userRouter;
